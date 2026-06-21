@@ -1,5 +1,6 @@
 package com.madiwist.twitch.presentation.login
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ import com.madiwist.twitch.presentation.components.StandardTextField
 import com.madiwist.twitch.presentation.ui.theme.ExtraSpaceLarge
 import com.madiwist.twitch.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.presentation.ui.theme.SpaceMedium
+import com.madiwist.twitch.presentation.utils.Screen
 
 @Composable
 fun LoginScreen(
@@ -59,14 +61,14 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = stringResource(R.string.login),
+                text = stringResource(R.string.login_title),
                 color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(ExtraSpaceLarge))
             StandardTextField(
-                hint = stringResource(R.string.username_hint),
+                hint = stringResource(R.string.username_email_hint),
                 text = viewModel.username.value,
                 onValueChange = { viewModel.setUsername(it) },
                 error = viewModel.usernameError.value
@@ -85,7 +87,7 @@ fun LoginScreen(
             )
             Spacer(modifier = Modifier.height(ExtraSpaceLarge))
             Button(
-                onClick = { },
+                onClick = { navController.navigate(Screen.MainFeedScreen.route) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -93,10 +95,15 @@ fun LoginScreen(
                 elevation = ButtonDefaults.buttonElevation(
                     defaultElevation = 6.dp,
                     pressedElevation = 2.dp
+                ),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 Text(
-                    text = stringResource(R.string.login),
+                    text = stringResource(R.string.login_title),
+                    style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -104,7 +111,11 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(SpaceMedium))
 
             Text(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .clickable {
+                        navController.navigate((Screen.RegisterScreen.route))
+                    },
                 text = buildAnnotatedString {
                     append(stringResource(R.string.dont_have_an_account_yet))
                     append(" ")

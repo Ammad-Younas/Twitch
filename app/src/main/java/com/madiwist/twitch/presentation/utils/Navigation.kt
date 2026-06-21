@@ -5,6 +5,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.madiwist.twitch.presentation.login.LoginScreen
+import com.madiwist.twitch.presentation.main_feed.MainFeedScreen
+import com.madiwist.twitch.presentation.register.RegisterScreen
 import com.madiwist.twitch.presentation.splash.SplashScreen
 
 @Composable
@@ -19,6 +21,12 @@ fun Navigation() {
         }
         composable(Screen.LoginScreen.route){
             LoginScreen(navController = navController)
+        }
+        composable(Screen.RegisterScreen.route){
+            RegisterScreen(navController = navController)
+        }
+        composable(Screen.MainFeedScreen.route){
+            MainFeedScreen(navController = navController)
         }
     }
 }
