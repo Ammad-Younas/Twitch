@@ -1,5 +1,6 @@
 package com.madiwist.twitch.presentation.components
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -14,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -26,54 +26,67 @@ import com.madiwist.twitch.R
 fun StandardTextField(
     text: String = "",
     hint: String = "",
-    isError: Boolean = false,
+    error: String = "",
     maxLength: Int = 40,
+    showPasswordToggle : Boolean = false,
+    onPasswordToggleCLick : (Boolean) -> Unit = {},
     keyboardType: KeyboardType = KeyboardType.Text,
     onValueChange : (String) -> Unit,
 ) {
 
     val isPasswordToggleDisplayed by remember { mutableStateOf(keyboardType == KeyboardType.Password) }
-    var isPasswordVisible by remember { mutableStateOf(false) }
 
-    TextField(
-        modifier = Modifier.fillMaxWidth(),
-        isError = isError,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = keyboardType
-        ),
-        singleLine = true,
-        visualTransformation = if (!isPasswordVisible && isPasswordToggleDisplayed){
-            PasswordVisualTransformation()
-        }else {
-            VisualTransformation.None
-        },
-        trailingIcon = {
-            if (isPasswordToggleDisplayed){
-                IconButton(onClick = {
-                    isPasswordVisible = !isPasswordVisible
-                }) {
-                    Icon(
-                        imageVector = if (isPasswordVisible) {
-                            Icons.Filled.VisibilityOff
-                        } else {
-                            Icons.Filled.Visibility
-                        },
-                        contentDescription = if (isPasswordVisible) {
-                            stringResource(R.string.password_visible_content_description)
-                        } else {
-                            stringResource(R.string.password_hidden_content_description)
-                        },
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
+    Column (
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            isError = error != "",
+
+            keyboardOptions = KeyboardOptions(
+                keyboardType = keyboardType
+            ),
+            singleLine = true,
+            visualTransformation = if (!showPasswordToggle && isPasswordToggleDisplayed){
+                PasswordVisualTransformation()
+            }else {
+                VisualTransformation.None
+            },
+            trailingIcon = {
+                if (isPasswordToggleDisplayed){
+                    IconButton(onClick = {
+                        onPasswordToggleCLick(!showPasswordToggle)
+                    }) {
+                        Icon(
+                            imageVector = if (showPasswordToggle) {
+                                Icons.Filled.VisibilityOff
+                            } else {
+                                Icons.Filled.Visibility
+                            },
+                            contentDescription = if (showPasswordToggle) {
+                                stringResource(R.string.password_visible_content_description)
+                            } else {
+                                stringResource(R.string.password_hidden_content_description)
+                            },
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
-            }
-        },
-        value = text,
-        onValueChange = {
-            if (it.length <= maxLength){
-                onValueChange(it)
-            }
-        },
-        placeholder = { Text(hint, style = MaterialTheme.typography.bodyLarge) },
-    )
+            },
+            value = text,
+            onValueChange = {
+                if (it.length <= maxLength){
+                    onValueChange(it)
+                }
+            },
+            placeholder = { Text(hint, style = MaterialTheme.typography.bodyLarge) },
+        )
+        if (error.isNotEmpty()){
+            Text(
+                text = error,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+    }
 }
