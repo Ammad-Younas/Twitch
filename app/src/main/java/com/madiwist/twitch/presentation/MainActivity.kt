@@ -30,6 +30,7 @@ class MainActivity : ComponentActivity() {
                     innerPadding ->
                     val navController = rememberNavController()
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
+                    val currentRoute = navBackStackEntry?.destination?.route
                     Surface(
                         modifier = Modifier.fillMaxSize().padding(innerPadding),
                         color = MaterialTheme.colorScheme.background
@@ -46,7 +47,8 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.fillMaxSize(),
                             onFabClick = {
                                 navController.navigate(Screen.CreatePostScreen.route)
-                            }
+                            },
+                            currentRoute = currentRoute
                         ) {
                             Navigation(navController = navController)
                         }

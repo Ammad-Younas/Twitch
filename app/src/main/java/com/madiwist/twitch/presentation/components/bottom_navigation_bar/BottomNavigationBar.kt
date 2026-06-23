@@ -22,7 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,7 +32,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.madiwist.twitch.R
 import com.madiwist.twitch.domain.models.BottomNavItem
 import com.madiwist.twitch.presentation.components.BottomNavigationItem
@@ -43,6 +41,7 @@ import com.madiwist.twitch.presentation.utils.NavItems
 fun BottomNavigationBar(
     modifier: Modifier = Modifier,
     navController: NavController,
+    currentRoute: String?,
     showBottomBarAndFab: Boolean = true,
     bottomNavItemsList: List<BottomNavItem> = NavItems.NAV_ITEMS,
     onFabClick: () -> Unit = {},
@@ -51,7 +50,6 @@ fun BottomNavigationBar(
     val navBarHeight = 50.dp
     val density = LocalDensity.current
     val navigationBarPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
 
     val cutoutShape = remember(density) {
         GenericShape { size, _ ->
@@ -120,7 +118,7 @@ fun BottomNavigationBar(
                             BottomNavigationItem(
                                 icon = bottomNavItem.icon,
                                 contentDescription = bottomNavItem.contentDescription,
-                                selected = bottomNavItem.route == navBackStackEntry?.destination?.route,
+                                selected = bottomNavItem.route == currentRoute,
                                 alertCount = bottomNavItem.alertCount,
                                 onClick = {
                                     bottomNavItem.route?.let { route ->
