@@ -130,7 +130,7 @@ fun BottomNavigationBar(
                                 alertCount = bottomNavItem.alertCount,
                                 onClick = {
                                     bottomNavItem.route?.let { route ->
-                                        if (route != navController.currentBackStackEntry?.destination?.route) {
+                                        if (route != currentRoute) {
                                             navController.navigate(route)
                                         }
                                     }
