@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -43,20 +42,21 @@ import com.madiwist.twitch.presentation.ui.theme.SpaceSmall
 import com.madiwist.twitch.utils.Constants
 
 @Composable
-fun Post(post: Post) {
+fun Post(
+    post: Post
+) {
     Column (
         modifier = Modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(SpaceMedium),
+            .background(MaterialTheme.colorScheme.surface),
 
     ) {
        Image(
            painter = painterResource(R.drawable.feed_image),
            contentDescription = "Post Image",
            modifier = Modifier.fillMaxWidth(),
-           contentScale = ContentScale.Crop
+           contentScale = ContentScale.FillWidth
        )
        Column(
            modifier = Modifier
@@ -154,7 +154,7 @@ fun EngagementButtons(
                     Color.Red
                 } else {
                     MaterialTheme.colorScheme.onPrimary
-                },
+                }
             )
         }
         Spacer(modifier = Modifier.width(SpaceMedium))

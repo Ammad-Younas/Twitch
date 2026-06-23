@@ -1,8 +1,6 @@
 package com.madiwist.twitch.presentation.main_feed
 
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
@@ -21,13 +19,8 @@ fun MainFeedScreen(
         modifier = Modifier.fillMaxSize(),
         content = {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(SpaceMedium)
+                modifier = Modifier.fillMaxSize().padding(horizontal = SpaceMedium)
             ) {
-                item {
-                    Spacer(modifier = Modifier.height(SpaceMedium))
-                }
                 item {
                     Post(
                         post = PostModel(
@@ -38,9 +31,6 @@ fun MainFeedScreen(
                             commentCount = 15
                         )
                     )
-                }
-                item {
-                    Spacer(modifier = Modifier.height(SpaceMedium))
                 }
             }
         }

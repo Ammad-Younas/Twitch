@@ -1,14 +1,14 @@
 package com.madiwist.twitch.presentation.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Chat
 import androidx.compose.material.icons.filled.Add
@@ -36,7 +36,7 @@ fun BottomNavigationBar(
 ) {
     val navBarHeight = 60.dp
     val navigationBarPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-    
+
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
