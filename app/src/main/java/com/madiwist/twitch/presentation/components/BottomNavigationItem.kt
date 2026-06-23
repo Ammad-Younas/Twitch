@@ -1,5 +1,7 @@
 package com.madiwist.twitch.presentation.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
@@ -47,6 +49,14 @@ fun RowScope.BottomNavigationItem(
     if (alertCount != null && alertCount < 0) {
         throw IllegalArgumentException("Alert Count can't be negative")
     }
+
+    val lineLength = animateFloatAsState(
+        targetValue = if (selected) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = 300
+        )
+    )
+
     NavigationBarItem(
         selected = selected,
         onClick = onClick,
@@ -55,7 +65,7 @@ fun RowScope.BottomNavigationItem(
         colors = NavigationBarItemDefaults.colors(
             selectedIconColor = selectedColor,
             unselectedIconColor = unselectedColor,
-            indicatorColor = Color.Transparent
+            indicatorColor = Color.Transparent,
         ),
         icon = {
             Box(
@@ -66,8 +76,8 @@ fun RowScope.BottomNavigationItem(
                         if (selected) {
                             drawLine(
                                 color = selectedColor,
-                                start = Offset(size.width / 2f - 10.dp.toPx(), size.height),
-                                end = Offset(size.width / 2f + 10.dp.toPx(), size.height),
+                                start = Offset(size.width / 2f - lineLength.value * 10.dp.toPx(), size.height),
+                                end = Offset(size.width / 2f + lineLength.value * 10.dp.toPx(), size.height),
                                 strokeWidth = 4.dp.toPx(),
                                 cap = StrokeCap.Round
                             )

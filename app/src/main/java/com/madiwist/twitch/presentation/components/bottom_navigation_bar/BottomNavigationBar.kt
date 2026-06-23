@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalDensity
@@ -51,32 +50,41 @@ fun BottomNavigationBar(
     val density = LocalDensity.current
     val navigationBarPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
+
     val cutoutShape = remember(density) {
         GenericShape { size, _ ->
             val cutoutRadius = with(density) { 38.dp.toPx() }
+            val cornerRadius = with(density) { 12.dp.toPx() }
+
             val cutoutCenterX = size.width / 2f
-            
+
+            val notchStart = cutoutCenterX - cutoutRadius - cornerRadius
+            val notchEnd = cutoutCenterX + cutoutRadius + cornerRadius
+
             addPath(Path().apply {
-                moveTo(0f, 0f)
-                lineTo(cutoutCenterX - cutoutRadius, 0f)
-                arcTo(
-                    rect = Rect(
-                        left = cutoutCenterX - cutoutRadius,
-                        top = -cutoutRadius,
-                        right = cutoutCenterX + cutoutRadius,
-                        bottom = cutoutRadius
-                    ),
-                    startAngleDegrees = 180f,
-                    sweepAngleDegrees = -180f,
-                    forceMoveTo = false
+                moveTo(0f, cornerRadius)
+                quadraticTo(0f, 0f, cornerRadius, 0f)
+                lineTo(notchStart, 0f)
+                cubicTo(
+                    x1 = cutoutCenterX - cutoutRadius, y1 = 0f,
+                    x2 = cutoutCenterX - cutoutRadius, y2 = cutoutRadius,
+                    x3 = cutoutCenterX, y3 = cutoutRadius
                 )
-                lineTo(size.width, 0f)
+                cubicTo(
+                    x1 = cutoutCenterX + cutoutRadius, y1 = cutoutRadius,
+                    x2 = cutoutCenterX + cutoutRadius, y2 = 0f,
+                    x3 = notchEnd, y3 = 0f
+                )
+                lineTo(size.width - cornerRadius, 0f)
+                quadraticTo(size.width, 0f, size.width, cornerRadius)
                 lineTo(size.width, size.height)
                 lineTo(0f, size.height)
                 close()
             })
         }
     }
+
+
     Scaffold(
         modifier = modifier,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
