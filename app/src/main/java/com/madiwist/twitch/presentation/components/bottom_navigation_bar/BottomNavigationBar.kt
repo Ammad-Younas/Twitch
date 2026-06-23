@@ -20,8 +20,10 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.madiwist.twitch.R
 import com.madiwist.twitch.domain.models.BottomNavItem
 import com.madiwist.twitch.presentation.components.BottomNavigationItem
 import com.madiwist.twitch.presentation.utils.NavItems
@@ -32,6 +34,7 @@ fun BottomNavigationBar(
     navController: NavController,
     showBottomBar: Boolean = true,
     bottomNavItemsList: List<BottomNavItem> = NavItems.NAV_ITEMS,
+    onFabClick: () -> Unit = {},
     content : @Composable () -> Unit
 ) {
     val navBarHeight = 60.dp
@@ -41,7 +44,7 @@ fun BottomNavigationBar(
         Scaffold(
             floatingActionButton = {
                 FloatingActionButton(
-                    onClick = {},
+                    onClick = onFabClick,
                     containerColor = MaterialTheme.colorScheme.primary,
                     elevation = FloatingActionButtonDefaults.elevation(5.dp),
                     modifier = Modifier.offset(y = (40).dp),
@@ -49,7 +52,7 @@ fun BottomNavigationBar(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "",
+                        contentDescription = stringResource(R.string.make_post),
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
