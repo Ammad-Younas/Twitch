@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.madiwist.twitch.domain.models.Post as PostModel
-import com.madiwist.twitch.presentation.components.BottomNavigationBar
+import com.madiwist.twitch.presentation.components.bottom_navigation_bar.BottomNavigationBar
 import com.madiwist.twitch.presentation.components.Post
 import com.madiwist.twitch.presentation.ui.theme.SpaceMedium
 
@@ -17,6 +17,7 @@ fun MainFeedScreen(
 ) {
     BottomNavigationBar(
         modifier = Modifier.fillMaxSize(),
+        navController = navController,
         content = {
             LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(horizontal = SpaceMedium)

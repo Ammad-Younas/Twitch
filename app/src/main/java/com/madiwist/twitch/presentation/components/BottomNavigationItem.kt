@@ -35,7 +35,7 @@ import kotlin.jvm.Throws
 fun RowScope.BottomNavigationItem(
     modifier: Modifier = Modifier,
     icon: ImageVector,
-    contentDescription: String? = null,
+    contentDescription: Int? = null,
     selected: Boolean = false,
     alertCount: Int? = null,
     selectedColor: Color = MaterialTheme.colorScheme.primary,
@@ -76,7 +76,7 @@ fun RowScope.BottomNavigationItem(
             ) {
                 Icon(
                     imageVector = icon,
-                    contentDescription = contentDescription,
+                    contentDescription = contentDescription.toString(),
                     modifier = Modifier
                         .align(Alignment.Center)
                         .size(iconSize)
