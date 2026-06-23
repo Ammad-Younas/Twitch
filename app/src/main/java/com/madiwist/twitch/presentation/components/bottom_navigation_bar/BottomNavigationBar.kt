@@ -84,5 +84,7 @@ fun BottomNavigationBar(
                 content()
             }
         }
+    } else {
+        content()
     }
 }

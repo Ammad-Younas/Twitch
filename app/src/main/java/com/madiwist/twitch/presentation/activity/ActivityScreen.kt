@@ -13,15 +13,10 @@ import com.madiwist.twitch.presentation.components.bottom_navigation_bar.BottomN
 fun ActivityScreen(
     navController: NavController
 ) {
-    BottomNavigationBar(
-        navController = navController,
-        modifier = Modifier.fillMaxSize()
+    Box (
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        Box (
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = "Activity Screen")
-        }
+        Text(text = "Activity Screen")
     }
 }

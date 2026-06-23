@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.madiwist.twitch.presentation.components.bottom_navigation_bar.BottomNavigationBar
 import com.madiwist.twitch.presentation.ui.theme.TwitchTheme
@@ -27,13 +29,14 @@ class MainActivity : ComponentActivity() {
                 ) {
                     innerPadding ->
                     val navController = rememberNavController()
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
                     Surface(
                         modifier = Modifier.fillMaxSize().padding(innerPadding),
                         color = MaterialTheme.colorScheme.background
                     ) {
                         BottomNavigationBar(
                             navController = navController,
-                            showBottomBar = navController.currentDestination?.route in listOf(
+                            showBottomBar = navBackStackEntry?.destination?.route in listOf(
                                 Screen.MainFeedScreen.route,
                                 Screen.ChatScreen.route,
                                 Screen.ActivityScreen.route,

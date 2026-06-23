@@ -13,15 +13,10 @@ import com.madiwist.twitch.presentation.components.bottom_navigation_bar.BottomN
 fun ProfileScreen(
     navController: NavController
 ) {
-    BottomNavigationBar(
-        navController = navController,
-        modifier = Modifier.fillMaxSize()
+    Box (
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        Box (
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = "Profile Screen")
-        }
+        Text(text = "Profile Screen")
     }
 }

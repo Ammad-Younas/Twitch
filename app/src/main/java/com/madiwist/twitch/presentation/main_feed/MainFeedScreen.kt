@@ -12,28 +12,22 @@ import com.madiwist.twitch.presentation.components.Post
 import com.madiwist.twitch.presentation.ui.theme.SpaceMedium
 
 @Composable
-fun MainFeedScreen(
+fun MainFeedScreen (
     navController: NavController
 ) {
-    BottomNavigationBar(
-        modifier = Modifier.fillMaxSize(),
-        navController = navController,
-        content = {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(horizontal = SpaceMedium)
-            ) {
-                item {
-                    Post(
-                        post = PostModel(
-                            username = "MADI",
-                            imageUrl = "",
-                            description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers",
-                            likeCount = 23,
-                            commentCount = 15
-                        )
-                    )
-                }
-            }
+    LazyColumn(
+        modifier = Modifier.fillMaxSize().padding(horizontal = SpaceMedium)
+    ) {
+        item {
+            Post(
+                post = PostModel(
+                    username = "MADI",
+                    imageUrl = "",
+                    description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers",
+                    likeCount = 23,
+                    commentCount = 15
+                )
+            )
         }
-    )
+    }
 }

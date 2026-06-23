@@ -13,15 +13,10 @@ import com.madiwist.twitch.presentation.components.bottom_navigation_bar.BottomN
 fun ChatScreen(
     navController: NavController
 ) {
-    BottomNavigationBar(
-        navController = navController,
-        modifier = Modifier.fillMaxSize()
+    Box (
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        Box (
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = "Chat Screen")
-        }
+        Text(text = "Chat Screen")
     }
 }
