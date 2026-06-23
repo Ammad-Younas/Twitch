@@ -85,7 +85,7 @@ fun BottomNavigationBar(
                 FloatingActionButton(
                     onClick = onFabClick,
                     containerColor = MaterialTheme.colorScheme.primary,
-                    elevation = FloatingActionButtonDefaults.elevation(5.dp),
+                    elevation = FloatingActionButtonDefaults.elevation(12.dp),
                     shape = CircleShape,
                     modifier = Modifier.offset(y = 45.dp)
                 ) {
@@ -136,7 +136,5 @@ fun BottomNavigationBar(
                 content()
             }
         }
-    } else {
-        content()
     }
 }
