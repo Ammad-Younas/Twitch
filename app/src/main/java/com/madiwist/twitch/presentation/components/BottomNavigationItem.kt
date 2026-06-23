@@ -34,7 +34,7 @@ import kotlin.jvm.Throws
 @Throws(IllegalArgumentException::class)
 fun RowScope.BottomNavigationItem(
     modifier: Modifier = Modifier,
-    icon: ImageVector,
+    icon: ImageVector? = null,
     contentDescription: Int? = null,
     selected: Boolean = false,
     alertCount: Int? = null,
@@ -74,13 +74,15 @@ fun RowScope.BottomNavigationItem(
                         }
                     }
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = contentDescription.toString(),
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .size(iconSize)
-                )
+                if (icon != null){
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = contentDescription.toString(),
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .size(iconSize)
+                    )
+                }
                 if (alertCount != null && alertCount > 0) {
                     val alertText = if (alertCount > 99) "99+" else alertCount.toString()
                     Box(

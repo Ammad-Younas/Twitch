@@ -37,7 +37,7 @@ fun BottomNavigationBar(
     onFabClick: () -> Unit = {},
     content : @Composable () -> Unit
 ) {
-    val navBarHeight = 60.dp
+    val navBarHeight = 50.dp
     val navigationBarPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
     if (showBottomBar){
@@ -75,8 +75,11 @@ fun BottomNavigationBar(
                             selected = bottomNavItem.route == navController.currentDestination?.route,
                             alertCount = bottomNavItem.alertCount,
                             onClick = {
-                                navController.navigate(bottomNavItem.route)
-                            }
+                                bottomNavItem.route?.let {
+                                    navController.navigate(it)
+                                }
+                            },
+                            enabled = bottomNavItem.icon != null
                         )
                     }
                 }

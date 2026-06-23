@@ -20,6 +20,12 @@ object NavItems {
             icon = Icons.AutoMirrored.Outlined.Chat,
             contentDescription = R.string.chat
         ),
+
+        BottomNavItem(
+            route = null,
+            icon = null
+        ),
+
         BottomNavItem(
             route = Screen.ActivityScreen.route,
             icon = Icons.Outlined.Notifications,
