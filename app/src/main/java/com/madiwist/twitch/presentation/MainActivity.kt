@@ -36,14 +36,17 @@ class MainActivity : ComponentActivity() {
                     ) {
                         BottomNavigationBar(
                             navController = navController,
-                            showBottomBar = navBackStackEntry?.destination?.route in listOf(
+                            showBottomBarAndFab = navBackStackEntry?.destination?.route in listOf(
                                 Screen.MainFeedScreen.route,
                                 Screen.ChatScreen.route,
                                 Screen.ActivityScreen.route,
                                 Screen.ProfileScreen.route
 
                             ),
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize(),
+                            onFabClick = {
+                                navController.navigate(Screen.CreatePostScreen.route)
+                            }
                         ) {
                             Navigation(navController = navController)
                         }

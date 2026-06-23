@@ -43,7 +43,7 @@ import com.madiwist.twitch.presentation.utils.NavItems
 fun BottomNavigationBar(
     modifier: Modifier = Modifier,
     navController: NavController,
-    showBottomBar: Boolean = true,
+    showBottomBarAndFab: Boolean = true,
     bottomNavItemsList: List<BottomNavItem> = NavItems.NAV_ITEMS,
     onFabClick: () -> Unit = {},
     content : @Composable () -> Unit
@@ -79,12 +79,11 @@ fun BottomNavigationBar(
             })
         }
     }
-
-    if (showBottomBar){
-        Scaffold(
-            modifier = modifier,
-            contentWindowInsets = WindowInsets(0, 0, 0, 0),
-            floatingActionButton = {
+    Scaffold(
+        modifier = modifier,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        floatingActionButton = {
+            if (showBottomBarAndFab){
                 FloatingActionButton(
                     onClick = onFabClick,
                     containerColor = MaterialTheme.colorScheme.primary,
@@ -98,9 +97,11 @@ fun BottomNavigationBar(
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
-            },
-            floatingActionButtonPosition = FabPosition.Center,
-            bottomBar = {
+            }
+        },
+        floatingActionButtonPosition = FabPosition.Center,
+        bottomBar = {
+            if (showBottomBarAndFab){
                 BottomAppBar(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -134,10 +135,10 @@ fun BottomNavigationBar(
                     }
                 }
             }
-        ) { innerPadding ->
-            Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-                content()
-            }
+        }
+    ) { innerPadding ->
+        Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+            content()
         }
     }
 }

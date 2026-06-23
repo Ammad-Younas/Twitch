@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.madiwist.twitch.presentation.activity.ActivityScreen
 import com.madiwist.twitch.presentation.chat.ChatScreen
+import com.madiwist.twitch.presentation.create_post.CreatePostScreen
 import com.madiwist.twitch.presentation.login.LoginScreen
 import com.madiwist.twitch.presentation.main_feed.MainFeedScreen
 import com.madiwist.twitch.presentation.profile.ProfileScreen
@@ -38,6 +39,9 @@ fun Navigation(navController: NavHostController) {
         }
         composable(Screen.ProfileScreen.route){
             ProfileScreen(navController = navController)
+        }
+        composable(Screen.CreatePostScreen.route){
+            CreatePostScreen(navController = navController)
         }
     }
 }
