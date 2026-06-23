@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         BottomNavigationBar(
                             navController = navController,
-                            showBottomBarAndFab = navBackStackEntry?.destination?.route in listOf(
+                            showBottomBarAndFab = currentRoute in listOf(
                                 Screen.MainFeedScreen.route,
                                 Screen.ChatScreen.route,
                                 Screen.ActivityScreen.route,
