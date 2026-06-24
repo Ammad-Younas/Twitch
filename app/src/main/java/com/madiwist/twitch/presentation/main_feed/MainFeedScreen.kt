@@ -9,9 +9,8 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.MenuOpen
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -24,50 +23,64 @@ import com.madiwist.twitch.domain.models.Post as PostModel
 import com.madiwist.twitch.presentation.components.Post
 import com.madiwist.twitch.presentation.components.TwitchToolBar
 import com.madiwist.twitch.presentation.ui.theme.SpaceMedium
+import com.madiwist.twitch.presentation.utils.Screen
 
 @Composable
 fun MainFeedScreen (
     navController: NavController
 ) {
     Column (
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(SpaceMedium)
+            .windowInsetsPadding(WindowInsets.safeDrawing
+                .only(WindowInsetsSides.Horizontal))
     ) {
         TwitchToolBar(
             navController = navController,
             modifier = Modifier.fillMaxWidth(),
             title = {
-                Text("You Feed")
+                Text(stringResource(R.string.your_feed))
             },
             showBackArrow = true,
             navActions = {
                 IconButton(
-                    onClick = {  }
+                    onClick = {
+                        navController.navigate(Screen.SearchScreen.route)
+                    }
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.MenuOpen,
-                        contentDescription = stringResource(R.string.Back)
+                        imageVector = Icons.Outlined.Search,
+                        contentDescription = stringResource(R.string.Search)
                     )
                 }
             }
         )
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-                .padding(SpaceMedium)
-        ) {
-            item {
-                Post(
-                    navController = navController,
-                    post = PostModel(
-                        username = "MADI",
-                        imageUrl = "",
-                        description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers",
-                        likeCount = 23,
-                        commentCount = 15
-                    )
-                )
-            }
-        }
+        Post(
+            navController = navController,
+            post = PostModel(
+                username = "MADI",
+                imageUrl = "",
+                description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers",
+                likeCount = 23,
+                commentCount = 15
+            )
+        )
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
