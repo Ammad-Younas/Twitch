@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material.icons.Icons
@@ -44,7 +43,7 @@ import com.madiwist.twitch.presentation.utils.NavItems
 fun TwitchScaffold(
     modifier: Modifier = Modifier,
     navController: NavController,
-    currentRoute: String?,
+    currentRoute: String? = null,
     showBottomBarAndFab: Boolean = true,
     bottomNavItemsList: List<BottomNavItem> = NavItems.NAV_ITEMS,
     onFabClick: () -> Unit = {},

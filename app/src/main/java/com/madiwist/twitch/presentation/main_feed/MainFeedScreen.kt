@@ -52,8 +52,7 @@ fun MainFeedScreen (
             )
         },
         navController = navController,
-        showBottomBarAndFab = false,
-        currentRoute = Screen.MainFeedScreen.route
+        showBottomBarAndFab = false
     ) {
         Column(
             modifier = Modifier
