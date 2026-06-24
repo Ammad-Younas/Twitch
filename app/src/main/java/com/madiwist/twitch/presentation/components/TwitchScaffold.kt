@@ -15,7 +15,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -28,6 +27,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -40,7 +40,6 @@ import androidx.navigation.NavController
 import com.madiwist.twitch.R
 import com.madiwist.twitch.domain.models.BottomNavItem
 import com.madiwist.twitch.presentation.utils.NavItems
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -126,56 +125,57 @@ fun TwitchScaffold(
                 )
             }
         },
-        floatingActionButton = {
-            if (showBottomBarAndFab){
-                FloatingActionButton(
-                    onClick = onFabClick,
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    elevation = FloatingActionButtonDefaults.elevation(12.dp),
-                    shape = CircleShape,
-                    modifier = Modifier.offset(y = 45.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(R.string.make_post),
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-            }
-        },
-        floatingActionButtonPosition = FabPosition.Center,
         bottomBar = {
             if (showBottomBarAndFab){
-                BottomAppBar(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(cutoutShape)
                         .navigationBarsPadding(),
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    tonalElevation = 0.dp,
-                    windowInsets = WindowInsets(0, 0, 0, 0)
+                    contentAlignment = Alignment.TopCenter,
                 ) {
-                    NavigationBar (
-                        containerColor = Color.Transparent,
+                    BottomAppBar(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(cutoutShape),
+                        containerColor = MaterialTheme.colorScheme.surface,
                         tonalElevation = 0.dp,
                         windowInsets = WindowInsets(0, 0, 0, 0)
                     ) {
-                        bottomNavItemsList.forEach { bottomNavItem ->
-                            BottomNavigationItem(
-                                icon = bottomNavItem.icon,
-                                contentDescription = bottomNavItem.contentDescription,
-                                selected = bottomNavItem.route == currentRoute,
-                                alertCount = bottomNavItem.alertCount,
-                                onClick = {
-                                    bottomNavItem.route?.let { route ->
-                                        if (route != currentRoute) {
-                                            navController.navigate(route)
+                        NavigationBar (
+                            containerColor = Color.Transparent,
+                            tonalElevation = 0.dp,
+                            windowInsets = WindowInsets(0, 0, 0, 0)
+                        ) {
+                            bottomNavItemsList.forEach { bottomNavItem ->
+                                BottomNavigationItem(
+                                    icon = bottomNavItem.icon,
+                                    contentDescription = bottomNavItem.contentDescription,
+                                    selected = bottomNavItem.route == currentRoute,
+                                    alertCount = bottomNavItem.alertCount,
+                                    onClick = {
+                                        bottomNavItem.route?.let { route ->
+                                            if (route != currentRoute) {
+                                                navController.navigate(route)
+                                            }
                                         }
-                                    }
-                                },
-                                enabled = bottomNavItem.icon != null,
-                            )
+                                    },
+                                    enabled = bottomNavItem.icon != null,
+                                )
+                            }
                         }
+                    }
+                    FloatingActionButton(
+                        onClick = onFabClick,
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        elevation = FloatingActionButtonDefaults.elevation(12.dp),
+                        shape = CircleShape,
+                        modifier = Modifier.offset(y = (-30).dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(R.string.make_post),
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
                 }
             }
