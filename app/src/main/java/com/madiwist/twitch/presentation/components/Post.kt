@@ -46,10 +46,11 @@ import com.madiwist.twitch.utils.Constants
 @Composable
 fun Post(
     post: Post,
-    navController: NavController
+    navController: NavController,
+    modifier: Modifier = Modifier
 ) {
     Column (
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surface),
