@@ -13,7 +13,6 @@ import com.madiwist.twitch.presentation.post_detail.PostDetailsScreen
 import com.madiwist.twitch.presentation.profile.ProfileScreen
 import com.madiwist.twitch.presentation.register.RegisterScreen
 import com.madiwist.twitch.presentation.splash.SplashScreen
-import com.madiwist.twitch.domain.models.Post
 import com.madiwist.twitch.presentation.search.SearchScreen
 
 @Composable
@@ -47,15 +46,7 @@ fun Navigation(navController: NavHostController) {
             CreatePostScreen(navController = navController)
         }
         composable(Screen.PostDetailsScreen.route){
-            PostDetailsScreen(
-                post = Post(
-                    username = "MADI",
-                    imageUrl = "",
-                    description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers",
-                    likeCount = 23,
-                    commentCount = 15
-                )
-            )
+            PostDetailsScreen(navController = navController)
         }
         composable(Screen.SearchScreen.route){
             SearchScreen(navController = navController)

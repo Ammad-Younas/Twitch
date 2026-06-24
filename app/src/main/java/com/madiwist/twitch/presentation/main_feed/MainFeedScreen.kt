@@ -19,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.madiwist.twitch.R
+import com.madiwist.twitch.domain.models.Post
+import com.madiwist.twitch.presentation.components.Post
 import com.madiwist.twitch.presentation.components.TwitchScaffold
 import com.madiwist.twitch.presentation.components.TwitchToolBar
 import com.madiwist.twitch.presentation.ui.theme.SpaceMedium
@@ -60,7 +62,17 @@ fun MainFeedScreen (
                 .padding(SpaceMedium)
                 .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
         ) {
-            Text("Hello")
+            Post(
+                post = Post(
+                    username = "MADI",
+                    imageUrl = "",
+                    description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers",
+                    likeCount = 23,
+                    commentCount = 15
+                ),
+                navController = navController,
+                modifier = Modifier
+            )
         }
     }
 }
