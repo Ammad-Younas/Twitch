@@ -15,7 +15,7 @@ fun MainFeedScreen (
     navController: NavController
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(horizontal = SpaceMedium)
+        modifier = Modifier.fillMaxSize().padding(SpaceMedium)
     ) {
         item {
             Post(

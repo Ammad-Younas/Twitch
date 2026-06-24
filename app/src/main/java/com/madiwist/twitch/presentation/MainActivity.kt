@@ -4,9 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -24,34 +22,29 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             TwitchTheme {
-                Scaffold(
-                    modifier = Modifier.fillMaxSize()
+                val navController = rememberNavController()
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
                 ) {
-                    innerPadding ->
-                    val navController = rememberNavController()
-                    val navBackStackEntry by navController.currentBackStackEntryAsState()
-                    val currentRoute = navBackStackEntry?.destination?.route
-                    Surface(
-                        modifier = Modifier.fillMaxSize().padding(innerPadding),
-                        color = MaterialTheme.colorScheme.background
+                    TwitchScaffold(
+                        navController = navController,
+                        showBottomBarAndFab = currentRoute in listOf(
+                            Screen.MainFeedScreen.route,
+                            Screen.ChatScreen.route,
+                            Screen.ActivityScreen.route,
+                            Screen.ProfileScreen.route
+                        ),
+                        modifier = Modifier.fillMaxSize(),
+                        onFabClick = {
+                            navController.navigate(Screen.CreatePostScreen.route)
+                        },
+                        currentRoute = currentRoute,
+                        toolBarTitle = "Feed"
                     ) {
-                        TwitchScaffold(
-                            navController = navController,
-                            showBottomBarAndFab = currentRoute in listOf(
-                                Screen.MainFeedScreen.route,
-                                Screen.ChatScreen.route,
-                                Screen.ActivityScreen.route,
-                                Screen.ProfileScreen.route
-                            ),
-                            modifier = Modifier.fillMaxSize(),
-                            onFabClick = {
-                                navController.navigate(Screen.CreatePostScreen.route)
-                            },
-                            currentRoute = currentRoute,
-                            toolBarTitle = "Feed"
-                        ) {
-                            Navigation(navController = navController)
-                        }
+                        Navigation(navController = navController)
                     }
                 }
             }

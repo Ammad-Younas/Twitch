@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material.icons.Icons
@@ -57,9 +58,9 @@ fun TwitchScaffold(
     content : @Composable () -> Unit
 ) {
     val navBarHeight = 50.dp
-    val density = LocalDensity.current
     val navigationBarPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
+    val density = LocalDensity.current
 
     val cutoutShape = remember(density) {
         GenericShape { size, _ ->
