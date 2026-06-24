@@ -11,20 +11,15 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -34,7 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.madiwist.twitch.R
@@ -47,10 +41,7 @@ fun TwitchScaffold(
     modifier: Modifier = Modifier,
     navController: NavController,
     currentRoute: String?,
-    toolBarTitle: String? = null,
     showBottomBarAndFab: Boolean = true,
-    showToolBar: Boolean = true,
-    showBackArrow: Boolean = true,
     bottomNavItemsList: List<BottomNavItem> = NavItems.NAV_ITEMS,
     onFabClick: () -> Unit = {},
     content : @Composable () -> Unit
@@ -93,38 +84,6 @@ fun TwitchScaffold(
     Scaffold(
         modifier = modifier,
         contentWindowInsets = WindowInsets.safeDrawing,
-        topBar = {
-            if (showToolBar){
-                TopAppBar(
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                        actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-                    ),
-                    title = {
-                        if (toolBarTitle != null){
-                            Text(
-                                text = toolBarTitle,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    },
-                    navigationIcon = {
-                        if (showBackArrow){
-                            IconButton(
-                                onClick = { navController.popBackStack() }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = stringResource(R.string.Back)
-                                )
-                            }
-                        }
-                    }
-                )
-            }
-        },
         bottomBar = {
             if (showBottomBarAndFab){
                 Box(
