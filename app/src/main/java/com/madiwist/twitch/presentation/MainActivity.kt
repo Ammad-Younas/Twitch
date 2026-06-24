@@ -12,7 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.madiwist.twitch.presentation.components.bottom_navigation_bar.BottomNavigationBar
+import com.madiwist.twitch.presentation.components.TwitchScaffold
 import com.madiwist.twitch.presentation.ui.theme.TwitchTheme
 import com.madiwist.twitch.presentation.utils.Navigation
 import com.madiwist.twitch.presentation.utils.Screen
@@ -35,20 +35,20 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize().padding(innerPadding),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        BottomNavigationBar(
+                        TwitchScaffold(
                             navController = navController,
                             showBottomBarAndFab = currentRoute in listOf(
                                 Screen.MainFeedScreen.route,
                                 Screen.ChatScreen.route,
                                 Screen.ActivityScreen.route,
                                 Screen.ProfileScreen.route
-
                             ),
                             modifier = Modifier.fillMaxSize(),
                             onFabClick = {
                                 navController.navigate(Screen.CreatePostScreen.route)
                             },
-                            currentRoute = currentRoute
+                            currentRoute = currentRoute,
+                            toolBarTitle = "Feed"
                         ) {
                             Navigation(navController = navController)
                         }

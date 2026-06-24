@@ -9,9 +9,11 @@ import com.madiwist.twitch.presentation.chat.ChatScreen
 import com.madiwist.twitch.presentation.create_post.CreatePostScreen
 import com.madiwist.twitch.presentation.login.LoginScreen
 import com.madiwist.twitch.presentation.main_feed.MainFeedScreen
+import com.madiwist.twitch.presentation.post_detail.PostDetailsScreen
 import com.madiwist.twitch.presentation.profile.ProfileScreen
 import com.madiwist.twitch.presentation.register.RegisterScreen
 import com.madiwist.twitch.presentation.splash.SplashScreen
+import com.madiwist.twitch.domain.models.Post
 
 @Composable
 fun Navigation(navController: NavHostController) {
@@ -42,6 +44,17 @@ fun Navigation(navController: NavHostController) {
         }
         composable(Screen.CreatePostScreen.route){
             CreatePostScreen(navController = navController)
+        }
+        composable(Screen.PostDetailsScreen.route){
+            PostDetailsScreen(
+                post = Post(
+                    username = "MADI",
+                    imageUrl = "",
+                    description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers",
+                    likeCount = 23,
+                    commentCount = 15
+                )
+            )
         }
     }
 }

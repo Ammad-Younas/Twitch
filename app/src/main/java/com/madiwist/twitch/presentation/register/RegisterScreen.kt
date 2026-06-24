@@ -32,11 +32,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.madiwist.twitch.R
-import com.madiwist.twitch.presentation.components.StandardTextField
+import com.madiwist.twitch.presentation.components.TwitchTextField
 import com.madiwist.twitch.presentation.ui.theme.ExtraSpaceLarge
 import com.madiwist.twitch.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.presentation.ui.theme.SpaceMedium
-import com.madiwist.twitch.presentation.utils.Screen
 
 @Composable
 fun RegisterScreen(
@@ -67,21 +66,22 @@ fun RegisterScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(ExtraSpaceLarge))
-            StandardTextField(
+            TwitchTextField(
                 hint = stringResource(R.string.email_hint),
                 text = viewModel.email.value,
                 onValueChange = { viewModel.setEmail(it) },
-                error = viewModel.emailError.value
+                error = viewModel.emailError.value,
+                keyboardType = KeyboardType.Email
             )
             Spacer(modifier = Modifier.height(SpaceMedium))
-            StandardTextField(
+            TwitchTextField(
                 hint = stringResource(R.string.username_hint),
                 text = viewModel.username.value,
                 onValueChange = { viewModel.setUsername(it) },
                 error = viewModel.usernameError.value
             )
             Spacer(modifier = Modifier.height(SpaceMedium))
-            StandardTextField(
+            TwitchTextField(
                 hint = stringResource(R.string.password_hint),
                 text = viewModel.password.value,
                 onValueChange = { viewModel.setPassword(it) },

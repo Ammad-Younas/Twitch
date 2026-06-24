@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.madiwist.twitch.R
-import com.madiwist.twitch.presentation.components.StandardTextField
+import com.madiwist.twitch.presentation.components.TwitchTextField
 import com.madiwist.twitch.presentation.ui.theme.ExtraSpaceLarge
 import com.madiwist.twitch.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.presentation.ui.theme.SpaceMedium
@@ -67,14 +67,15 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(ExtraSpaceLarge))
-            StandardTextField(
+            TwitchTextField(
                 hint = stringResource(R.string.username_email_hint),
                 text = viewModel.username.value,
                 onValueChange = { viewModel.setUsername(it) },
-                error = viewModel.usernameError.value
+                error = viewModel.usernameError.value,
+                keyboardType = KeyboardType.Email
             )
             Spacer(modifier = Modifier.height(SpaceMedium))
-            StandardTextField(
+            TwitchTextField(
                 hint = stringResource(R.string.password_hint),
                 text = viewModel.password.value,
                 onValueChange = { viewModel.setPassword(it) },

@@ -35,15 +35,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.madiwist.twitch.R
 import com.madiwist.twitch.domain.models.Post
 import com.madiwist.twitch.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.presentation.ui.theme.SpaceSmall
+import com.madiwist.twitch.presentation.utils.Screen
 import com.madiwist.twitch.utils.Constants
 
 @Composable
 fun Post(
-    post: Post
+    post: Post,
+    navController: NavController
 ) {
     Column (
         modifier = Modifier
@@ -87,7 +90,7 @@ fun Post(
                    withStyle(
                        SpanStyle(
                            color = MaterialTheme.colorScheme.primary,
-                           fontWeight = FontWeight.Bold
+                           fontWeight = FontWeight.Bold,
                        )
                    ) {
                        append(stringResource(R.string.read_more))
@@ -96,7 +99,10 @@ fun Post(
                color = MaterialTheme.colorScheme.onBackground,
                style = MaterialTheme.typography.bodyLarge,
                overflow = TextOverflow.Ellipsis,
-               maxLines = Constants.MAX_POST_DESCRIPTION_LINES
+               maxLines = Constants.MAX_POST_DESCRIPTION_LINES,
+               modifier = Modifier.clickable{
+                   navController.navigate(Screen.PostDetailsScreen.route)
+               }
            )
            Spacer(modifier = Modifier.height(SpaceMedium))
            Row(

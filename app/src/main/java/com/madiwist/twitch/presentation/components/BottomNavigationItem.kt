@@ -73,12 +73,12 @@ fun RowScope.BottomNavigationItem(
                     .fillMaxSize()
                     .padding(SpaceMedium)
                     .drawBehind {
-                        if (selected) {
+                        if (lineLength.value > 0f) {
                             drawLine(
                                 color = selectedColor,
                                 start = Offset(size.width / 2f - lineLength.value * 10.dp.toPx(), size.height),
                                 end = Offset(size.width / 2f + lineLength.value * 10.dp.toPx(), size.height),
-                                strokeWidth = 4.dp.toPx(),
+                                strokeWidth = 3.dp.toPx(),
                                 cap = StrokeCap.Round
                             )
                         }
