@@ -38,7 +38,6 @@ class MainActivity : ComponentActivity() {
                 ) {
                     TwitchScaffold(
                         navController = navController,
-
                         showBottomBarAndFab = currentRoute in listOf (
                             Screen.MainFeedScreen.route,
                             Screen.ChatScreen.route,

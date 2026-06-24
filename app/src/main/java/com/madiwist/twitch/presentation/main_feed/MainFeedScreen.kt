@@ -1,14 +1,11 @@
 package com.madiwist.twitch.presentation.main_feed
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Icon
@@ -29,33 +26,33 @@ import com.madiwist.twitch.presentation.utils.Screen
 fun MainFeedScreen (
     navController: NavController
 ) {
+    TwitchToolBar(
+        navController = navController,
+        modifier = Modifier.fillMaxWidth(),
+        title = {
+            Text(stringResource(R.string.your_feed))
+        },
+        showBackArrow = true,
+        navActions = {
+            IconButton(
+                onClick = {
+                    navController.navigate(Screen.SearchScreen.route)
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Search,
+                    contentDescription = stringResource(R.string.Search)
+                )
+            }
+        }
+    )
     Column (
         modifier = Modifier
             .fillMaxSize()
+            .systemBarsPadding()
+            .displayCutoutPadding()
             .padding(SpaceMedium)
-            .windowInsetsPadding(WindowInsets.safeDrawing
-                .only(WindowInsetsSides.Horizontal))
     ) {
-        TwitchToolBar(
-            navController = navController,
-            modifier = Modifier.fillMaxWidth(),
-            title = {
-                Text(stringResource(R.string.your_feed))
-            },
-            showBackArrow = true,
-            navActions = {
-                IconButton(
-                    onClick = {
-                        navController.navigate(Screen.SearchScreen.route)
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Search,
-                        contentDescription = stringResource(R.string.Search)
-                    )
-                }
-            }
-        )
         Post(
             navController = navController,
             post = PostModel(

@@ -14,6 +14,7 @@ import com.madiwist.twitch.presentation.profile.ProfileScreen
 import com.madiwist.twitch.presentation.register.RegisterScreen
 import com.madiwist.twitch.presentation.splash.SplashScreen
 import com.madiwist.twitch.domain.models.Post
+import com.madiwist.twitch.presentation.search.SearchScreen
 
 @Composable
 fun Navigation(navController: NavHostController) {
@@ -55,6 +56,9 @@ fun Navigation(navController: NavHostController) {
                     commentCount = 15
                 )
             )
+        }
+        composable(Screen.SearchScreen.route){
+            SearchScreen(navController = navController)
         }
     }
 }
