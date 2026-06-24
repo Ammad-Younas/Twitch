@@ -2,13 +2,16 @@ package com.madiwist.twitch.presentation.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material.icons.Icons
@@ -34,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -59,15 +63,22 @@ fun TwitchScaffold(
 
     val navBarHeight = 50.dp
     val density = LocalDensity.current
+    val layoutDirection = LocalLayoutDirection.current
     val navigationBarPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
+    val safeInsets = WindowInsets.safeDrawing.asPaddingValues()
+    val leftInset = safeInsets.calculateLeftPadding(layoutDirection)
+    val rightInset = safeInsets.calculateRightPadding(layoutDirection)
 
-    val cutoutShape = remember(density) {
+    val cutoutShape = remember(density, leftInset, rightInset) {
         GenericShape { size, _ ->
             val cutoutRadius = with(density) { 38.dp.toPx() }
             val cornerRadius = with(density) { 12.dp.toPx() }
 
-            val cutoutCenterX = size.width / 2f
+            val leftPx = with(density) { leftInset.toPx() }
+            val rightPx = with(density) { rightInset.toPx() }
+            val usableWidth = size.width - leftPx - rightPx
+            val cutoutCenterX = leftPx + usableWidth / 2f
 
             val notchStart = cutoutCenterX - cutoutRadius - cornerRadius
             val notchEnd = cutoutCenterX + cutoutRadius + cornerRadius
@@ -96,9 +107,11 @@ fun TwitchScaffold(
     }
     Scaffold(
         modifier = modifier,
+        contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
             if (showToolBar){
                 TopAppBar(
+                    windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.surface,
                         navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
