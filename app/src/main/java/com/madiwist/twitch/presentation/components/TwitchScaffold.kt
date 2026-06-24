@@ -1,6 +1,7 @@
 package com.madiwist.twitch.presentation.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material.icons.Icons
@@ -46,6 +48,7 @@ fun TwitchScaffold(
     showBottomBarAndFab: Boolean = true,
     bottomNavItemsList: List<BottomNavItem> = NavItems.NAV_ITEMS,
     onFabClick: () -> Unit = {},
+    topBar: @Composable () -> Unit = {},
     content : @Composable () -> Unit
 ) {
     val density = LocalDensity.current
@@ -86,6 +89,7 @@ fun TwitchScaffold(
     Scaffold(
         modifier = modifier,
         contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
+        topBar = topBar,
         bottomBar = {
             if (showBottomBarAndFab){
                 Box(
@@ -142,7 +146,7 @@ fun TwitchScaffold(
             }
         }
     ) { innerPadding ->
-        Box(modifier = Modifier
+        Column(modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding)
         ) {
