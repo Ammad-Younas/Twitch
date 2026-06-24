@@ -2,12 +2,14 @@ package com.madiwist.twitch.presentation.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material.icons.Icons
@@ -83,7 +85,7 @@ fun TwitchScaffold(
 
     Scaffold(
         modifier = modifier,
-        contentWindowInsets = WindowInsets.navigationBars,
+        contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
         bottomBar = {
             if (showBottomBarAndFab){
                 Box(
@@ -142,7 +144,8 @@ fun TwitchScaffold(
     ) { innerPadding ->
         Box(modifier = Modifier
             .fillMaxSize()
-            .padding(innerPadding)) {
+            .padding(innerPadding)
+        ) {
             content()
         }
     }
