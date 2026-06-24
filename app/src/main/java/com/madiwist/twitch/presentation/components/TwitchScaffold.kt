@@ -1,7 +1,9 @@
 package com.madiwist.twitch.presentation.components
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material.icons.Icons
@@ -41,6 +44,9 @@ import androidx.navigation.NavController
 import com.madiwist.twitch.R
 import com.madiwist.twitch.domain.models.BottomNavItem
 import com.madiwist.twitch.presentation.utils.NavItems
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.ui.platform.LocalConfiguration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,10 +62,10 @@ fun TwitchScaffold(
     onFabClick: () -> Unit = {},
     content : @Composable () -> Unit
 ) {
+
     val navBarHeight = 50.dp
     val density = LocalDensity.current
     val navigationBarPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-
 
     val cutoutShape = remember(density) {
         GenericShape { size, _ ->
@@ -97,7 +103,7 @@ fun TwitchScaffold(
 
     Scaffold(
         modifier = modifier,
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
             if (showToolBar){
                 TopAppBar(
@@ -153,8 +159,9 @@ fun TwitchScaffold(
                 BottomAppBar(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(navBarHeight + navigationBarPadding)
-                        .clip(cutoutShape),
+                        .clip(cutoutShape)
+                        .windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Bottom))
+                        .height(navBarHeight + navigationBarPadding),
                     containerColor = MaterialTheme.colorScheme.surface,
                     tonalElevation = 0.dp,
                     windowInsets = WindowInsets(0, 0, 0, 0)
