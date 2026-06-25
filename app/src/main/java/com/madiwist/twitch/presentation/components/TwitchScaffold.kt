@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
@@ -90,7 +89,7 @@ fun TwitchScaffold(
                     tonalElevation = 0.dp,
                 ) {
                     NavigationBar(
-                        containerColor = Color.Transparent,
+                        containerColor = MaterialTheme.colorScheme.surface,
                         tonalElevation = 0.dp,
                     ) {
                         bottomNavItemsList.forEach { bottomNavItem ->
@@ -114,8 +113,8 @@ fun TwitchScaffold(
             }
         },
         floatingActionButton = {
-            if (showBottomBarAndFab){
-                TwitchFab (
+            if (showBottomBarAndFab) {
+                TwitchFab(
                     onClick = onFabClick
                 )
             }
