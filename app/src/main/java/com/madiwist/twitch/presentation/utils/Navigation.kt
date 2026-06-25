@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.madiwist.twitch.domain.models.Post
 import com.madiwist.twitch.presentation.activity.ActivityScreen
 import com.madiwist.twitch.presentation.chat.ChatScreen
 import com.madiwist.twitch.presentation.create_post.CreatePostScreen
@@ -46,7 +47,14 @@ fun Navigation(navController: NavHostController) {
             CreatePostScreen(navController = navController)
         }
         composable(Screen.PostDetailsScreen.route){
-            PostDetailsScreen(navController = navController)
+            val post = Post(
+                username = "kndkvndsvlj",
+                description = "This is a sample post description for preview purposes.",
+                likeCount = 120,
+                commentCount = 35,
+                imageUrl = ""
+            )
+            PostDetailsScreen(navController = navController, post = post)
         }
         composable(Screen.SearchScreen.route){
             SearchScreen(navController = navController)
