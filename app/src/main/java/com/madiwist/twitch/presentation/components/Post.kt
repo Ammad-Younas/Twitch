@@ -22,6 +22,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -29,6 +33,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -84,27 +89,48 @@ fun Post(
                }
            )
            Spacer(modifier = Modifier.height(SpaceSmall))
+
+           val maxLines = Constants.MAX_POST_DESCRIPTION_LINES
+           val readMore = stringResource(R.string.read_more)
+           val primaryColor = MaterialTheme.colorScheme.primary
+           var finalDisplayText by remember(post.description) { mutableStateOf(buildAnnotatedString { append(post.description) })
+           }
+           var hasOverflowed by remember(post.description) { mutableStateOf(false) }
            Text(
-               text = buildAnnotatedString {
-                   append(post.description)
-                   append(" ")
-                   withStyle(
-                       SpanStyle(
-                           color = MaterialTheme.colorScheme.primary,
-                           fontWeight = FontWeight.Bold,
-                       )
-                   ) {
-                       append(stringResource(R.string.read_more))
-                   }
-               },
+               text = finalDisplayText,
                color = MaterialTheme.colorScheme.onBackground,
                style = MaterialTheme.typography.bodyLarge,
-               overflow = TextOverflow.Ellipsis,
-               maxLines = Constants.MAX_POST_DESCRIPTION_LINES,
-               modifier = Modifier.clickable{
+               maxLines = maxLines,
+               onTextLayout = { result ->
+                   if (result.hasVisualOverflow && !hasOverflowed) {
+
+                       hasOverflowed = true
+
+                       val endIndex = (
+                               result.getLineEnd(maxLines - 1, visibleEnd = true) -
+                                       ("... ".length + readMore.length)
+                               ).coerceAtLeast(0)
+
+                       finalDisplayText = buildAnnotatedString {
+                           append(post.description.take(endIndex).trimEnd())
+                           append("... ")
+
+                           withStyle(
+                               SpanStyle(
+                                   color = primaryColor,
+                                   fontWeight = FontWeight.Bold
+                               )
+                           ) {
+                               append(readMore)
+                           }
+                       }
+                   }
+               },
+               modifier = Modifier.clickable {
                    navController.navigate(Screen.PostDetailsScreen.route)
                }
            )
+
            Spacer(modifier = Modifier.height(SpaceMedium))
            Row(
                modifier = Modifier.fillMaxWidth(),
