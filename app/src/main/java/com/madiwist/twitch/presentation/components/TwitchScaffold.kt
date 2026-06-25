@@ -92,9 +92,6 @@ fun TwitchScaffold(
                     NavigationBar(
                         containerColor = Color.Transparent,
                         tonalElevation = 0.dp,
-                        modifier = Modifier
-                            .windowInsetsPadding(WindowInsets.safeDrawing.only(
-                            WindowInsetsSides.Bottom)),
                     ) {
                         bottomNavItemsList.forEach { bottomNavItem ->
                             BottomNavigationItem(
