@@ -33,32 +33,30 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.madiwist.twitch.R
 import com.madiwist.twitch.domain.models.Post
 import com.madiwist.twitch.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.presentation.ui.theme.SpaceSmall
-import com.madiwist.twitch.presentation.utils.Screen
 import com.madiwist.twitch.utils.Constants
 
 @Composable
 fun Post(
     post: Post,
-    navController: NavController,
-    modifier: Modifier = Modifier
+    onPostClick: () -> Unit = {}
 ) {
     Column (
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
-            .background(MaterialTheme.colorScheme.surface),
+            .background(MaterialTheme.colorScheme.surface)
+            .clickable {
+                onPostClick()
+            },
 
     ) {
        Image(
@@ -125,9 +123,6 @@ fun Post(
                            }
                        }
                    }
-               },
-               modifier = Modifier.clickable {
-                   navController.navigate(Screen.PostDetailsScreen.route)
                }
            )
 
@@ -137,7 +132,7 @@ fun Post(
                horizontalArrangement = Arrangement.SpaceBetween
            ) {
                Text(
-                   text = stringResource(R.string.liked_by_x_people, post.likeCount),
+                   text = stringResource(R.string.post_liked_by_x_people, post.likeCount),
                    color = MaterialTheme.colorScheme.onPrimary,
                    style = MaterialTheme.typography.bodyMedium,
                    fontWeight = FontWeight.Bold

@@ -74,8 +74,7 @@ fun MainFeedScreen (
                     likeCount = 23,
                     commentCount = 15
                 ),
-                navController = navController,
-                modifier = Modifier
+                onPostClick = { navController.navigate(Screen.PostDetailsScreen.route) }
             )
         }
     }

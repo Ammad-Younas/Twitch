@@ -18,45 +18,48 @@ import com.madiwist.twitch.presentation.search.SearchScreen
 
 @Composable
 fun Navigation(navController: NavHostController) {
-    NavHost (
+    NavHost(
         navController = navController,
         startDestination = Screen.SplashScreen.route
-    )  {
-        composable(Screen.SplashScreen.route){
+    ) {
+        composable(Screen.SplashScreen.route) {
             SplashScreen(navController = navController)
         }
-        composable(Screen.LoginScreen.route){
+        composable(Screen.LoginScreen.route) {
             LoginScreen(navController = navController)
         }
-        composable(Screen.RegisterScreen.route){
+        composable(Screen.RegisterScreen.route) {
             RegisterScreen(navController = navController)
         }
-        composable(Screen.MainFeedScreen.route){
+        composable(Screen.MainFeedScreen.route) {
             MainFeedScreen(navController = navController)
         }
-        composable(Screen.ChatScreen.route){
+        composable(Screen.ChatScreen.route) {
             ChatScreen(navController = navController)
         }
-        composable(Screen.ActivityScreen.route){
+        composable(Screen.ActivityScreen.route) {
             ActivityScreen(navController = navController)
         }
-        composable(Screen.ProfileScreen.route){
+        composable(Screen.ProfileScreen.route) {
             ProfileScreen(navController = navController)
         }
-        composable(Screen.CreatePostScreen.route){
+        composable(Screen.CreatePostScreen.route) {
             CreatePostScreen(navController = navController)
         }
-        composable(Screen.PostDetailsScreen.route){
+        composable(Screen.PostDetailsScreen.route) {
             val post = Post(
-                username = "kndkvndsvlj",
-                description = "This is a sample post description for preview purposes.",
-                likeCount = 120,
-                commentCount = 35,
-                imageUrl = ""
+                username = "MADI",
+                imageUrl = "",
+                description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers, Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers\",\n" +
+                        "                likeCount = 23,Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers\",\n" +
+                        "                likeCount = 23,Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers\",\n" +
+                        "                likeCount = 23,",
+                likeCount = 23,
+                commentCount = 15
             )
             PostDetailsScreen(navController = navController, post = post)
         }
-        composable(Screen.SearchScreen.route){
+        composable(Screen.SearchScreen.route) {
             SearchScreen(navController = navController)
         }
     }

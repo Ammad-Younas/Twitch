@@ -39,4 +39,9 @@ val Typography = Typography(
         fontWeight = FontWeight.Medium,
         fontSize = 24.sp,
     ),
+    headlineSmall = TextStyle(
+        fontFamily = quicksand,
+        fontWeight = FontWeight.Medium,
+        fontSize = 18.sp,
+    ),
 )
