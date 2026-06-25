@@ -134,7 +134,8 @@ fun PostDetailsScreen(
                         profilePictureUrl = "",
                         comment = "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
                         timeStamp = System.currentTimeMillis(),
-                        likeCount = 23
+                        likeCount = 11,
+                        isLiked = true
                     )
                 )
             }
