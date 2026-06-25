@@ -16,8 +16,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -71,61 +70,60 @@ fun PostDetailsScreen(
         navController = navController,
         showBottomBarAndFab = false
     ) {
-        val scrollState = rememberScrollState()
-        Column (
+        LazyColumn (
             modifier = Modifier
                 .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
                 .padding(SpaceSmall)
                 .clip(MaterialTheme.shapes.medium)
                 .fillMaxSize()
-                .verticalScroll(scrollState)
+        ) {
+            item {
+                Column {
+                    Image(
+                        painter = painterResource(R.drawable.feed_image),
+                        contentDescription = "Post Image",
+                        modifier = Modifier.fillMaxWidth(),
+                        contentScale = ContentScale.FillWidth
+                    )
+                    Column(
+                        modifier = Modifier
+                            .padding(SpaceMedium)
+                    ) {
+                        ActionRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            username = "MADI",
+                            onLikeClick = { isLiked ->
 
-            ) {
-            Image(
-                painter = painterResource(R.drawable.feed_image),
-                contentDescription = "Post Image",
-                modifier = Modifier.fillMaxWidth(),
-                contentScale = ContentScale.FillWidth
-            )
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(SpaceMedium)
-            ) {
-                ActionRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    username = "MADI",
-                    onLikeClick = { isLiked ->
+                            },
+                            onCommentClick = {
 
-                    },
-                    onCommentClick = {
+                            },
+                            onShareClick = {
 
-                    },
-                    onShareClick = {
+                            },
+                            onUsernameClick = { username->
 
-                    },
-                    onUsernameClick = { username->
-
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(SpaceMedium))
+                        Text(
+                            text = post.description,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                        Spacer(modifier = Modifier.height(ExtraSpaceLarge))
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = stringResource(R.string.post_liked_by_x_people, post.likeCount),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
                     }
-                )
-                Spacer(modifier = Modifier.height(SpaceMedium))
-                Text(
-                    text = post.description,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-                Spacer(modifier = Modifier.height(ExtraSpaceLarge))
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = stringResource(R.string.post_liked_by_x_people, post.likeCount),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
+                }
             }
-            Spacer(modifier = Modifier.height(ExtraSpaceLarge))
-            repeat(5){
+            items(10){
                 Comment (
                     modifier = Modifier.fillMaxSize(),
                     comment = Comment(
@@ -150,7 +148,8 @@ fun Comment(
     onLikeClick : (Boolean) -> Unit = {},
 ) {
     Card (
-        modifier = modifier.padding(SpaceSmall),
+        modifier = modifier
+            .padding(SpaceSmall),
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
