@@ -40,7 +40,6 @@ class MainActivity : ComponentActivity() {
                         navController = navController,
                         showBottomBarAndFab = currentRoute in listOf (
                             Screen.MainFeedScreen.route,
-                            Screen.PostDetailsScreen.route,
                             Screen.ChatScreen.route,
                             Screen.ActivityScreen.route,
                             Screen.ProfileScreen.route
