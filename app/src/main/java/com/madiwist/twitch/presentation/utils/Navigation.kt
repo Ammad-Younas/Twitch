@@ -50,10 +50,7 @@ fun Navigation(navController: NavHostController) {
             val post = Post(
                 username = "MADI",
                 imageUrl = "",
-                description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers, Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers\",\n" +
-                        "                likeCount = 23,Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers\",\n" +
-                        "                likeCount = 23,Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers\",\n" +
-                        "                likeCount = 23,",
+                description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry",
                 likeCount = 23,
                 commentCount = 15
             )

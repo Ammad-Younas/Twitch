@@ -32,4 +32,13 @@
     <string name="your_post">your post</string>
     <string name="liked_post">liked</string>
     <string name="commented_on_post">commented on</string>
+    <string name="your_profile">Your profile</string>
+    <string name="banner_image">Banner</string>
+    <string name="profile_image">Profile Image</string>
+    <string name="edit">Edit</string>
+    <string name="followers">Followers</string>
+    <string name="following">Following</string>
+    <string name="posts">Posts</string>
+    <string name="follow">Follow</string>
+    <string name="un_follow">Unfollow</string>
 </resources>

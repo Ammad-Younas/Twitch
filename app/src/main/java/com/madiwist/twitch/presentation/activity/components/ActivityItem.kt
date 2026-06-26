@@ -1,4 +1,4 @@
-package com.madiwist.twitch.presentation.activity
+package com.madiwist.twitch.presentation.activity.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

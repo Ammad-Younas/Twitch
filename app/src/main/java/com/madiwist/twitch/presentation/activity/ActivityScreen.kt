@@ -25,6 +25,7 @@ import com.madiwist.twitch.R
 import com.madiwist.twitch.domain.models.Activity
 import com.madiwist.twitch.domain.util.ActivityAction
 import com.madiwist.twitch.domain.util.DateFormatUtil
+import com.madiwist.twitch.presentation.activity.components.ActivityItem
 import com.madiwist.twitch.presentation.components.TwitchToolBar
 import com.madiwist.twitch.presentation.ui.theme.SpaceMedium
 import kotlin.random.Random
@@ -59,7 +60,7 @@ fun ActivityScreen(
                     ActivityItem(
                         activity = Activity(
                             username = "MADI",
-                            actionType = if (Random.nextInt(2) == 0){
+                            actionType = if (Random.nextInt(2) == 0) {
                                 ActivityAction.LikedPost
                             } else {
                                 ActivityAction.CommentedOnPost
