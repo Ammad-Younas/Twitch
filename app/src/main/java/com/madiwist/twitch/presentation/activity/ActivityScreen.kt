@@ -43,7 +43,7 @@ fun ActivityScreen(
             title = {
                 Text(stringResource(R.string.your_activity))
             },
-            showBackArrow = true,
+            showBackArrow = false,
         )
         Column(
             modifier = Modifier

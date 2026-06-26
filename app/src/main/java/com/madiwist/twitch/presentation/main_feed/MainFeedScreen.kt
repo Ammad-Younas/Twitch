@@ -40,7 +40,7 @@ fun MainFeedScreen (
                 title = {
                     Text(stringResource(R.string.your_feed))
                 },
-                showBackArrow = true,
+                showBackArrow = false,
                 navActions = {
                     IconButton(
                         onClick = {
