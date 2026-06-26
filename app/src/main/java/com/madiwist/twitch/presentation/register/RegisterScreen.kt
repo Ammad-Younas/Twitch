@@ -55,9 +55,7 @@ fun RegisterScreen(
             .fillMaxSize()
             .padding(SpaceLarge)
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-            .navigationBarsPadding()
             .systemBarsPadding()
-            .imePadding()
     ) {
         Column(
             modifier = Modifier

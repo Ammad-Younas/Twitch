@@ -36,8 +36,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import com.madiwist.twitch.R
 import com.madiwist.twitch.domain.models.Post
 import com.madiwist.twitch.presentation.ui.theme.SpaceMedium
@@ -155,7 +153,6 @@ fun EngagementButtons(
     isLiked : Boolean = false,
     onCommentClick : () -> Unit = {},
     onShareClick : () -> Unit = {},
-    iconSize: Dp = 30.dp
 ) {
     Row(
         modifier = modifier,
@@ -165,7 +162,7 @@ fun EngagementButtons(
             onClick = {
                 onLikeClick(!isLiked)
             },
-            modifier = Modifier.size(iconSize)
+            modifier = Modifier.size(Constants.ENGAGEMENT_ICON_SIZE)
         ) {
             Icon(
                 imageVector = if (isLiked) {
@@ -190,7 +187,7 @@ fun EngagementButtons(
             onClick = {
                 onCommentClick()
             },
-            modifier = Modifier.size(iconSize)
+            modifier = Modifier.size(Constants.ENGAGEMENT_ICON_SIZE)
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.Comment,
@@ -202,7 +199,7 @@ fun EngagementButtons(
             onClick = {
                 onShareClick()
             },
-            modifier = Modifier.size(iconSize)
+            modifier = Modifier.size(Constants.ENGAGEMENT_ICON_SIZE)
         ) {
             Icon(
                 imageVector = Icons.Default.Share,

@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.madiwist.twitch.presentation.ui.theme.SpaceMedium
+import com.madiwist.twitch.utils.Constants
 import kotlin.jvm.Throws
 
 @Composable
@@ -44,7 +45,6 @@ fun RowScope.BottomNavigationItem(
     unselectedColor: Color = MaterialTheme.colorScheme.onSurface,
     onClick : () -> Unit,
     enabled: Boolean = true,
-    iconSize: Dp = 30.dp
 ) {
     if (alertCount != null && alertCount < 0) {
         throw IllegalArgumentException("Alert Count can't be negative")
@@ -90,7 +90,7 @@ fun RowScope.BottomNavigationItem(
                         contentDescription = contentDescription.toString(),
                         modifier = Modifier
                             .align(Alignment.Center)
-                            .size(iconSize)
+                            .size(Constants.ENGAGEMENT_ICON_SIZE)
                     )
                 }
                 if (alertCount != null && alertCount > 0) {

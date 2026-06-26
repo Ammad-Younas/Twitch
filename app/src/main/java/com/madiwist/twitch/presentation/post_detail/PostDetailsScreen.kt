@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -47,42 +46,39 @@ import com.madiwist.twitch.R
 import com.madiwist.twitch.domain.models.Comment
 import com.madiwist.twitch.domain.models.Post
 import com.madiwist.twitch.presentation.components.ActionRow
-import com.madiwist.twitch.presentation.components.TwitchScaffold
 import com.madiwist.twitch.presentation.components.TwitchToolBar
 import com.madiwist.twitch.presentation.ui.theme.ExtraSpaceLarge
+import com.madiwist.twitch.presentation.ui.theme.ExtraSpaceSmall
 import com.madiwist.twitch.presentation.ui.theme.Shapes
 import com.madiwist.twitch.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.presentation.ui.theme.SpaceSmall
+import com.madiwist.twitch.utils.Constants
 
 @Composable
 fun PostDetailsScreen(
     navController: NavController,
     post: Post,
-
 ) {
-    TwitchScaffold(
-        topBar = {
-            TwitchToolBar(
-                navController = navController,
-                modifier = Modifier.fillMaxWidth(),
-                title = {
-                    Text(stringResource(R.string.your_feed))
-                },
-                showBackArrow = true,
-            )
-        },
-        navController = navController,
-        showBottomBarAndFab = false
+    Column(
+        modifier = Modifier.fillMaxSize()
     ) {
+        TwitchToolBar(
+            navController = navController,
+            modifier = Modifier.fillMaxWidth(),
+            title = {
+                Text(stringResource(R.string.your_feed))
+            },
+            showBackArrow = true,
+        )
         Column(
             modifier = Modifier
-                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+                .weight(1f)
                 .padding(SpaceSmall)
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
                 .clip(MaterialTheme.shapes.medium)
-                .fillMaxSize()
         ) {
-            LazyColumn (
+            LazyColumn(
                 modifier = Modifier.weight(1f)
             ) {
                 item {
@@ -100,18 +96,10 @@ fun PostDetailsScreen(
                             ActionRow(
                                 modifier = Modifier.fillMaxWidth(),
                                 username = "MADI",
-                                onLikeClick = { isLiked ->
-
-                                },
-                                onCommentClick = {
-
-                                },
-                                onShareClick = {
-
-                                },
-                                onUsernameClick = { username->
-
-                                }
+                                onLikeClick = { isLiked -> },
+                                onCommentClick = { },
+                                onShareClick = { },
+                                onUsernameClick = { username -> }
                             )
                             Spacer(modifier = Modifier.height(SpaceMedium))
                             Text(
@@ -131,14 +119,14 @@ fun PostDetailsScreen(
                         }
                     }
                 }
-                items(10){
-                    Comment (
-                        modifier = Modifier.fillMaxSize(),
+                items(10) {
+                    Comment(
+                        modifier = Modifier.fillMaxWidth(),
                         comment = Comment(
                             commentId = 1,
                             username = "MADI",
                             profilePictureUrl = "",
-                            comment = "Lorem Ipsum is simply dummy text of the printing and typesetting industry, Lorem Ipsum is simply dummy text of the printing and typesetting industryLorem Ipsum is simply dummy text of the printing and typesetting industryLorem Ipsum is simply dummy text of the printing and typesetting industryLorem Ipsum is simply dummy text of the printing and typesetting industryLorem Ipsum is simply dummy text of the printing and typesetting industry",
+                            comment = "Lorem Ipsum is simply dummy text of the printing and typesetting industry...",
                             timeStamp = System.currentTimeMillis(),
                             likeCount = 11,
                             isLiked = true
@@ -146,33 +134,44 @@ fun PostDetailsScreen(
                     )
                 }
             }
-            Spacer(Modifier.height(SpaceLarge))
-            Row (
-                modifier = Modifier.fillMaxWidth().padding(horizontal = SpaceMedium),
+            Spacer(Modifier.height(SpaceMedium))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = SpaceMedium,
+                        end = SpaceMedium,
+                        top = SpaceSmall,
+                        bottom = SpaceLarge
+                    ),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TextField(
-                    modifier = Modifier.fillMaxWidth().weight(1f).imePadding(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text
                     ),
                     value = "",
-                    onValueChange = {
-
+                    onValueChange = { },
+                    placeholder = {
+                        Text(
+                            "Enter a comment",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
                     },
-                    placeholder = { Text("Enter a comment", style = MaterialTheme.typography.bodyLarge) },
+                    maxLines = 3
                 )
                 Spacer(Modifier.width(SpaceMedium))
                 IconButton(
-                    onClick = {
-
-                    },
+                    onClick = { },
                     modifier = Modifier.size(30.dp)
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.Send,
-                        contentDescription =  "",
+                        contentDescription = "",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -235,13 +234,13 @@ fun Comment(
                     text = comment.comment,
                 )
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     IconButton(
                         onClick = {
                             onLikeClick(comment.isLiked)
                         },
-                        modifier = Modifier.size(30.dp)
+                        modifier = Modifier.size(Constants.ENGAGEMENT_ICON_SIZE)
                     ) {
                         Icon(
                             imageVector = if (comment.isLiked) {
