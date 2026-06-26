@@ -28,4 +28,8 @@
     <string name="your_feed">Your feed</string>
     <string name="Search">Search</string>
     <string name="liked_comments">%d</string>
+    <string name="your_activity">Your activity</string>
+    <string name="your_post">your post</string>
+    <string name="liked_post">liked</string>
+    <string name="commented_on_post">commented on</string>
 </resources>
