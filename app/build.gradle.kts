@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
 
     testImplementation(libs.junit)

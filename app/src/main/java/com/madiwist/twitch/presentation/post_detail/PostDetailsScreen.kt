@@ -37,7 +37,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -126,7 +128,7 @@ fun PostDetailsScreen(
                             commentId = 1,
                             username = "MADI",
                             profilePictureUrl = "",
-                            comment = "Lorem Ipsum is simply dummy text of the printing and typesetting industry...",
+                            comment = "Lorem Ipsum is simply dummy text of the printing and typesetting industry, Lorem Ipsum is simply dummy text of the printing and typesetting industryLorem Ipsum is simply dummy text of the printing and typesetting industryLorem Ipsum is simply dummy text of the printing and typesetting industryLorem Ipsum is simply dummy text of the printing and typesetting industryLorem Ipsum is simply dummy text of the printing and typesetting industry",
                             timeStamp = System.currentTimeMillis(),
                             likeCount = 11,
                             isLiked = true
@@ -233,6 +235,7 @@ fun Comment(
                     modifier = Modifier.weight(1f),
                     text = comment.comment,
                 )
+                Spacer(Modifier.width(ExtraSpaceSmall))
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
