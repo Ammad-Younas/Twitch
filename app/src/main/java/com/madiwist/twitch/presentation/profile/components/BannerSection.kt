@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.madiwist.twitch.R
@@ -33,10 +34,11 @@ fun BannerSection(
         modifier = modifier.padding(bottom = SpaceSmall)
     ) {
         Image(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize(),
             painter = painterResource(R.drawable.profile_banner),
-            contentDescription = stringResource(R.string.banner_image)
+            contentDescription = stringResource(R.string.banner_image),
+            contentScale = ContentScale.Crop
         )
         Box(
             modifier = Modifier.fillMaxSize().background(
@@ -45,7 +47,7 @@ fun BannerSection(
                         Color.Transparent,
                         Color.Black
                     ),
-                    startY = constraints.maxHeight - Constants.PROFILE_ICONS_SIZE.toPx() * 2f
+                    startY = constraints.maxHeight - Constants.PROFILE_ICONS_SIZE.toPx() * 2f,
                 )
             ),
         )
