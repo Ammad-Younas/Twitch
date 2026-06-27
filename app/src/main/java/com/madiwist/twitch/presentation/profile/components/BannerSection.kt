@@ -26,7 +26,8 @@ import com.madiwist.twitch.utils.Constants
 @Composable
 fun BannerSection(
     modifier: Modifier = Modifier,
-    iconModifier: Modifier = Modifier,
+    leftIconModifier: Modifier = Modifier,
+    rightIconModifier: Modifier = Modifier,
     onGitHubClick: () -> Unit = {},
     onInstagramClick: () -> Unit = {},
     onLinkedInClick: () -> Unit = {}
@@ -53,7 +54,7 @@ fun BannerSection(
             ),
         )
         Row(
-            modifier = iconModifier
+            modifier = leftIconModifier
                 .height(Constants.PROFILE_ICONS_SIZE)
                 .align(Alignment.BottomStart)
                 .padding(SpaceSmall)
@@ -75,7 +76,7 @@ fun BannerSection(
             )
         }
         Row(
-            modifier = iconModifier
+            modifier = rightIconModifier
                 .height(Constants.PROFILE_ICONS_SIZE)
                 .align(Alignment.BottomEnd)
                 .padding(SpaceSmall)
