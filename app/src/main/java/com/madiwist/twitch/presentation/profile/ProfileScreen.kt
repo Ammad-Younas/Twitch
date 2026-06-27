@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -56,9 +57,10 @@ import com.madiwist.twitch.utils.Constants
 fun ProfileScreen(
     navController: NavController
 ) {
+    val toolBarHeightCollapsed = 100.dp
     var toolBarOffsetY by  remember { mutableFloatStateOf(0f) }
 
-    val toolBarHeightCollapsed = 80.dp
+    val lazyListState = rememberLazyListState()
 
     val containerWidth = LocalWindowInfo.current.containerSize.width
     val bannerHeight = with(LocalDensity.current) { (containerWidth.toDp() / 2.5f) }
@@ -70,11 +72,17 @@ fun ProfileScreen(
 
     val imageCollapsedOffsetY = remember { (toolBarHeightCollapsed - Constants.PROFILE_PICTURE_SIZE_LARGE / 2f) / 2f }
 
+    val iconSizeExpanded = Constants.PROFILE_ICONS_SIZE
+    val iconCollapsedOffsetY = remember { (toolBarHeightCollapsed - iconSizeExpanded) / 2f }
+
 
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
             override fun onPreScroll( available: Offset, source: NestedScrollSource): Offset {
                 val delta = available.y
+                if (delta > 0f && lazyListState.firstVisibleItemIndex != 0){
+                    return Offset.Zero
+                }
                 val newOffset = toolBarOffsetY + delta
                 toolBarOffsetY = newOffset.coerceIn(
                     minimumValue = - (maxOffset.toPx()),
@@ -107,7 +115,8 @@ fun ProfileScreen(
                 modifier = Modifier.fillMaxSize().nestedScroll(nestedScrollConnection)
             ) {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    state = lazyListState
                 ) {
                     item {
                         Spacer(Modifier.height((toolBarHeightExpanded) - Constants.PROFILE_PICTURE_SIZE_LARGE / 2f))
@@ -149,7 +158,10 @@ fun ProfileScreen(
                                     minimumValue = toolBarHeightCollapsed,
                                     maximumValue = bannerHeight
                                 )
-                            )
+                            ),
+                        iconModifier = Modifier.graphicsLayer {
+                            translationY = (1f - expandedRatio) * (-iconCollapsedOffsetY.toPx())
+                        }
                     )
                     Image(
                         painter = painterResource(R.drawable.profile_image),
