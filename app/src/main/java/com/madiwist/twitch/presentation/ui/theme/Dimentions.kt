@@ -8,5 +8,4 @@ val SpaceMedium = 16.dp
 val SpaceLarge = 24.dp
 val ExtraSpaceLarge = 32.dp
 
-
 val SocialIconMedium = 25.dp

@@ -50,4 +50,6 @@
     <string name="bio">Bio</string>
     <string name="select_your_top_skills">Select your top skills</string>
     <string name="done">Done</string>
+    <string name="search_for_users">Search for users</string>
+    <string name="search">Search</string>
 </resources>

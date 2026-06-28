@@ -21,7 +21,7 @@ import com.madiwist.twitch.presentation.search.SearchScreen
 fun Navigation(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = Screen.EditProfileScreen.route
+        startDestination = Screen.SearchScreen.route
     ) {
         composable(Screen.SplashScreen.route) {
             SplashScreen(navController = navController)
