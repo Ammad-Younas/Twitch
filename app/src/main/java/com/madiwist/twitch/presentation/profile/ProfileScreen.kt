@@ -23,11 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,7 +34,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
@@ -46,6 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.madiwist.twitch.R
 import com.madiwist.twitch.domain.models.Post
@@ -54,7 +50,6 @@ import com.madiwist.twitch.presentation.components.Post
 import com.madiwist.twitch.presentation.components.TwitchToolBar
 import com.madiwist.twitch.presentation.profile.components.BannerSection
 import com.madiwist.twitch.presentation.profile.components.ProfileHeaderSection
-import com.madiwist.twitch.presentation.ui.theme.ExtraSpaceLarge
 import com.madiwist.twitch.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.presentation.ui.theme.SpaceSmall
@@ -63,45 +58,44 @@ import com.madiwist.twitch.utils.Constants
 
 @Composable
 fun ProfileScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val toolBarHeightCollapsed = 100.dp
-    var toolBarOffsetY by  remember { mutableFloatStateOf(0f) }
-
     val lazyListState = rememberLazyListState()
+
+    val expandedRatio by viewModel.expandedRatio
 
     val containerWidth = LocalWindowInfo.current.containerSize.width
     val bannerHeight = with(LocalDensity.current) { (containerWidth.toDp() / 2.5f) }
-    val toolBarHeightExpanded = remember { bannerHeight + Constants.PROFILE_PICTURE_SIZE_LARGE }
+    val toolBarHeightExpanded = remember(bannerHeight) { bannerHeight + Constants.PROFILE_PICTURE_SIZE_LARGE }
 
-    val maxOffset = remember { toolBarHeightExpanded - toolBarHeightCollapsed }
+    val maxOffset = remember(toolBarHeightExpanded, toolBarHeightCollapsed) { toolBarHeightExpanded - toolBarHeightCollapsed }
 
-    var expandedRatio by remember { mutableFloatStateOf(1f) }
-
-    val imageCollapsedOffsetY = remember { (toolBarHeightCollapsed - Constants.PROFILE_PICTURE_SIZE_LARGE / 2f) / 2f }
+    val imageCollapsedOffsetY = remember(toolBarHeightCollapsed) { (toolBarHeightCollapsed - Constants.PROFILE_PICTURE_SIZE_LARGE / 2f) / 2f }
 
     val iconSizeExpanded = Constants.PROFILE_ICONS_SIZE
-    val iconCollapsedOffsetY = remember { (toolBarHeightCollapsed - iconSizeExpanded) / 2f }
+    val iconCollapsedOffsetY = remember(toolBarHeightCollapsed, iconSizeExpanded) { (toolBarHeightCollapsed - iconSizeExpanded) / 2f }
 
-    val iconGroupWidth = remember { mutableIntStateOf(0) }
+    val iconHorizontalCenterLength = remember(containerWidth) {
+        containerWidth / 4f - (Constants.PROFILE_PICTURE_SIZE_LARGE / 2f).toPx() - SpaceSmall.toPx()
+    }
 
-//    val iconHorizontalCenterLength = LocalConfiguration.current.screenWidthDp.dp.toPx()
-    val iconHorizontalCenterLength = LocalWindowInfo.current.containerSize.width / 4f - (Constants.PROFILE_PICTURE_SIZE_LARGE / 2f).toPx() - SpaceSmall.toPx()
 
-
-    val nestedScrollConnection = remember {
+    val nestedScrollConnection = remember(maxOffset) {
         object : NestedScrollConnection {
-            override fun onPreScroll( available: Offset, source: NestedScrollSource): Offset {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
                 val delta = available.y
-                if (delta > 0f && lazyListState.firstVisibleItemIndex != 0){
-                    return Offset.Zero
+                val currentOffset = viewModel.toolBarOffsetY.value
+                if (delta < 0f) {
+                    val newOffset = (currentOffset + delta).coerceIn(-maxOffset.toPx(), 0f)
+                    viewModel.setToolbarOffsetY(newOffset)
+                    viewModel.setExpandedRatio((newOffset + maxOffset.toPx()) / maxOffset.toPx())
+                } else if (delta > 0f && lazyListState.firstVisibleItemIndex == 0) {
+                    val newOffset = (currentOffset + delta).coerceIn(-maxOffset.toPx(), 0f)
+                    viewModel.setToolbarOffsetY(newOffset)
+                    viewModel.setExpandedRatio((newOffset + maxOffset.toPx()) / maxOffset.toPx())
                 }
-                val newOffset = toolBarOffsetY + delta
-                toolBarOffsetY = newOffset.coerceIn(
-                    minimumValue = - (maxOffset.toPx()),
-                    maximumValue = 0f
-                )
-                expandedRatio = ((toolBarOffsetY + maxOffset.toPx()) / maxOffset.toPx())
                 return Offset.Zero
             }
         }
