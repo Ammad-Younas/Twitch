@@ -8,6 +8,7 @@ import com.madiwist.twitch.domain.models.Post
 import com.madiwist.twitch.presentation.activity.ActivityScreen
 import com.madiwist.twitch.presentation.chat.ChatScreen
 import com.madiwist.twitch.presentation.create_post.CreatePostScreen
+import com.madiwist.twitch.presentation.edit_profile.EditProfileScreen
 import com.madiwist.twitch.presentation.login.LoginScreen
 import com.madiwist.twitch.presentation.main_feed.MainFeedScreen
 import com.madiwist.twitch.presentation.post_detail.PostDetailsScreen
@@ -20,7 +21,7 @@ import com.madiwist.twitch.presentation.search.SearchScreen
 fun Navigation(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = Screen.ProfileScreen.route
+        startDestination = Screen.EditProfileScreen.route
     ) {
         composable(Screen.SplashScreen.route) {
             SplashScreen(navController = navController)
@@ -58,6 +59,9 @@ fun Navigation(navController: NavHostController) {
         }
         composable(Screen.SearchScreen.route) {
             SearchScreen(navController = navController)
+        }
+        composable(Screen.EditProfileScreen.route) {
+            EditProfileScreen(navController = navController)
         }
     }
 }

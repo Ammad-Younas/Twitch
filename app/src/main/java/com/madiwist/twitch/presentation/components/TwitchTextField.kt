@@ -1,7 +1,9 @@
 package com.madiwist.twitch.presentation.components
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -13,11 +15,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import com.madiwist.twitch.R
+import com.madiwist.twitch.presentation.ui.theme.SocialIconMedium
 
 @Composable
 fun TwitchTextField(
@@ -27,6 +31,8 @@ fun TwitchTextField(
     maxLength: Int = 40,
     showPasswordToggle : Boolean = false,
     onPasswordToggleCLick : (Boolean) -> Unit = {},
+    leadingIcon: ImageVector? = null,
+    @StringRes leadingIconDescription: Int? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
     isPasswordToggleDisplayed : Boolean = keyboardType == KeyboardType.Password,
     onValueChange : (String) -> Unit,
@@ -47,11 +53,25 @@ fun TwitchTextField(
             }else {
                 VisualTransformation.None
             },
-            trailingIcon = {
-                if (isPasswordToggleDisplayed){
-                    IconButton(onClick = {
-                        onPasswordToggleCLick(!showPasswordToggle)
-                    }) {
+            leadingIcon = if (leadingIcon != null) {
+                @Composable {
+                    Icon(
+                        imageVector = leadingIcon,
+                        contentDescription = leadingIconDescription?.let { stringResource(it) },
+                        modifier = Modifier.size(SocialIconMedium)
+                    )
+                }
+            } else {
+                null
+            },
+            trailingIcon = if (isPasswordToggleDisplayed) {
+                @Composable {
+                    IconButton(
+                        onClick = {
+                            onPasswordToggleCLick(!showPasswordToggle)
+                        }
+                    )
+                    {
                         Icon(
                             imageVector = if (showPasswordToggle) {
                                 Icons.Filled.VisibilityOff
@@ -67,6 +87,8 @@ fun TwitchTextField(
                         )
                     }
                 }
+            } else {
+                null
             },
             value = text,
             onValueChange = {
