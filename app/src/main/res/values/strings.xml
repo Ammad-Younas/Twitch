@@ -52,4 +52,9 @@
     <string name="done">Done</string>
     <string name="search_for_users">Search for users</string>
     <string name="search">Search</string>
+    <string name="create_post">Create post</string>
+    <string name="choose_image">Choose image</string>
+    <string name="description">Description</string>
+    <string name="post">Post</string>
+    <string name="send">Send</string>
 </resources>

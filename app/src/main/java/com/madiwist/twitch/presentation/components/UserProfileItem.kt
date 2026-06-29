@@ -62,8 +62,9 @@ fun UserProfileItem(
             Image(
                 painter = painterResource(R.drawable.profile_image),
                 contentDescription = null,
-                modifier = Modifier.clip(Shapes.extraLarge).size(Constants.PROFILE_PICTURE_SIZE_LARGE - 75.dp).weight(3f)
+                modifier = Modifier.clip(Shapes.extraLarge).size(Constants.PROFILE_PICTURE_SIZE_LARGE - 75.dp)
             )
+            Spacer(Modifier.width(SpaceMedium))
             Column(
                 modifier = Modifier
                     .fillMaxHeight().weight(8f)
@@ -84,7 +85,7 @@ fun UserProfileItem(
             }
             IconButton(
                 onClick = onActionItemClick,
-                modifier = Modifier.weight(2f)
+                modifier = Modifier
             ) {
                 actionIcon()
             }

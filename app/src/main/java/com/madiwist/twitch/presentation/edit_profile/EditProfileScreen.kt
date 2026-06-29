@@ -156,7 +156,10 @@ fun EditProfileScreen(
                     },
                     hint = stringResource(R.string.bio),
                     error = viewModel.bioState.value.error,
-                    leadingIcon = Icons.Default.Description
+                    leadingIcon = Icons.Default.Description,
+                    minLines = 3,
+                    maxLines = 3,
+                    singleLine = false
                 )
                 Spacer(Modifier.height(ExtraSpaceLarge))
                 Text(

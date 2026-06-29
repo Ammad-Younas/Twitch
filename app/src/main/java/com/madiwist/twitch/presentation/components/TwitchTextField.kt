@@ -29,6 +29,9 @@ fun TwitchTextField(
     hint: String = "",
     error: String = "",
     maxLength: Int = 40,
+    minLines: Int = 1,
+    maxLines: Int = 1,
+    singleLine: Boolean = true,
     showPasswordToggle : Boolean = false,
     onPasswordToggleCLick : (Boolean) -> Unit = {},
     leadingIcon: ImageVector? = null,
@@ -43,11 +46,13 @@ fun TwitchTextField(
         TextField(
             modifier = Modifier.fillMaxWidth(),
             isError = error != "",
+            minLines = minLines,
+            maxLines = maxLines,
 
             keyboardOptions = KeyboardOptions(
                 keyboardType = keyboardType
             ),
-            singleLine = true,
+            singleLine = singleLine,
             visualTransformation = if (!showPasswordToggle && isPasswordToggleDisplayed){
                 PasswordVisualTransformation()
             }else {
