@@ -11,6 +11,7 @@ import com.madiwist.twitch.presentation.create_post.CreatePostScreen
 import com.madiwist.twitch.presentation.edit_profile.EditProfileScreen
 import com.madiwist.twitch.presentation.login.LoginScreen
 import com.madiwist.twitch.presentation.main_feed.MainFeedScreen
+import com.madiwist.twitch.presentation.person.PersonListScreen
 import com.madiwist.twitch.presentation.post_detail.PostDetailsScreen
 import com.madiwist.twitch.presentation.profile.ProfileScreen
 import com.madiwist.twitch.presentation.register.RegisterScreen
@@ -63,5 +64,9 @@ fun Navigation(navController: NavHostController) {
         composable(Screen.EditProfileScreen.route) {
             EditProfileScreen(navController = navController)
         }
+        composable(Screen.PersonListScreen.route) {
+            PersonListScreen(navController = navController)
+        }
+
     }
 }
