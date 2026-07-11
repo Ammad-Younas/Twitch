@@ -64,6 +64,9 @@ fun ActivityItem (
                         is ActivityAction.CommentedOnPost -> {
                             append(stringResource(R.string.commented_on_post))
                         }
+                        is ActivityAction.FollowedYou -> {
+                            append(stringResource(R.string.followed_you))
+                        }
                     }
                     append(" ")
                     withStyle(

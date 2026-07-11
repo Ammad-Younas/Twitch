@@ -2,7 +2,9 @@ package com.madiwist.twitch.presentation.components
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -20,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
 import com.madiwist.twitch.R
 import com.madiwist.twitch.presentation.ui.theme.SocialIconMedium
 
@@ -104,6 +107,7 @@ fun TwitchTextField(
             placeholder = { Text(hint, style = MaterialTheme.typography.bodyLarge) },
         )
         if (error.isNotEmpty()){
+            Spacer(Modifier.height(5.dp))
             Text(
                 text = error,
                 style = MaterialTheme.typography.bodyMedium,

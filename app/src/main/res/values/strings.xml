@@ -58,4 +58,9 @@
     <string name="post">Post</string>
     <string name="send">Send</string>
     <string name="liked_by">Liked by %d people</string>
+    <string name="followed_you">followed you</string>
+    <string name="field_cant_be_empty">Field can\'t be empty</string>
+    <string name="not_a_valid_email">This is not a valid email</string>
+    <string name="input_too_short">The minimum length is %d</string>
+    <string name="invalid_password">Should contain least one upper case and one lower case</string>
 </resources>

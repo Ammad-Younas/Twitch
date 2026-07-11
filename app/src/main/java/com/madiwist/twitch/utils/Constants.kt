@@ -10,4 +10,7 @@ object Constants {
     val PROFILE_ICONS_SIZE = 40.dp
 
     val PROFILE_PICTURE_SIZE_LARGE = 125.dp
+
+    const val MIN_USERNAME_LENGTH = 3
+    const val MIN_PASSWORD_LENGTH = 3
 }

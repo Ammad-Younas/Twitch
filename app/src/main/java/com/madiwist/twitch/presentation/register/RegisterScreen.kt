@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -42,6 +40,7 @@ import com.madiwist.twitch.presentation.components.TwitchTextField
 import com.madiwist.twitch.presentation.ui.theme.ExtraSpaceLarge
 import com.madiwist.twitch.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.presentation.ui.theme.SpaceMedium
+import com.madiwist.twitch.utils.Constants
 
 @Composable
 fun RegisterScreen(
@@ -49,6 +48,7 @@ fun RegisterScreen(
     viewModel: RegisterViewModel = hiltViewModel()
 ) {
     val scrollState = rememberScrollState()
+    val state = viewModel.state.value
 
     BoxWithConstraints(
         modifier = Modifier
@@ -74,33 +74,60 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(ExtraSpaceLarge))
             TwitchTextField(
                 hint = stringResource(R.string.email_hint),
-                text = viewModel.email.value,
-                onValueChange = { viewModel.setEmail(it) },
-                error = viewModel.emailError.value,
+                text = state.email,
+                onValueChange = { viewModel.onEvent(RegisterEvent.EnteredEmail(it)) },
+                error = when(state.emailError) {
+                    is RegisterState.EmailError.FieldEmpty -> {
+                        stringResource(R.string.field_cant_be_empty)
+                    }
+                    is RegisterState.EmailError.InvalidEmail -> {
+                        stringResource(R.string.not_a_valid_email)
+                    }
+                    null -> ""
+                },
                 keyboardType = KeyboardType.Email
             )
             Spacer(modifier = Modifier.height(SpaceMedium))
             TwitchTextField(
                 hint = stringResource(R.string.username_hint),
-                text = viewModel.username.value,
-                onValueChange = { viewModel.setUsername(it) },
-                error = viewModel.usernameError.value
+                text = state.username,
+                onValueChange = { viewModel.onEvent(RegisterEvent.EnteredUsername(it)) },
+                error = when(state.usernameError) {
+                    is RegisterState.UsernameError.FieldEmpty -> {
+                        stringResource(R.string.field_cant_be_empty)
+                    }
+                    is RegisterState.UsernameError.InputTooShort -> {
+                        stringResource(R.string.input_too_short, Constants.MIN_USERNAME_LENGTH)
+                    }
+                    null -> ""
+                },
             )
             Spacer(modifier = Modifier.height(SpaceMedium))
             TwitchTextField(
                 hint = stringResource(R.string.password_hint),
-                text = viewModel.password.value,
-                onValueChange = { viewModel.setPassword(it) },
+                text = state.password,
+                onValueChange = { viewModel.onEvent(RegisterEvent.EnteredPassword(it)) },
                 keyboardType = KeyboardType.Password,
-                showPasswordToggle = viewModel.showPassword.value,
+                showPasswordToggle = state.isPasswordVisible,
                 onPasswordToggleCLick = {
-                    viewModel.setShowPassword(it)
+                    viewModel.onEvent(RegisterEvent.TogglePasswordVisibility)
                 },
-                error = viewModel.passwordError.value
+                error = when(state.passwordError) {
+                    is RegisterState.PasswordError.FieldEmpty -> {
+                        stringResource(R.string.field_cant_be_empty)
+                    }
+                    is RegisterState.PasswordError.InputTooShort -> {
+                        stringResource(R.string.input_too_short, Constants.MIN_PASSWORD_LENGTH)
+                    }
+                    is RegisterState.PasswordError.InvalidPassword -> {
+                        stringResource(R.string.invalid_password)
+                    }
+                    null -> ""
+                }
             )
             Spacer(modifier = Modifier.height(ExtraSpaceLarge))
             Button(
-                onClick = { },
+                onClick = { viewModel.onEvent(RegisterEvent.Register) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
