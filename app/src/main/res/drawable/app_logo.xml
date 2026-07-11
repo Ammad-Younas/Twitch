@@ -4,7 +4,6 @@
     android:height="150dp"
     android:viewportWidth="150"
     android:viewportHeight="150">
-
   <group
       android:name="logo_group"
       android:pivotX="75"
@@ -13,6 +12,22 @@
       android:scaleY="0.0">
     <path
         android:fillColor="#03B100"
-        android:pathData="M 50,100 L 50,60 A 10,10 0 0 1 60,50 L 90,50 A 10,10 0 0 1 100,60 L 100,100 L 90,100 L 90,60 L 80,60 L 80,100 L 70,100 L 70,60 L 60,60 L 60,100 Z" />
+        android:pathData="
+            M 50,55
+            L 50,65
+            A 5,5 0 0 0 55,70
+            L 70,70
+            L 70,105
+            A 5,5 0 0 0 75,110
+            L 85,110
+            A 5,5 0 0 0 90,105
+            L 90,70
+            L 105,70
+            A 5,5 0 0 0 110,65
+            L 110,55
+            A 5,5 0 0 0 105,50
+            L 55,50
+            A 5,5 0 0 0 50,55
+            Z" />
   </group>
 </vector>
