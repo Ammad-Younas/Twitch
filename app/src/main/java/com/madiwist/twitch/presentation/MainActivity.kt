@@ -1,5 +1,6 @@
 package com.madiwist.twitch.presentation
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -17,7 +18,6 @@ import com.madiwist.twitch.presentation.ui.theme.TwitchTheme
 import com.madiwist.twitch.presentation.utils.Navigation
 import com.madiwist.twitch.presentation.utils.Screen
 import dagger.hilt.android.AndroidEntryPoint
-import android.graphics.Color
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
