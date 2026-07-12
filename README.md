@@ -71,4 +71,4 @@ The application follows a sleek, dark aesthetic:
 
 ---
 
-Made by MADI (https://madiwist.dev)
+Made by [MADI](https://madiwist.dev)
