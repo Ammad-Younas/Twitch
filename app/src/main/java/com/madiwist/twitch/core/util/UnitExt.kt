@@ -1,4 +1,4 @@
-package com.madiwist.twitch.core.presentation.utils
+package com.madiwist.twitch.core.util
 
 import android.content.res.Resources
 import android.util.TypedValue

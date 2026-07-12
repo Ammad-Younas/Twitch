@@ -25,7 +25,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.madiwist.twitch.core.domain.models.BottomNavItem
-import com.madiwist.twitch.core.presentation.utils.NavItems
+import com.madiwist.twitch.core.util.NavItems
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

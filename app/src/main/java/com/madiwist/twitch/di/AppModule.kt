@@ -1,4 +1,4 @@
-package com.madiwist.twitch.core.di
+package com.madiwist.twitch.di
 
 import dagger.Module
 import dagger.hilt.InstallIn

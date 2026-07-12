@@ -4,41 +4,51 @@ import android.util.Patterns
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.madiwist.twitch.core.domain.states.PasswordTextFiledState
+import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
 import com.madiwist.twitch.core.util.Constants
+import com.madiwist.twitch.feature_auth.presentation.util.AuthError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor()  : ViewModel() {
-    private val _state = mutableStateOf(RegisterState())
-    val state : State<RegisterState> = _state
+
+    private val _usernameState = mutableStateOf(TwitchTextFieldState())
+    val usernameState : State<TwitchTextFieldState> = _usernameState
+
+    private val _emailState = mutableStateOf(TwitchTextFieldState())
+    val emailState : State<TwitchTextFieldState> = _emailState
+
+    private val _passwordState = mutableStateOf(PasswordTextFiledState())
+    val passwordState : State<PasswordTextFiledState> = _passwordState
 
     fun onEvent(event: RegisterEvent){
         when(event){
             is RegisterEvent.EnteredUsername -> {
-                _state.value = _state.value.copy(
-                    username = event.value
+                _usernameState.value = _usernameState.value.copy(
+                    text = event.value
                 )
             }
             is RegisterEvent.EnteredEmail -> {
-                _state.value = _state.value.copy(
-                    email = event.value
+                _emailState.value = _emailState.value.copy(
+                    text = event.value
                 )
             }
             is RegisterEvent.EnteredPassword -> {
-                _state.value = _state.value.copy(
-                    password = event.value
+                _passwordState.value = _passwordState.value.copy(
+                    text = event.value
                 )
             }
             is RegisterEvent.TogglePasswordVisibility -> {
-                _state.value = _state.value.copy(
-                    isPasswordVisible = !state.value.isPasswordVisible
+                _passwordState.value = _passwordState.value.copy(
+                    isPasswordVisible = !_passwordState.value.isPasswordVisible
                 )
             }
             is RegisterEvent.Register -> {
-                validateUsername(state.value.username)
-                validateEmail(state.value.email)
-                validatePassword(state.value.password)
+                validateUsername(usernameState.value.text)
+                validateEmail(emailState.value.text)
+                validatePassword(passwordState.value.text)
             }
         }
     }
@@ -46,19 +56,19 @@ class RegisterViewModel @Inject constructor()  : ViewModel() {
     private fun validateUsername(username: String){
         val trimmedUsername = username.trim()
         if (trimmedUsername.isBlank()){
-            _state.value = _state.value.copy(
-                usernameError = RegisterState.UsernameError.FieldEmpty
+            _usernameState.value = _usernameState.value.copy(
+                error = AuthError.FieldEmpty
             )
             return
         }
         if (trimmedUsername.length < Constants.MIN_USERNAME_LENGTH){
-            _state.value = _state.value.copy(
-                usernameError = RegisterState.UsernameError.InputTooShort
+            _usernameState.value = _usernameState.value.copy(
+                error = AuthError.InputTooShort
             )
             return
         }
-        _state.value = _state.value.copy(
-            usernameError = null
+        _usernameState.value = _usernameState.value.copy(
+            error = null
         )
     }
 
@@ -66,45 +76,45 @@ class RegisterViewModel @Inject constructor()  : ViewModel() {
     private fun validateEmail(email: String){
         val trimmedEmail = email.trim()
         if (trimmedEmail.isBlank()){
-            _state.value = _state.value.copy(
-                emailError = RegisterState.EmailError.FieldEmpty
+            _emailState.value = _emailState.value.copy(
+                error = AuthError.FieldEmpty
             )
             return
         }
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            _state.value = _state.value.copy(
-                emailError = RegisterState.EmailError.InvalidEmail
+            _emailState.value = _emailState.value.copy(
+                error = AuthError.InvalidEmail
             )
             return
         }
-        _state.value = _state.value.copy(
-            emailError = null
+        _emailState.value = _emailState.value.copy(
+            error = null
         )
     }
 
     private fun validatePassword(password: String){
         if (password.isBlank()){
-            _state.value = _state.value.copy(
-                passwordError = RegisterState.PasswordError.FieldEmpty
+            _passwordState.value = _passwordState.value.copy(
+                error = AuthError.FieldEmpty
             )
             return
         }
         if (password.length < Constants.MIN_PASSWORD_LENGTH){
-            _state.value = _state.value.copy(
-                passwordError = RegisterState.PasswordError.InputTooShort
+            _passwordState.value = _passwordState.value.copy(
+                error = AuthError.InputTooShort
             )
             return
         }
         val capitalLettersInPassword = password.any { it.isUpperCase() }
         val numbersInPassword = password.any { it.isDigit() }
         if (!capitalLettersInPassword || !numbersInPassword) {
-            _state.value = _state.value.copy(
-                passwordError = RegisterState.PasswordError.InvalidPassword
+            _passwordState.value = _passwordState.value.copy(
+                error = AuthError.InvalidPassword
             )
             return
         }
-        _state.value = _state.value.copy(
-            passwordError = null
+        _passwordState.value = _passwordState.value.copy(
+            error = null
         )
     }
 

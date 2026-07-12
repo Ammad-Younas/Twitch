@@ -20,7 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
-import com.madiwist.twitch.core.presentation.utils.toPx
+import com.madiwist.twitch.core.util.toPx
 import com.madiwist.twitch.core.util.Constants
 
 @Composable

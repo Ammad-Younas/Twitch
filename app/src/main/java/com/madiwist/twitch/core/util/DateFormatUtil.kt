@@ -1,4 +1,4 @@
-package com.madiwist.twitch.core.domain.util
+package com.madiwist.twitch.core.util
 
 import java.text.SimpleDateFormat
 import java.util.Locale

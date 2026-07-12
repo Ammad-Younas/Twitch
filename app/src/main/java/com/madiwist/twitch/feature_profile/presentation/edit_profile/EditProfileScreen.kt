@@ -55,8 +55,9 @@ import com.madiwist.twitch.feature_profile.presentation.edit_profile.components.
 import com.madiwist.twitch.core.presentation.ui.theme.ExtraSpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
-import com.madiwist.twitch.core.presentation.utils.states.TwitchTextFieldState
+import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
 import com.madiwist.twitch.core.util.Constants
+import com.madiwist.twitch.feature_profile.presentation.util.EditProfileError
 
 @Composable
 fun EditProfileScreen(
@@ -113,7 +114,10 @@ fun EditProfileScreen(
                         viewModel.setUsernameState(state = TwitchTextFieldState(text = it))
                     },
                     hint = stringResource(R.string.username),
-                    error = viewModel.usernameState.value.error,
+                    error = when(viewModel.usernameState.value.error){
+                        is EditProfileError.FieldEmpty -> stringResource(R.string.field_cant_be_empty)
+                        else -> ""
+                    },
                     leadingIcon = Icons.Filled.Person
                 )
                 Spacer(Modifier.height(SpaceLarge))
@@ -123,7 +127,10 @@ fun EditProfileScreen(
                         viewModel.setInstagramState(state = TwitchTextFieldState(text = it))
                     },
                     hint = stringResource(R.string.instagram),
-                    error = viewModel.instagramState.value.error,
+                    error = when(viewModel.instagramState.value.error){
+                        is EditProfileError.FieldEmpty -> stringResource(R.string.field_cant_be_empty)
+                        else -> ""
+                    },
                     leadingIcon = ImageVector.vectorResource(
                         R.drawable.instagram,
                     )
@@ -135,7 +142,10 @@ fun EditProfileScreen(
                         viewModel.setLinkedinState(state = TwitchTextFieldState(text = it))
                     },
                     hint = stringResource(R.string.linkedin),
-                    error = viewModel.linkedinState.value.error,
+                    error = when(viewModel.linkedinState.value.error){
+                        is EditProfileError.FieldEmpty -> stringResource(R.string.field_cant_be_empty)
+                        else -> ""
+                    },
                     leadingIcon = ImageVector.vectorResource(R.drawable.linkedin)
                 )
                 Spacer(Modifier.height(SpaceLarge))
@@ -145,7 +155,10 @@ fun EditProfileScreen(
                         viewModel.setGithubState(state = TwitchTextFieldState(text = it))
                     },
                     hint = stringResource(R.string.github),
-                    error = viewModel.githubState.value.error,
+                    error = when(viewModel.githubState.value.error){
+                        is EditProfileError.FieldEmpty -> stringResource(R.string.field_cant_be_empty)
+                        else -> ""
+                    },
                     leadingIcon = ImageVector.vectorResource(R.drawable.github)
                 )
                 Spacer(Modifier.height(SpaceLarge))
@@ -155,7 +168,10 @@ fun EditProfileScreen(
                         viewModel.setBioState(state = TwitchTextFieldState(text = it))
                     },
                     hint = stringResource(R.string.bio),
-                    error = viewModel.bioState.value.error,
+                    error = when(viewModel.bioState.value.error){
+                        is EditProfileError.FieldEmpty -> stringResource(R.string.field_cant_be_empty)
+                        else -> ""
+                    },
                     leadingIcon = Icons.Default.Description,
                     minLines = 3,
                     maxLines = 3,

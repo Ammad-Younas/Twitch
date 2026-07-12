@@ -1,4 +1,4 @@
-package com.madiwist.twitch.core.presentation.utils
+package com.madiwist.twitch.core.presentation.navigation
 
 sealed class Screen(val route: String) {
     object SplashScreen : Screen("splash_screen")

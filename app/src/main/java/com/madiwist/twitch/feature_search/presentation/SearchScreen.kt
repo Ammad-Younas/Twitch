@@ -23,13 +23,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.madiwist.twitch.R
-import com.madiwist.twitch.feature_profile.domain.models.User
+import com.madiwist.twitch.core.domain.models.User
 import com.madiwist.twitch.core.presentation.components.TwitchTextField
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.components.UserProfileItem
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
-import com.madiwist.twitch.core.presentation.utils.states.TwitchTextFieldState
+import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
+import com.madiwist.twitch.feature_profile.presentation.util.EditProfileError
 
 @Composable
 fun SearchScreen(
@@ -59,7 +60,7 @@ fun SearchScreen(
                     viewModel.setSearchState(state = TwitchTextFieldState(text = it))
                 },
                 hint = stringResource(R.string.search),
-                error = viewModel.searchState.value.error,
+                error = "",
                 leadingIcon = Icons.Filled.Search
             )
             Spacer(Modifier.height(SpaceLarge))

@@ -40,7 +40,7 @@ import com.madiwist.twitch.core.presentation.components.TwitchTextField
 import com.madiwist.twitch.core.presentation.ui.theme.ExtraSpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
-import com.madiwist.twitch.core.presentation.utils.Screen
+import com.madiwist.twitch.core.presentation.navigation.Screen
 
 @Composable
 fun LoginScreen(

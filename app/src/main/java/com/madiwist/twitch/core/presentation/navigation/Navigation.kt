@@ -1,10 +1,10 @@
-package com.madiwist.twitch.core.presentation.utils
+package com.madiwist.twitch.core.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.madiwist.twitch.feature_post.domain.models.Post
+import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.feature_activity.presentation.activity.ActivityScreen
 import com.madiwist.twitch.feature_chat.presentation.chat.ChatScreen
 import com.madiwist.twitch.feature_post.presentation.create_post.CreatePostScreen

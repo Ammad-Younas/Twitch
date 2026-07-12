@@ -43,9 +43,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.madiwist.twitch.R
-import com.madiwist.twitch.feature_post.domain.models.Comment
-import com.madiwist.twitch.feature_post.domain.models.Post
-import com.madiwist.twitch.core.presentation.components.ActionRow
+import com.madiwist.twitch.core.domain.models.Comment
+import com.madiwist.twitch.core.domain.models.Post
+import com.madiwist.twitch.feature_post.domain.util.ActionRow
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.ui.theme.ExtraSpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.ExtraSpaceSmall

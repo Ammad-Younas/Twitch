@@ -39,7 +39,8 @@ import com.madiwist.twitch.core.presentation.components.TwitchTextField
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.ui.theme.SocialIconSmall
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
-import com.madiwist.twitch.core.presentation.utils.states.TwitchTextFieldState
+import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
+import com.madiwist.twitch.feature_post.presentation.util.PostDescriptionError
 
 @Composable
 fun CreatePostScreen(
@@ -91,7 +92,10 @@ fun CreatePostScreen(
                     viewModel.setDescriptionState(TwitchTextFieldState(text = it))
                 },
                 hint = stringResource(R.string.description),
-                error = viewModel.descriptionState.value.error,
+                error = when(viewModel.descriptionState.value.error){
+                    is PostDescriptionError.FieldEmpty -> stringResource(R.string.field_cant_be_empty)
+                    else -> ""
+                },
                 minLines = 3,
                 maxLines = 3,
                 singleLine = false

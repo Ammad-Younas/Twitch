@@ -1,4 +1,4 @@
-package com.madiwist.twitch.core.presentation.components
+package com.madiwist.twitch.feature_post.domain.util
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,7 +37,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import com.madiwist.twitch.R
-import com.madiwist.twitch.feature_post.domain.models.Post
+import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
 import com.madiwist.twitch.core.util.Constants

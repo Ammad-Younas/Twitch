@@ -1,4 +1,4 @@
-package com.madiwist.twitch.core.presentation.utils
+package com.madiwist.twitch.core.util
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Chat
@@ -7,6 +7,7 @@ import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Person
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.models.BottomNavItem
+import com.madiwist.twitch.core.presentation.navigation.Screen
 
 object NavItems {
     val NAV_ITEMS = listOf(

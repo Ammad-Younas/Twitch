@@ -16,8 +16,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.madiwist.twitch.core.presentation.ui.theme.TwitchTheme
 import com.madiwist.twitch.core.presentation.components.TwitchScaffold
-import com.madiwist.twitch.core.presentation.utils.Navigation
-import com.madiwist.twitch.core.presentation.utils.Screen
+import com.madiwist.twitch.core.presentation.navigation.Navigation
+import com.madiwist.twitch.core.presentation.navigation.Screen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

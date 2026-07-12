@@ -21,12 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.madiwist.twitch.R
-import com.madiwist.twitch.feature_post.domain.models.Post
-import com.madiwist.twitch.core.presentation.components.Post
+import com.madiwist.twitch.core.domain.models.Post
+import com.madiwist.twitch.feature_post.domain.util.Post
 import com.madiwist.twitch.core.presentation.components.TwitchScaffold
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
-import com.madiwist.twitch.core.presentation.utils.Screen
+import com.madiwist.twitch.core.presentation.navigation.Screen
 
 @Composable
 fun MainFeedScreen (

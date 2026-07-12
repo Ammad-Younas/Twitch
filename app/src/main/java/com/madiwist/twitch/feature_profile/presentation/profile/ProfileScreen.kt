@@ -44,16 +44,16 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.madiwist.twitch.R
-import com.madiwist.twitch.feature_post.domain.models.Post
-import com.madiwist.twitch.feature_profile.domain.models.User
-import com.madiwist.twitch.core.presentation.components.Post
+import com.madiwist.twitch.core.domain.models.Post
+import com.madiwist.twitch.core.domain.models.User
+import com.madiwist.twitch.feature_post.domain.util.Post
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.feature_profile.presentation.profile.components.BannerSection
 import com.madiwist.twitch.feature_profile.presentation.profile.components.ProfileHeaderSection
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
-import com.madiwist.twitch.core.presentation.utils.toPx
+import com.madiwist.twitch.core.util.toPx
 import com.madiwist.twitch.core.util.Constants
 
 @Composable

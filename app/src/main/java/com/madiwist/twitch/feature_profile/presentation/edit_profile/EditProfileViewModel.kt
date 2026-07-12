@@ -3,7 +3,7 @@ package com.madiwist.twitch.feature_profile.presentation.edit_profile
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.madiwist.twitch.core.presentation.utils.states.TwitchTextFieldState
+import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

@@ -21,7 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.madiwist.twitch.R
-import com.madiwist.twitch.feature_profile.domain.models.User
+import com.madiwist.twitch.core.domain.models.User
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 
 @Composable

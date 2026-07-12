@@ -1,4 +1,4 @@
-package com.madiwist.twitch.feature_activity.domain.models
+package com.madiwist.twitch.core.domain.models
 
 import com.madiwist.twitch.feature_activity.domain.util.ActivityAction
 

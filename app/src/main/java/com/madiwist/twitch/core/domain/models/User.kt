@@ -1,4 +1,4 @@
-package com.madiwist.twitch.feature_profile.domain.models
+package com.madiwist.twitch.core.domain.models
 
 data class User(
     val profilePictureUrl: String? = null,

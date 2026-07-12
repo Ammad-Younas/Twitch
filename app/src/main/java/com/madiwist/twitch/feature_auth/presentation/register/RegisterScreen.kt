@@ -41,6 +41,7 @@ import com.madiwist.twitch.core.presentation.ui.theme.ExtraSpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.util.Constants
+import com.madiwist.twitch.feature_auth.presentation.util.AuthError
 
 @Composable
 fun RegisterScreen(
@@ -48,7 +49,9 @@ fun RegisterScreen(
     viewModel: RegisterViewModel = hiltViewModel()
 ) {
     val scrollState = rememberScrollState()
-    val state = viewModel.state.value
+    val emailState = viewModel.emailState.value
+    val usernameState = viewModel.usernameState.value
+    val passwordState = viewModel.passwordState.value
 
     BoxWithConstraints(
         modifier = Modifier
@@ -74,55 +77,59 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(ExtraSpaceLarge))
             TwitchTextField(
                 hint = stringResource(R.string.email_hint),
-                text = state.email,
+                text = emailState.text,
                 onValueChange = { viewModel.onEvent(RegisterEvent.EnteredEmail(it)) },
-                error = when(state.emailError) {
-                    is RegisterState.EmailError.FieldEmpty -> {
+                error = when(emailState.error) {
+                    is AuthError.FieldEmpty -> {
                         stringResource(R.string.field_cant_be_empty)
                     }
-                    is RegisterState.EmailError.InvalidEmail -> {
+                    is AuthError.InvalidEmail -> {
                         stringResource(R.string.not_a_valid_email)
                     }
-                    null -> ""
+                    else -> ""
                 },
                 keyboardType = KeyboardType.Email
             )
             Spacer(modifier = Modifier.height(SpaceMedium))
             TwitchTextField(
                 hint = stringResource(R.string.username_hint),
-                text = state.username,
+                text = usernameState.text,
                 onValueChange = { viewModel.onEvent(RegisterEvent.EnteredUsername(it)) },
-                error = when(state.usernameError) {
-                    is RegisterState.UsernameError.FieldEmpty -> {
+                error = when(usernameState.error) {
+                    is AuthError.FieldEmpty -> {
                         stringResource(R.string.field_cant_be_empty)
                     }
-                    is RegisterState.UsernameError.InputTooShort -> {
+                    is AuthError.InputTooShort -> {
                         stringResource(R.string.input_too_short, Constants.MIN_USERNAME_LENGTH)
                     }
-                    null -> ""
+                    else -> ""
                 },
             )
             Spacer(modifier = Modifier.height(SpaceMedium))
             TwitchTextField(
                 hint = stringResource(R.string.password_hint),
-                text = state.password,
+                text = passwordState.text,
                 onValueChange = { viewModel.onEvent(RegisterEvent.EnteredPassword(it)) },
                 keyboardType = KeyboardType.Password,
-                showPasswordToggle = state.isPasswordVisible,
+                showPasswordToggle = passwordState.isPasswordVisible,
+
+
                 onPasswordToggleCLick = {
                     viewModel.onEvent(RegisterEvent.TogglePasswordVisibility)
                 },
-                error = when(state.passwordError) {
-                    is RegisterState.PasswordError.FieldEmpty -> {
+
+
+                error = when(passwordState.error) {
+                    is AuthError.FieldEmpty -> {
                         stringResource(R.string.field_cant_be_empty)
                     }
-                    is RegisterState.PasswordError.InputTooShort -> {
+                    is AuthError.InputTooShort -> {
                         stringResource(R.string.input_too_short, Constants.MIN_PASSWORD_LENGTH)
                     }
-                    is RegisterState.PasswordError.InvalidPassword -> {
+                    is AuthError.InvalidPassword -> {
                         stringResource(R.string.invalid_password)
                     }
-                    null -> ""
+                    else -> ""
                 }
             )
             Spacer(modifier = Modifier.height(ExtraSpaceLarge))

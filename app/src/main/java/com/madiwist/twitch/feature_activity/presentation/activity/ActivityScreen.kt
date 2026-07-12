@@ -22,9 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.madiwist.twitch.R
-import com.madiwist.twitch.feature_activity.domain.models.Activity
+import com.madiwist.twitch.core.domain.models.Activity
 import com.madiwist.twitch.feature_activity.domain.util.ActivityAction
-import com.madiwist.twitch.core.domain.util.DateFormatUtil
+import com.madiwist.twitch.core.util.DateFormatUtil
 import com.madiwist.twitch.feature_activity.presentation.activity.components.ActivityItem
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium

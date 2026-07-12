@@ -1,4 +1,4 @@
-package com.madiwist.twitch.feature_post.domain.models
+package com.madiwist.twitch.core.domain.models
 
 data class Post(
     val username: String,

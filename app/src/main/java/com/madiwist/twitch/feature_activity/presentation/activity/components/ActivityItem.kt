@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.madiwist.twitch.R
-import com.madiwist.twitch.feature_activity.domain.models.Activity
+import com.madiwist.twitch.core.domain.models.Activity
 import com.madiwist.twitch.feature_activity.domain.util.ActivityAction
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
