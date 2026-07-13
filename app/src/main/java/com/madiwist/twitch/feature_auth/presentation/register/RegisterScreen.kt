@@ -24,8 +24,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -42,6 +44,7 @@ import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.feature_auth.presentation.util.AuthError
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun RegisterScreen(
@@ -52,6 +55,18 @@ fun RegisterScreen(
     val emailState = viewModel.emailState.value
     val usernameState = viewModel.usernameState.value
     val passwordState = viewModel.passwordState.value
+    val registerState = viewModel.registerState.value
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when(event) {
+                is RegisterViewModel.UiEvent.SnackbarEvent -> {
+
+                }
+            }
+        }
+    }
 
     BoxWithConstraints(
         modifier = Modifier
@@ -134,7 +149,10 @@ fun RegisterScreen(
             )
             Spacer(modifier = Modifier.height(ExtraSpaceLarge))
             Button(
-                onClick = { viewModel.onEvent(RegisterEvent.Register) },
+                onClick = {
+                    viewModel.onEvent(RegisterEvent.Register)
+                },
+                enabled = !registerState.isLoading,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),

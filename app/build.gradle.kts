@@ -91,6 +91,9 @@ dependencies {
     // Coil (Image Loading)
     implementation(libs.coil.compose)
 
+    // JSON to Kotlin Object Mapping
+    implementation(libs.converter.gson)
+
     // Timber (Logging)
     implementation(libs.timber)
 

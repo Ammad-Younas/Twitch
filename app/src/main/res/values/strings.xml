@@ -63,4 +63,8 @@
     <string name="not_a_valid_email">This is not a valid email</string>
     <string name="input_too_short">The minimum length is %d</string>
     <string name="invalid_password">Should contain least one upper case and one lower case</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="error_couldnt_reach_server">Oops! couldn\'t reach server, please check your internet connection.</string>
+    <string name="error_something_went_wrong">Oops! something went wrong, please try again.</string>
+    <string name="successfully_registered">Successfully Registered!</string>
 </resources>

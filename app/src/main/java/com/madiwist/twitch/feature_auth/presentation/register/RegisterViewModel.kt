@@ -4,15 +4,25 @@ import android.util.Patterns
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.states.PasswordTextFiledState
 import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
 import com.madiwist.twitch.core.util.Constants
+import com.madiwist.twitch.core.util.Resource
+import com.madiwist.twitch.core.util.UiText
+import com.madiwist.twitch.feature_auth.domain.use_case.RegisterUserCase
 import com.madiwist.twitch.feature_auth.presentation.util.AuthError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RegisterViewModel @Inject constructor()  : ViewModel() {
+class RegisterViewModel @Inject constructor(
+    private val registerUserCase: RegisterUserCase
+)  : ViewModel() {
 
     private val _usernameState = mutableStateOf(TwitchTextFieldState())
     val usernameState : State<TwitchTextFieldState> = _usernameState
@@ -22,6 +32,12 @@ class RegisterViewModel @Inject constructor()  : ViewModel() {
 
     private val _passwordState = mutableStateOf(PasswordTextFiledState())
     val passwordState : State<PasswordTextFiledState> = _passwordState
+
+    private val _registerState = mutableStateOf(RegisterState())
+    val registerState : State<RegisterState> = _registerState
+
+    private val _eventFlow = MutableSharedFlow<UiEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
 
     fun onEvent(event: RegisterEvent){
         when(event){
@@ -49,6 +65,39 @@ class RegisterViewModel @Inject constructor()  : ViewModel() {
                 validateUsername(usernameState.value.text)
                 validateEmail(emailState.value.text)
                 validatePassword(passwordState.value.text)
+                registerIfNoErrors()
+            }
+        }
+    }
+
+    private fun registerIfNoErrors(){
+        if (
+            usernameState.value.error == null
+            ||
+            emailState.value.error == null
+            ||
+            passwordState.value.error == null
+        ) {
+            return
+        }
+        viewModelScope.launch {
+            _registerState.value = RegisterState(isLoading = true)
+            val result = registerUserCase(
+                email = emailState.value.text,
+                username = usernameState.value.text,
+                password = passwordState.value.text
+            )
+            when (result) {
+                is Resource.Success -> {
+                    _eventFlow.emit(
+                        UiEvent.SnackbarEvent(UiText.StringResource(R.string.successfully_registered))
+                    )
+                }
+                is Resource.Error -> {
+                    _eventFlow.emit(
+                        UiEvent.SnackbarEvent(result.uiText ?: UiText.unknownError())
+                    )
+                }
             }
         }
     }
@@ -118,4 +167,7 @@ class RegisterViewModel @Inject constructor()  : ViewModel() {
         )
     }
 
+    sealed class UiEvent {
+        data class SnackbarEvent(val uiText: UiText): UiEvent()
+    }
 }
