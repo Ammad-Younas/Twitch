@@ -16,6 +16,8 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -32,6 +34,7 @@ import com.madiwist.twitch.core.util.NavItems
 fun TwitchScaffold(
     modifier: Modifier = Modifier,
     navController: NavController,
+    snackbarHostState: SnackbarHostState,
     currentRoute: String? = null,
     showBottomBarAndFab: Boolean = true,
     bottomNavItemsList: List<BottomNavItem> = NavItems.NAV_ITEMS,
@@ -77,6 +80,7 @@ fun TwitchScaffold(
         modifier = modifier,
         contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
         topBar = topBar,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             if (showBottomBarAndFab) {
                 BottomAppBar(

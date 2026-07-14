@@ -72,11 +72,11 @@ class RegisterViewModel @Inject constructor(
 
     private fun registerIfNoErrors(){
         if (
-            usernameState.value.error == null
+            usernameState.value.error != null
             ||
-            emailState.value.error == null
+            emailState.value.error != null
             ||
-            passwordState.value.error == null
+            passwordState.value.error != null
         ) {
             return
         }
@@ -92,11 +92,13 @@ class RegisterViewModel @Inject constructor(
                     _eventFlow.emit(
                         UiEvent.SnackbarEvent(UiText.StringResource(R.string.successfully_registered))
                     )
+                    _registerState.value = RegisterState(isLoading = false)
                 }
                 is Resource.Error -> {
                     _eventFlow.emit(
                         UiEvent.SnackbarEvent(result.uiText ?: UiText.unknownError())
                     )
+                    _registerState.value = RegisterState(isLoading = false)
                 }
             }
         }

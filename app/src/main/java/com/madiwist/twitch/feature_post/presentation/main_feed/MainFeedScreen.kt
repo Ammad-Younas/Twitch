@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -30,7 +31,8 @@ import com.madiwist.twitch.core.presentation.navigation.Screen
 
 @Composable
 fun MainFeedScreen (
-    navController: NavController
+    navController: NavController,
+    snackbarHostState: SnackbarHostState,
 ) {
     TwitchScaffold(
         topBar = {
@@ -56,7 +58,8 @@ fun MainFeedScreen (
             )
         },
         navController = navController,
-        showBottomBarAndFab = false
+        showBottomBarAndFab = false,
+        snackbarHostState = snackbarHostState
     ) {
         val scrollState = rememberScrollState()
         Column(

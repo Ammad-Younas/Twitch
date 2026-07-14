@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
@@ -21,7 +22,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,6 +46,7 @@ import com.madiwist.twitch.core.presentation.components.TwitchTextField
 import com.madiwist.twitch.core.presentation.ui.theme.ExtraSpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
+import com.madiwist.twitch.core.presentation.util.asString
 import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.feature_auth.presentation.util.AuthError
 import kotlinx.coroutines.flow.collectLatest
@@ -49,6 +54,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun RegisterScreen(
     navController: NavController,
+    snackbarHostState: SnackbarHostState,
     viewModel: RegisterViewModel = hiltViewModel()
 ) {
     val scrollState = rememberScrollState()
@@ -62,7 +68,10 @@ fun RegisterScreen(
         viewModel.eventFlow.collectLatest { event ->
             when(event) {
                 is RegisterViewModel.UiEvent.SnackbarEvent -> {
-
+                    snackbarHostState.showSnackbar(
+                        message = event.uiText.asString(context),
+                        duration = SnackbarDuration.Long
+                    )
                 }
             }
         }
@@ -166,11 +175,19 @@ fun RegisterScreen(
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
-                Text(
-                    text = stringResource(R.string.sign_up_title),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold
-                )
+                if (registerState.isLoading) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text(
+                        text = stringResource(R.string.sign_up_title),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(SpaceMedium))

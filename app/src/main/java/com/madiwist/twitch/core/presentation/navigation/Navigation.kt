@@ -1,5 +1,6 @@
 package com.madiwist.twitch.core.presentation.navigation
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -18,7 +19,10 @@ import com.madiwist.twitch.feature_auth.presentation.register.RegisterScreen
 import com.madiwist.twitch.feature_search.presentation.SearchScreen
 
 @Composable
-fun Navigation(navController: NavHostController) {
+fun Navigation(
+    navController: NavHostController,
+    snackbarHostState: SnackbarHostState
+) {
     NavHost(
         navController = navController,
         startDestination = Screen.LoginScreen.route
@@ -27,10 +31,16 @@ fun Navigation(navController: NavHostController) {
             LoginScreen(navController = navController)
         }
         composable(Screen.RegisterScreen.route) {
-            RegisterScreen(navController = navController)
+            RegisterScreen(
+                navController = navController,
+                snackbarHostState = snackbarHostState
+            )
         }
         composable(Screen.MainFeedScreen.route) {
-            MainFeedScreen(navController = navController)
+            MainFeedScreen(
+                navController = navController,
+                snackbarHostState = snackbarHostState
+            )
         }
         composable(Screen.ChatScreen.route) {
             ChatScreen(navController = navController)

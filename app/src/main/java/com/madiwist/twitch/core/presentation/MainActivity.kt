@@ -10,7 +10,9 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -34,6 +36,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
+                val snackbarHostState = remember { SnackbarHostState() }
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -50,9 +53,10 @@ class MainActivity : ComponentActivity() {
                         onFabClick = {
                             navController.navigate(Screen.CreatePostScreen.route)
                         },
-                        currentRoute = currentRoute
+                        currentRoute = currentRoute,
+                        snackbarHostState = snackbarHostState
                     ) {
-                        Navigation(navController = navController)
+                        Navigation(navController = navController, snackbarHostState = snackbarHostState)
                     }
                 }
             }

@@ -1,6 +1,9 @@
 package com.madiwist.twitch.di
 
 import com.madiwist.twitch.feature_auth.data.remote.AuthApi
+import com.madiwist.twitch.feature_auth.data.repository.AuthRepositoryImpl
+import com.madiwist.twitch.feature_auth.domain.repository.AuthRepository
+import com.madiwist.twitch.feature_auth.domain.use_case.RegisterUserCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,5 +24,17 @@ object AuthModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(AuthApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provieAuthRepository(api: AuthApi) : AuthRepository{
+        return AuthRepositoryImpl(api)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRegisterUserCase(repository: AuthRepository) : RegisterUserCase {
+        return RegisterUserCase(repository)
     }
 }
