@@ -1,6 +1,7 @@
 package com.madiwist.twitch.feature_auth.data.repository
 
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.core.util.Resource
@@ -12,7 +13,6 @@ import com.madiwist.twitch.feature_auth.data.remote.AuthApi
 import com.madiwist.twitch.feature_auth.domain.repository.AuthRepository
 import okio.IOException
 import retrofit2.HttpException
-import androidx.core.content.edit
 
 class AuthRepositoryImpl(
     private val api: AuthApi,
