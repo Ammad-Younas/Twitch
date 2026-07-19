@@ -51,7 +51,6 @@ fun TwitchTextField(
             isError = error != "",
             minLines = minLines,
             maxLines = maxLines,
-
             keyboardOptions = KeyboardOptions(
                 keyboardType = keyboardType
             ),
