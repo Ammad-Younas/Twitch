@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
@@ -21,11 +22,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -37,17 +43,41 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.components.TwitchTextField
+import com.madiwist.twitch.core.presentation.navigation.Screen
 import com.madiwist.twitch.core.presentation.ui.theme.ExtraSpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
-import com.madiwist.twitch.core.presentation.navigation.Screen
+import com.madiwist.twitch.core.presentation.util.asString
+import com.madiwist.twitch.feature_auth.presentation.util.AuthError
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun LoginScreen(
     navController: NavController,
+    snackbarHostState: SnackbarHostState,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val scrollState = rememberScrollState()
+    val emailState = viewModel.emailState.value
+    val passwordState = viewModel.passwordState.value
+    val loginState = viewModel.loginState.value
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when(event) {
+                is LoginViewModel.UiEvent.SnackbarEvent -> {
+                    snackbarHostState.showSnackbar(
+                        message = event.uiText.asString(context),
+                        duration = SnackbarDuration.Long
+                    )
+                }
+                is LoginViewModel.UiEvent.Navigate -> {
+                    navController.navigate(event.route)
+                }
+            }
+        }
+    }
 
     BoxWithConstraints(
         modifier = Modifier
@@ -72,27 +102,42 @@ fun LoginScreen(
             )
             Spacer(modifier = Modifier.height(ExtraSpaceLarge))
             TwitchTextField(
-                hint = stringResource(R.string.username_email_hint),
-                text = viewModel.username.value,
-                onValueChange = { viewModel.setUsername(it) },
-                error = viewModel.usernameError.value,
+                hint = stringResource(R.string.email_hint),
+                text = emailState.text,
+                onValueChange = { viewModel.onEvent(LoginEvent.EnteredEmail(it)) },
+                error = when(emailState.error) {
+                    is AuthError.FieldEmpty -> {
+                        stringResource(R.string.field_cant_be_empty)
+                    }
+                    is AuthError.InvalidEmail -> {
+                        stringResource(R.string.not_a_valid_email)
+                    }
+                    else -> ""
+                },
                 keyboardType = KeyboardType.Email
             )
             Spacer(modifier = Modifier.height(SpaceMedium))
             TwitchTextField(
                 hint = stringResource(R.string.password_hint),
-                text = viewModel.password.value,
-                onValueChange = { viewModel.setPassword(it) },
+                text = passwordState.text,
+                onValueChange = { viewModel.onEvent(LoginEvent.EnteredPassword(it)) },
                 keyboardType = KeyboardType.Password,
-                showPasswordToggle = viewModel.showPassword.value,
+                showPasswordToggle = passwordState.isPasswordVisible,
                 onPasswordToggleCLick = {
-                    viewModel.setShowPassword(it)
+                    viewModel.onEvent(LoginEvent.TogglePasswordVisibility)
                 },
-                error = viewModel.passwordError.value
+                error = when(passwordState.error) {
+                    is AuthError.FieldEmpty -> {
+                        stringResource(R.string.field_cant_be_empty)
+                    }
+                    else -> ""
+                }
             )
             Spacer(modifier = Modifier.height(ExtraSpaceLarge))
             Button(
-                onClick = { navController.navigate(Screen.MainFeedScreen.route) },
+                onClick = {
+                    viewModel.onEvent(LoginEvent.Login)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -106,11 +151,19 @@ fun LoginScreen(
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
-                Text(
-                    text = stringResource(R.string.login_title),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold
-                )
+                if (loginState.isLoading) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text(
+                        text = stringResource(R.string.login_title),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(SpaceMedium))

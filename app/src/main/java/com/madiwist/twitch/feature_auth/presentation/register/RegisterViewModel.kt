@@ -39,23 +39,23 @@ class RegisterViewModel @Inject constructor(
     fun onEvent(event: RegisterEvent){
         when(event){
             is RegisterEvent.EnteredUsername -> {
-                _usernameState.value = _usernameState.value.copy(
+                _usernameState.value = usernameState.value.copy(
                     text = event.value
                 )
             }
             is RegisterEvent.EnteredEmail -> {
-                _emailState.value = _emailState.value.copy(
+                _emailState.value = emailState.value.copy(
                     text = event.value
                 )
             }
             is RegisterEvent.EnteredPassword -> {
-                _passwordState.value = _passwordState.value.copy(
+                _passwordState.value = passwordState.value.copy(
                     text = event.value
                 )
             }
             is RegisterEvent.TogglePasswordVisibility -> {
-                _passwordState.value = _passwordState.value.copy(
-                    isPasswordVisible = !_passwordState.value.isPasswordVisible
+                _passwordState.value = passwordState.value.copy(
+                    isPasswordVisible = !passwordState.value.isPasswordVisible
                 )
             }
             is RegisterEvent.Register -> {
@@ -76,17 +76,17 @@ class RegisterViewModel @Inject constructor(
                 password = passwordState.value.text
             )
             if (registerResult.emailError != null){
-                _emailState.value = _emailState.value.copy(
+                _emailState.value = emailState.value.copy(
                     error = registerResult.emailError
                 )
             }
             if (registerResult.usernameError != null){
-                _usernameState.value = _usernameState.value.copy(
+                _usernameState.value = usernameState.value.copy(
                     error = registerResult.usernameError
                 )
             }
             if (registerResult.passwordError != null){
-                _passwordState.value = _passwordState.value.copy(
+                _passwordState.value = passwordState.value.copy(
                     error = registerResult.passwordError
                 )
             }

@@ -7,15 +7,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.feature_activity.presentation.activity.ActivityScreen
+import com.madiwist.twitch.feature_auth.presentation.login.LoginScreen
+import com.madiwist.twitch.feature_auth.presentation.register.RegisterScreen
 import com.madiwist.twitch.feature_chat.presentation.chat.ChatScreen
 import com.madiwist.twitch.feature_post.presentation.create_post.CreatePostScreen
-import com.madiwist.twitch.feature_profile.presentation.edit_profile.EditProfileScreen
-import com.madiwist.twitch.feature_auth.presentation.login.LoginScreen
 import com.madiwist.twitch.feature_post.presentation.main_feed.MainFeedScreen
 import com.madiwist.twitch.feature_post.presentation.person_list.PersonListScreen
 import com.madiwist.twitch.feature_post.presentation.post_detail.PostDetailsScreen
+import com.madiwist.twitch.feature_profile.presentation.edit_profile.EditProfileScreen
 import com.madiwist.twitch.feature_profile.presentation.profile.ProfileScreen
-import com.madiwist.twitch.feature_auth.presentation.register.RegisterScreen
 import com.madiwist.twitch.feature_search.presentation.SearchScreen
 
 @Composable
@@ -28,7 +28,10 @@ fun Navigation(
         startDestination = Screen.LoginScreen.route
     ) {
         composable(Screen.LoginScreen.route) {
-            LoginScreen(navController = navController)
+            LoginScreen(
+                navController = navController,
+                snackbarHostState = snackbarHostState
+            )
         }
         composable(Screen.RegisterScreen.route) {
             RegisterScreen(
