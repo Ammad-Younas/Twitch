@@ -1,7 +1,7 @@
 package com.madiwist.twitch.di
 
 import android.content.SharedPreferences
-import com.madiwist.twitch.feature_auth.data.remote.AuthApi
+import com.madiwist.twitch.feature_auth.data.data_source.remote.AuthApi
 import com.madiwist.twitch.feature_auth.data.repository.AuthRepositoryImpl
 import com.madiwist.twitch.feature_auth.domain.repository.AuthRepository
 import com.madiwist.twitch.feature_auth.domain.use_case.AuthenticateUseCase

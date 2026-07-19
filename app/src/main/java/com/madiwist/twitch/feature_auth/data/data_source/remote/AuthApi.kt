@@ -1,4 +1,4 @@
-package com.madiwist.twitch.feature_auth.data.remote
+package com.madiwist.twitch.feature_auth.data.data_source.remote
 
 import com.madiwist.twitch.feature_auth.data.dto.request.CreateAccountRequest
 import com.madiwist.twitch.core.data.dto.response.BasicApiResponse

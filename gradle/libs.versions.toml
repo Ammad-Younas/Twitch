@@ -13,6 +13,7 @@ kotlin = "2.4.0"
 composeBom = "2026.06.00"
 hilt = "2.59.2"
 materialIconsCore = "1.7.8"
+pagingCompose = "3.5.0"
 retrofit = "3.0.0"
 okhttp = "5.4.0"
 navigation = "2.9.8"
@@ -30,6 +31,7 @@ androidx-compose-material-icons-core = { module = "androidx.compose.material:mat
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsCore" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "lifecycleRuntimeKtx" }
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingCompose" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

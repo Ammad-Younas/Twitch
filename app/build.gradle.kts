@@ -10,6 +10,7 @@ plugins {
 android {
     namespace = "com.madiwist.twitch"
     compileSdk = 37
+    ndkVersion = "30.0.15729638"
 
     defaultConfig {
         applicationId = "com.madiwist.twitch"
@@ -100,4 +101,7 @@ dependencies {
     // Material Icons
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.material.icons.extended)
+
+    // Pagging
+    implementation(libs.androidx.paging.compose)
 }
