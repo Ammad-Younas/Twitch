@@ -12,6 +12,7 @@ import com.madiwist.twitch.core.util.UiText
 import com.madiwist.twitch.feature_auth.domain.use_case.RegisterUserCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import com.madiwist.twitch.core.presentation.util.UiEvent
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -111,9 +112,5 @@ class RegisterViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    sealed class UiEvent {
-        data class SnackbarEvent(val uiText: UiText): UiEvent()
     }
 }

@@ -11,8 +11,10 @@ import com.madiwist.twitch.feature_auth.data.dto.request.CreateAccountRequest
 import com.madiwist.twitch.feature_auth.data.dto.request.LoginRequest
 import com.madiwist.twitch.feature_auth.data.remote.AuthApi
 import com.madiwist.twitch.feature_auth.domain.repository.AuthRepository
+import kotlinx.coroutines.withTimeout
 import okio.IOException
 import retrofit2.HttpException
+import kotlin.time.Duration.Companion.milliseconds
 
 class AuthRepositoryImpl(
     private val api: AuthApi,
@@ -70,6 +72,23 @@ class AuthRepositoryImpl(
         } catch (e: HttpException) {
             Resource.Error(
                 uiText = UiText.StringResource(R.string.invalid_credential)
+            )
+        }
+    }
+
+    override suspend fun authenticate(): SimpleResource {
+        return try {
+            withTimeout(5000L.milliseconds) {
+                api.authenticate()
+            }
+            Resource.Success(Unit)
+        } catch (e: IOException) {
+            Resource.Error(
+                uiText = UiText.StringResource(R.string.error_couldnt_reach_server),
+            )
+        } catch (e: HttpException) {
+            Resource.Error(
+                uiText = UiText.StringResource(R.string.error_something_went_wrong)
             )
         }
     }

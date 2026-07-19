@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.madiwist.twitch.core.domain.states.PasswordTextFiledState
 import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
 import com.madiwist.twitch.core.presentation.navigation.Screen
+import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText
 import com.madiwist.twitch.feature_auth.domain.use_case.LoginUseCase
@@ -95,11 +96,5 @@ class LoginViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-
-    sealed class UiEvent {
-        data class SnackbarEvent(val uiText: UiText): UiEvent()
-        data class Navigate(val route: String): UiEvent()
     }
 }
