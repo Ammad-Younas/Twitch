@@ -13,20 +13,21 @@ import androidx.compose.ui.geometry.Size
 
 enum class CropShape { RECTANGLE, CIRCLE }
 sealed class CropAspectRatio(val label: String) {
-    data object Free       : CropAspectRatio("Free")
-    data object Square     : CropAspectRatio("1 : 1")
-    data object Ratio4x3   : CropAspectRatio("4 : 3")
-    data object Ratio16x9  : CropAspectRatio("16 : 9")
+    data object Free : CropAspectRatio("Free")
+    data object Square : CropAspectRatio("1 : 1")
+    data object Ratio4x3 : CropAspectRatio("4 : 3")
+    data object Ratio16x9 : CropAspectRatio("16 : 9")
     data class Custom(val w: Float, val h: Float) : CropAspectRatio("$w : $h")
 
     fun ratio(): Float? = when (this) {
-        is Free      -> null
-        is Square    -> 1f
-        is Ratio4x3  -> 4f / 3f
+        is Free -> null
+        is Square -> 1f
+        is Ratio4x3 -> 4f / 3f
         is Ratio16x9 -> 16f / 9f
-        is Custom    -> w / h
+        is Custom -> w / h
     }
 }
+
 @Stable
 class ImageCropperState(
     initialAspectRatio: CropAspectRatio = CropAspectRatio.Free,
@@ -41,20 +42,21 @@ class ImageCropperState(
     var aspectRatio: CropAspectRatio by mutableStateOf(initialAspectRatio)
     var cropShape: CropShape by mutableStateOf(initialShape)
 
-    internal var cropRect   by mutableStateOf(Rect.Zero)
+    internal var cropRect by mutableStateOf(Rect.Zero)
     internal var canvasSize by mutableStateOf(Size.Zero)
 
     fun open(uri: Uri) {
-        imageUri      = uri
+        imageUri = uri
         croppedBitmap = null
-        isVisible     = true
-        cropRect      = Rect.Zero
+        isVisible = true
+        cropRect = Rect.Zero
     }
 
     fun dismiss() {
         isVisible = false
     }
 }
+
 @Composable
 fun rememberImageCropperState(
     initialAspectRatio: CropAspectRatio = CropAspectRatio.Free,
@@ -62,6 +64,6 @@ fun rememberImageCropperState(
 ): ImageCropperState = remember {
     ImageCropperState(
         initialAspectRatio = initialAspectRatio,
-        initialShape       = initialShape,
+        initialShape = initialShape,
     )
 }

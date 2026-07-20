@@ -157,12 +157,12 @@ private fun ImageCropperContent(
     }
 
     // Colors
-    val overlayColor   = Color(0x99000000)
-    val handleColor    = Color(0xFF03B100)   // app green
-    val borderColor    = Color(0xFFFFFFFF)
-    val gridLineColor  = Color(0x55FFFFFF)
-    val handleSize     = 12.dp
-    val borderWidth    = 2.dp
+    val overlayColor = Color(0x99000000)
+    val handleColor = Color(0xFF03B100)   // app green
+    val borderColor = Color(0xFFFFFFFF)
+    val gridLineColor = Color(0x55FFFFFF)
+    val handleSize = 12.dp
+    val borderWidth = 2.dp
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -336,7 +336,13 @@ private fun CropperBottomBar(state: ImageCropperState) {
                         )
                     },
                     leadingIcon = if (isSelected) {
-                        { Icon(Icons.Outlined.Crop, contentDescription = null, modifier = Modifier.size(14.dp)) }
+                        {
+                            Icon(
+                                Icons.Outlined.Crop,
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
                     } else null,
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = Color(0xFF03B100),
@@ -390,7 +396,7 @@ private fun CropCanvas(
             .pointerInput(bitmap, state.aspectRatio, state.cropShape) {
                 detectTransformGestures(panZoomLock = false) { centroid, pan, _, _ ->
                     val canvasSize = state.canvasSize
-                    val cropRect   = state.cropRect
+                    val cropRect = state.cropRect
 
                     // Initialise crop rect on very first gesture if draw() hasn't fired yet
                     if (cropRect == Rect.Zero && canvasSize != Size.Zero) {
@@ -405,17 +411,52 @@ private fun CropCanvas(
 
                     when (dragTarget) {
                         DragTarget.MOVE -> {
-                            val newLeft = (cropRect.left + pan.x).coerceIn(0f, canvasSize.width  - cropRect.width)
-                            val newTop  = (cropRect.top  + pan.y).coerceIn(0f, canvasSize.height - cropRect.height)
+                            val newLeft = (cropRect.left + pan.x).coerceIn(
+                                0f,
+                                canvasSize.width - cropRect.width
+                            )
+                            val newTop = (cropRect.top + pan.y).coerceIn(
+                                0f,
+                                canvasSize.height - cropRect.height
+                            )
                             state.cropRect = Rect(
                                 offset = Offset(newLeft, newTop),
-                                size   = cropRect.size,
+                                size = cropRect.size,
                             )
                         }
-                        DragTarget.TL -> state.cropRect = resizeCropRect(cropRect, pan, DragTarget.TL, state.aspectRatio, canvasSize)
-                        DragTarget.TR -> state.cropRect = resizeCropRect(cropRect, pan, DragTarget.TR, state.aspectRatio, canvasSize)
-                        DragTarget.BL -> state.cropRect = resizeCropRect(cropRect, pan, DragTarget.BL, state.aspectRatio, canvasSize)
-                        DragTarget.BR -> state.cropRect = resizeCropRect(cropRect, pan, DragTarget.BR, state.aspectRatio, canvasSize)
+
+                        DragTarget.TL -> state.cropRect = resizeCropRect(
+                            cropRect,
+                            pan,
+                            DragTarget.TL,
+                            state.aspectRatio,
+                            canvasSize
+                        )
+
+                        DragTarget.TR -> state.cropRect = resizeCropRect(
+                            cropRect,
+                            pan,
+                            DragTarget.TR,
+                            state.aspectRatio,
+                            canvasSize
+                        )
+
+                        DragTarget.BL -> state.cropRect = resizeCropRect(
+                            cropRect,
+                            pan,
+                            DragTarget.BL,
+                            state.aspectRatio,
+                            canvasSize
+                        )
+
+                        DragTarget.BR -> state.cropRect = resizeCropRect(
+                            cropRect,
+                            pan,
+                            DragTarget.BR,
+                            state.aspectRatio,
+                            canvasSize
+                        )
+
                         DragTarget.NONE -> Unit
                     }
                 }
@@ -440,25 +481,28 @@ private fun CropCanvas(
 
         val cropRect = state.cropRect
 
-        val imgBmp   = bitmap.asImageBitmap()
-        val imgW     = bitmap.width.toFloat()
-        val imgH     = bitmap.height.toFloat()
+        val imgBmp = bitmap.asImageBitmap()
+        val imgW = bitmap.width.toFloat()
+        val imgH = bitmap.height.toFloat()
         val fitScale = min(size.width / imgW, size.height / imgH)
-        val drawW    = imgW * fitScale
-        val drawH    = imgH * fitScale
-        val drawLeft = (size.width  - drawW) / 2f
-        val drawTop  = (size.height - drawH) / 2f
+        val drawW = imgW * fitScale
+        val drawH = imgH * fitScale
+        val drawLeft = (size.width - drawW) / 2f
+        val drawTop = (size.height - drawH) / 2f
 
         drawImage(
-            image     = imgBmp,
-            dstOffset = androidx.compose.ui.unit.IntOffset(drawLeft.roundToInt(), drawTop.roundToInt()),
-            dstSize   = androidx.compose.ui.unit.IntSize(drawW.roundToInt(), drawH.roundToInt()),
+            image = imgBmp,
+            dstOffset = androidx.compose.ui.unit.IntOffset(
+                drawLeft.roundToInt(),
+                drawTop.roundToInt()
+            ),
+            dstSize = androidx.compose.ui.unit.IntSize(drawW.roundToInt(), drawH.roundToInt()),
         )
 
         drawCropOverlay(
-            cropRect     = cropRect,
+            cropRect = cropRect,
             overlayColor = overlayColor,
-            shape        = state.cropShape,
+            shape = state.cropShape,
         )
 
         drawGrid(cropRect = cropRect, lineColor = gridLineColor, strokeWidth = 1.dp.toPx())
@@ -466,30 +510,31 @@ private fun CropCanvas(
         val strokePx = borderWidth.toPx()
         if (state.cropShape == CropShape.CIRCLE) {
             drawCircle(
-                color  = borderColor,
+                color = borderColor,
                 radius = cropRect.width / 2f,
                 center = cropRect.center,
-                style  = Stroke(width = strokePx),
+                style = Stroke(width = strokePx),
             )
         } else {
             drawRect(
-                color   = borderColor,
+                color = borderColor,
                 topLeft = cropRect.topLeft,
-                size    = cropRect.size,
-                style   = Stroke(width = strokePx),
+                size = cropRect.size,
+                style = Stroke(width = strokePx),
             )
         }
 
         if (state.cropShape == CropShape.RECTANGLE) {
             drawCornerHandles(
-                cropRect    = cropRect,
-                color       = handleColor,
-                handleSize  = handleSize.toPx(),
+                cropRect = cropRect,
+                color = handleColor,
+                handleSize = handleSize.toPx(),
                 strokeWidth = strokePx * 2,
             )
         }
     }
 }
+
 private fun DrawScope.drawCropOverlay(
     cropRect: Rect,
     overlayColor: Color,
@@ -505,27 +550,27 @@ private fun DrawScope.drawCropOverlay(
     } else {
         // Top band
         drawRect(
-            color   = overlayColor,
+            color = overlayColor,
             topLeft = Offset.Zero,
-            size    = Size(size.width, cropRect.top),
+            size = Size(size.width, cropRect.top),
         )
         // Bottom band
         drawRect(
-            color   = overlayColor,
+            color = overlayColor,
             topLeft = Offset(0f, cropRect.bottom),
-            size    = Size(size.width, size.height - cropRect.bottom),
+            size = Size(size.width, size.height - cropRect.bottom),
         )
         // Left strip (between top and bottom bands)
         drawRect(
-            color   = overlayColor,
+            color = overlayColor,
             topLeft = Offset(0f, cropRect.top),
-            size    = Size(cropRect.left, cropRect.height),
+            size = Size(cropRect.left, cropRect.height),
         )
         // Right strip (between top and bottom bands)
         drawRect(
-            color   = overlayColor,
+            color = overlayColor,
             topLeft = Offset(cropRect.right, cropRect.top),
-            size    = Size(size.width - cropRect.right, cropRect.height),
+            size = Size(size.width - cropRect.right, cropRect.height),
         )
     }
 }
@@ -533,10 +578,10 @@ private fun DrawScope.drawCropOverlay(
 private fun DrawScope.drawGrid(cropRect: Rect, lineColor: Color, strokeWidth: Float) {
     val thirds = 3
     for (i in 1 until thirds) {
-        val x = cropRect.left + cropRect.width  * i / thirds
-        val y = cropRect.top  + cropRect.height * i / thirds
-        drawLine(lineColor, Offset(x, cropRect.top),  Offset(x, cropRect.bottom), strokeWidth)
-        drawLine(lineColor, Offset(cropRect.left, y), Offset(cropRect.right, y),  strokeWidth)
+        val x = cropRect.left + cropRect.width * i / thirds
+        val y = cropRect.top + cropRect.height * i / thirds
+        drawLine(lineColor, Offset(x, cropRect.top), Offset(x, cropRect.bottom), strokeWidth)
+        drawLine(lineColor, Offset(cropRect.left, y), Offset(cropRect.right, y), strokeWidth)
     }
 }
 
@@ -550,8 +595,8 @@ private fun DrawScope.drawCornerHandles(
         cropRect.topLeft, cropRect.topRight,
         cropRect.bottomLeft, cropRect.bottomRight,
     )
-    val isTop    = listOf(true, true, false, false)
-    val isLeft   = listOf(true, false, true, false)
+    val isTop = listOf(true, true, false, false)
+    val isLeft = listOf(true, false, true, false)
 
     corners.forEachIndexed { i, corner ->
         val hx = if (isLeft[i]) 1f else -1f
@@ -568,27 +613,27 @@ private enum class DragTarget { NONE, MOVE, TL, TR, BL, BR }
 private fun pickDragTarget(point: Offset, rect: Rect, threshold: Float): DragTarget {
     fun near(a: Offset, b: Offset) = (a - b).getDistance() < threshold * 2.5f
     return when {
-        near(point, rect.topLeft)     -> DragTarget.TL
-        near(point, rect.topRight)    -> DragTarget.TR
-        near(point, rect.bottomLeft)  -> DragTarget.BL
+        near(point, rect.topLeft) -> DragTarget.TL
+        near(point, rect.topRight) -> DragTarget.TR
+        near(point, rect.bottomLeft) -> DragTarget.BL
         near(point, rect.bottomRight) -> DragTarget.BR
-        rect.contains(point)          -> DragTarget.MOVE
-        else                          -> DragTarget.NONE
+        rect.contains(point) -> DragTarget.MOVE
+        else -> DragTarget.NONE
     }
 }
 
 private fun defaultCropRect(canvasSize: Size, ratio: CropAspectRatio): Rect {
     val padding = canvasSize.width * 0.1f
-    val maxW    = canvasSize.width  - padding * 2
-    val maxH    = canvasSize.height - padding * 2
-    val r       = ratio.ratio()
-    val (w, h)  = if (r == null) {
+    val maxW = canvasSize.width - padding * 2
+    val maxH = canvasSize.height - padding * 2
+    val r = ratio.ratio()
+    val (w, h) = if (r == null) {
         maxW to maxH
     } else {
         if (maxW / r <= maxH) maxW to maxW / r else maxH * r to maxH
     }
-    val left = (canvasSize.width  - w) / 2f
-    val top  = (canvasSize.height - h) / 2f
+    val left = (canvasSize.width - w) / 2f
+    val top = (canvasSize.height - h) / 2f
     return Rect(Offset(left, top), Size(w, h))
 }
 
@@ -606,10 +651,22 @@ private fun resizeCropRect(
     var b = rect.bottom
 
     when (target) {
-        DragTarget.TL -> { l += pan.x; t += pan.y }
-        DragTarget.TR -> { r += pan.x; t += pan.y }
-        DragTarget.BL -> { l += pan.x; b += pan.y }
-        DragTarget.BR -> { r += pan.x; b += pan.y }
+        DragTarget.TL -> {
+            l += pan.x; t += pan.y
+        }
+
+        DragTarget.TR -> {
+            r += pan.x; t += pan.y
+        }
+
+        DragTarget.BL -> {
+            l += pan.x; b += pan.y
+        }
+
+        DragTarget.BR -> {
+            r += pan.x; b += pan.y
+        }
+
         else -> {}
     }
 
@@ -633,39 +690,40 @@ private fun resizeCropRect(
 
     return Rect(Offset(l, t), Size(r - l, b - t))
 }
+
 private fun cropBitmap(source: Bitmap, state: ImageCropperState): Bitmap {
     val canvasSize = state.canvasSize
-    val cropRect   = state.cropRect
+    val cropRect = state.cropRect
 
     if (canvasSize == Size.Zero || cropRect == Rect.Zero) return source
 
-    val imgW     = source.width.toFloat()
-    val imgH     = source.height.toFloat()
+    val imgW = source.width.toFloat()
+    val imgH = source.height.toFloat()
     // Image is always statically fitted — no imageScale / imageOffset
     val fitScale = min(canvasSize.width / imgW, canvasSize.height / imgH)
-    val drawW    = imgW * fitScale
-    val drawH    = imgH * fitScale
-    val drawLeft = (canvasSize.width  - drawW) / 2f
-    val drawTop  = (canvasSize.height - drawH) / 2f
+    val drawW = imgW * fitScale
+    val drawH = imgH * fitScale
+    val drawLeft = (canvasSize.width - drawW) / 2f
+    val drawTop = (canvasSize.height - drawH) / 2f
 
     // Map canvas crop rect → source bitmap pixel coordinates
-    val srcLeft  = ((cropRect.left   - drawLeft) / fitScale).coerceIn(0f, imgW).roundToInt()
-    val srcTop   = ((cropRect.top    - drawTop)  / fitScale).coerceIn(0f, imgH).roundToInt()
-    val srcRight = ((cropRect.right  - drawLeft) / fitScale).coerceIn(0f, imgW).roundToInt()
-    val srcBot   = ((cropRect.bottom - drawTop)  / fitScale).coerceIn(0f, imgH).roundToInt()
+    val srcLeft = ((cropRect.left - drawLeft) / fitScale).coerceIn(0f, imgW).roundToInt()
+    val srcTop = ((cropRect.top - drawTop) / fitScale).coerceIn(0f, imgH).roundToInt()
+    val srcRight = ((cropRect.right - drawLeft) / fitScale).coerceIn(0f, imgW).roundToInt()
+    val srcBot = ((cropRect.bottom - drawTop) / fitScale).coerceIn(0f, imgH).roundToInt()
 
     val srcW = (srcRight - srcLeft).coerceAtLeast(1)
-    val srcH = (srcBot   - srcTop).coerceAtLeast(1)
+    val srcH = (srcBot - srcTop).coerceAtLeast(1)
 
     val cropped = Bitmap.createBitmap(source, srcLeft, srcTop, srcW, srcH)
     return if (state.cropShape == CropShape.CIRCLE) applyCircleMask(cropped) else cropped
 }
 
 private fun applyCircleMask(src: Bitmap): Bitmap {
-    val size   = min(src.width, src.height)
+    val size = min(src.width, src.height)
     val output = createBitmap(size, size)
     val canvas = android.graphics.Canvas(output)
-    val paint  = Paint(Paint.ANTI_ALIAS_FLAG)
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     canvas.drawCircle(size / 2f, size / 2f, size / 2f, paint)
     paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
     canvas.drawBitmap(src, ((size - src.width) / 2f), ((size - src.height) / 2f), paint)
