@@ -158,7 +158,7 @@ private fun ImageCropperContent(
 
     // Colors
     val overlayColor = Color(0x99000000)
-    val handleColor = Color(0xFF03B100)   // app green
+    val handleColor = Color(0xFF03B100)
     val borderColor = Color(0xFFFFFFFF)
     val gridLineColor = Color(0x55FFFFFF)
     val handleSize = 12.dp
@@ -398,7 +398,7 @@ private fun CropCanvas(
                     val canvasSize = state.canvasSize
                     val cropRect = state.cropRect
 
-                    // Initialise crop rect on very first gesture if draw() hasn't fired yet
+                    // Initialize crop rect on very first gesture if draw() hasn't fired yet
                     if (cropRect == Rect.Zero && canvasSize != Size.Zero) {
                         state.cropRect = defaultCropRect(canvasSize, state.aspectRatio)
                         return@detectTransformGestures
@@ -681,9 +681,9 @@ private fun resizeCropRect(
     if (ar != null) {
         val w = r - l
         val h = w / ar
-        when (target) {
-            DragTarget.TL, DragTarget.BL -> b = t + h
-            else -> b = t + h
+        b = when (target) {
+            DragTarget.TL, DragTarget.BL -> t + h
+            else -> t + h
         }
         b = b.coerceAtMost(canvasSize.height)
     }

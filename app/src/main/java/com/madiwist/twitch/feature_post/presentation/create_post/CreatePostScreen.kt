@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
@@ -58,16 +59,13 @@ fun CreatePostScreen(
     navController: NavController,
     viewModel: CreatePostViewModel = hiltViewModel()
 ) {
-    // ── Cropper state ────────────────────────────────────────────────────────
     val cropperState = rememberImageCropperState(
         initialAspectRatio = CropAspectRatio.Ratio16x9,
-        initialShape       = CropShape.RECTANGLE,
+        initialShape = CropShape.RECTANGLE,
     )
 
-    // Holds the cropped bitmap shown in the preview box
     var croppedBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
-    // Gallery launcher + embedded cropper dialog (handled internally)
     val openGallery = rememberImageCropperLauncher(
         state = cropperState,
         onCropComplete = { bitmap ->
@@ -76,7 +74,6 @@ fun CreatePostScreen(
         },
     )
 
-    // ── UI ───────────────────────────────────────────────────────────────────
     Column(modifier = Modifier.fillMaxSize()) {
         TwitchToolBar(
             navController = navController,
@@ -92,7 +89,6 @@ fun CreatePostScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(SpaceMedium)
         ) {
-            // ── Image preview / picker ──────────────────────────────────────
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -100,6 +96,9 @@ fun CreatePostScreen(
                     .border(
                         width = 2.dp,
                         color = MaterialTheme.colorScheme.onPrimary,
+                        shape = MaterialTheme.shapes.medium,
+                    )
+                    .clip(
                         shape = MaterialTheme.shapes.medium,
                     )
                     .clickable { openGallery() },
@@ -121,7 +120,6 @@ fun CreatePostScreen(
 
             Spacer(Modifier.height(SpaceMedium))
 
-            // ── Description field ───────────────────────────────────────────
             TwitchTextField(
                 text = viewModel.descriptionState.value.text,
                 onValueChange = { viewModel.onEvent(CreatePostEvent.EnterDescription(it)) },
@@ -137,7 +135,6 @@ fun CreatePostScreen(
 
             Spacer(Modifier.height(SpaceMedium))
 
-            // ── Post button ─────────────────────────────────────────────────
             Button(
                 onClick = { viewModel.onEvent(CreatePostEvent.PostImage) },
                 modifier = Modifier.align(Alignment.End),
