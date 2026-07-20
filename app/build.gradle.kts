@@ -46,6 +46,9 @@ android {
 }
 
 dependencies {
+    // App Comppact
+    implementation(libs.androidx.appcompat)
+
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
@@ -103,4 +106,7 @@ dependencies {
 
     // Pagging
     implementation(libs.androidx.paging.compose)
+
+    // Image Cropping
+    implementation(libs.ucrop)
 }

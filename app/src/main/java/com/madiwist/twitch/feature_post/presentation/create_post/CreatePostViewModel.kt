@@ -21,6 +21,8 @@ class CreatePostViewModel @Inject constructor(
     private val _chosenImageUri = mutableStateOf<Uri?>(null)
     val chosenImageUri: State<Uri?> = _chosenImageUri
 
+    val destUri = Uri.EMPTY
+
     fun onEvent(event: CreatePostEvent){
         when(event){
             is CreatePostEvent.EnterDescription -> {
@@ -29,6 +31,9 @@ class CreatePostViewModel @Inject constructor(
                 )
             }
             is CreatePostEvent.PickImage -> {
+                _chosenImageUri.value = event.uri
+            }
+            is CreatePostEvent.CropImage -> {
                 _chosenImageUri.value = event.uri
             }
             is CreatePostEvent.PostImage -> {

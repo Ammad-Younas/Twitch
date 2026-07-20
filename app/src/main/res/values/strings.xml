@@ -68,4 +68,5 @@
     <string name="successfully_registered">Successfully Registered!</string>
     <string name="invalid_credential">Invalid Credentials!</string>
     <string name="file_not_found">File not found</string>
+    <string name="post_imag">Post Image</string>
 </resources>
