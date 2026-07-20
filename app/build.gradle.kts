@@ -107,6 +107,4 @@ dependencies {
     // Pagging
     implementation(libs.androidx.paging.compose)
 
-    // Image Cropping
-    implementation(libs.ucrop)
 }

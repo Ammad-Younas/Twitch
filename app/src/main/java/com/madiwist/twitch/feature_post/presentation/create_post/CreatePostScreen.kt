@@ -1,8 +1,6 @@
 package com.madiwist.twitch.feature_post.presentation.create_post
 
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -31,57 +29,62 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil3.compose.rememberAsyncImagePainter
-import coil3.request.ImageRequest
 import com.madiwist.twitch.R
+import com.madiwist.twitch.core.presentation.components.CropAspectRatio
+import com.madiwist.twitch.core.presentation.components.CropShape
+import com.madiwist.twitch.core.presentation.components.rememberImageCropperLauncher
+import com.madiwist.twitch.core.presentation.components.rememberImageCropperState
 import com.madiwist.twitch.core.presentation.components.TwitchTextField
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.ui.theme.SocialIconSmall
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
-import com.madiwist.twitch.core.presentation.util.CropActivityResultContract
 import com.madiwist.twitch.feature_post.presentation.util.PostDescriptionError
-import java.io.File
 
 @Composable
 fun CreatePostScreen(
     navController: NavController,
     viewModel: CreatePostViewModel = hiltViewModel()
 ) {
-    val imageUri = viewModel.chosenImageUri.value
+    // ── Cropper state ────────────────────────────────────────────────────────
+    val cropperState = rememberImageCropperState(
+        initialAspectRatio = CropAspectRatio.Ratio16x9,
+        initialShape       = CropShape.RECTANGLE,
+    )
 
-    val cropActivityLauncher = rememberLauncherForActivityResult(
-        contract = CropActivityResultContract(
-            Uri.fromFile(File(LocalContext.current.cacheDir, "temp"))
-        )) {
-        viewModel.onEvent(CreatePostEvent.CropImage(it))
-    }
+    // Holds the cropped bitmap shown in the preview box
+    var croppedBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
-    val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()) {
-            it?.let { uri ->
-                cropActivityLauncher.launch(uri)
-            }
-        }
+    // Gallery launcher + embedded cropper dialog (handled internally)
+    val openGallery = rememberImageCropperLauncher(
+        state = cropperState,
+        onCropComplete = { bitmap ->
+            croppedBitmap = bitmap
+            viewModel.onEvent(CreatePostEvent.CropImage(bitmap))
+        },
+    )
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    // ── UI ───────────────────────────────────────────────────────────────────
+    Column(modifier = Modifier.fillMaxSize()) {
         TwitchToolBar(
             navController = navController,
             modifier = Modifier.fillMaxWidth(),
-            title = {
-                Text(stringResource(R.string.create_post))
-            },
+            title = { Text(stringResource(R.string.create_post)) },
             showBackArrow = true,
         )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -89,6 +92,7 @@ fun CreatePostScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(SpaceMedium)
         ) {
+            // ── Image preview / picker ──────────────────────────────────────
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -96,62 +100,59 @@ fun CreatePostScreen(
                     .border(
                         width = 2.dp,
                         color = MaterialTheme.colorScheme.onPrimary,
-                        shape = MaterialTheme.shapes.medium
+                        shape = MaterialTheme.shapes.medium,
                     )
-                    .clickable {
-                        galleryLauncher.launch("image/*")
-                    },
-                contentAlignment = Alignment.Center
+                    .clickable { openGallery() },
+                contentAlignment = Alignment.Center,
             ) {
-                Icon(
+                croppedBitmap?.let { bmp ->
+                    Image(
+                        bitmap = bmp.asImageBitmap(),
+                        contentDescription = stringResource(R.string.post_imag),
+                        modifier = Modifier.matchParentSize(),
+                        contentScale = ContentScale.Crop,
+                    )
+                } ?: Icon(
                     imageVector = Icons.Outlined.Add,
                     contentDescription = stringResource(R.string.choose_image),
-                    tint = MaterialTheme.colorScheme.onPrimary
+                    tint = MaterialTheme.colorScheme.onPrimary,
                 )
-                imageUri?.let {uri ->
-                    Image(
-                        painter = rememberAsyncImagePainter(
-                            ImageRequest.Builder(LocalContext.current)
-                                .data(uri)
-                                .build()
-                        ),
-                        contentDescription = stringResource(R.string.post_imag),
-                        modifier = Modifier
-                            .matchParentSize()
-                    )
-                }
             }
+
             Spacer(Modifier.height(SpaceMedium))
+
+            // ── Description field ───────────────────────────────────────────
             TwitchTextField(
                 text = viewModel.descriptionState.value.text,
-                onValueChange = {
-                    viewModel.onEvent(CreatePostEvent.EnterDescription(it))
-                },
+                onValueChange = { viewModel.onEvent(CreatePostEvent.EnterDescription(it)) },
                 hint = stringResource(R.string.description),
-                error = when(viewModel.descriptionState.value.error){
+                error = when (viewModel.descriptionState.value.error) {
                     is PostDescriptionError.FieldEmpty -> stringResource(R.string.field_cant_be_empty)
                     else -> ""
                 },
                 minLines = 3,
                 maxLines = 3,
-                singleLine = false
+                singleLine = false,
             )
+
             Spacer(Modifier.height(SpaceMedium))
+
+            // ── Post button ─────────────────────────────────────────────────
             Button(
-                onClick = {viewModel.onEvent(CreatePostEvent.PostImage)},
+                onClick = { viewModel.onEvent(CreatePostEvent.PostImage) },
                 modifier = Modifier.align(Alignment.End),
             ) {
                 Text(
-                    stringResource(R.string.post),
+                    text = stringResource(R.string.post),
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(Modifier.width(8.dp))
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.Send,
                     contentDescription = stringResource(R.string.send),
                     tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(SocialIconSmall)
+                    modifier = Modifier.size(SocialIconSmall),
                 )
             }
         }

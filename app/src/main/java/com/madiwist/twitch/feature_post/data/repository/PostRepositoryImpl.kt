@@ -20,6 +20,7 @@ import com.madiwist.twitch.feature_post.domain.repository.PostRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
@@ -43,27 +44,37 @@ class PostRepositoryImpl (
         imageUri: Uri
     ): SimpleResource {
         val request = CreatePostRequest(description = description)
-        val file = withContext(Dispatchers.IO){
-            appContext.contentResolver.openFileDescriptor(imageUri, "r")?.let {fileDescriptor ->
-                val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
-                val file = File(
-                    appContext.cacheDir,
-                    appContext.contentResolver.getFileName(imageUri)
-                )
-                val outputStream = FileOutputStream(file)
-                inputStream.copyTo(outputStream)
-                file
+
+        val file: File = withContext(Dispatchers.IO) {
+            when (imageUri.scheme) {
+                "file" -> File(imageUri.path ?: return@withContext null)
+                else -> {
+                    appContext.contentResolver.openFileDescriptor(imageUri, "r")
+                        ?.let { fileDescriptor ->
+                            val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
+                            val rawName = appContext.contentResolver.getFileName(imageUri)
+                            val safeName = if (rawName.contains('.')) rawName else "$rawName.jpg"
+                            val dest = File(appContext.cacheDir, safeName)
+                            FileOutputStream(dest).use { out -> inputStream.copyTo(out) }
+                            dest
+                        }
+                }
             }
         } ?: return Resource.Error(
             uiText = UiText.StringResource(R.string.file_not_found)
         )
         return try {
+            val mimeType = when (file.extension.lowercase()) {
+                "png"  -> "image/png"
+                "webp" -> "image/webp"
+                else   -> "image/jpeg"
+            }
             val response = api.createPost(
                 postData = MultipartBody.Part.createFormData("post_data", gson.toJson(request)),
                 postImage = MultipartBody.Part.createFormData(
                     name = "post_image",
                     filename = file.name,
-                    body = file.asRequestBody()
+                    body = file.asRequestBody(mimeType.toMediaTypeOrNull()!!)
                 )
             )
             if (response.success) {
