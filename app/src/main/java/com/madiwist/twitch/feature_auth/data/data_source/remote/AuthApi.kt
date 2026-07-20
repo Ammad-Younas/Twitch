@@ -19,6 +19,6 @@ interface AuthApi {
     suspend fun login(@Body request: LoginRequest) : BasicApiResponse<AuthResponse>
 
     companion object {
-        const val BASE_URL = "http://10.0.2.2:8001/"
+        const val BASE_URL = "http://10.39.22.212:8001/"
     }
 }

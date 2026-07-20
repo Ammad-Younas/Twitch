@@ -17,22 +17,17 @@ import com.madiwist.twitch.feature_post.presentation.post_detail.PostDetailsScre
 import com.madiwist.twitch.feature_profile.presentation.edit_profile.EditProfileScreen
 import com.madiwist.twitch.feature_profile.presentation.profile.ProfileScreen
 import com.madiwist.twitch.feature_search.presentation.SearchScreen
-import com.madiwist.twitch.feature_splash.SplashScreen
 
 @Composable
 fun Navigation(
     navController: NavHostController,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
+    startDestination: String
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.SplashScreen.route
+        startDestination = startDestination
     ) {
-        composable(Screen.SplashScreen.route) {
-            SplashScreen(
-                navController = navController
-            )
-        }
         composable(Screen.LoginScreen.route) {
             LoginScreen(
                 navController = navController,
@@ -83,6 +78,5 @@ fun Navigation(
         composable(Screen.PersonListScreen.route) {
             PersonListScreen(navController = navController)
         }
-
     }
 }

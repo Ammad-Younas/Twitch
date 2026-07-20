@@ -11,6 +11,7 @@ import com.madiwist.twitch.feature_auth.data.data_source.remote.request.CreateAc
 import com.madiwist.twitch.feature_auth.data.data_source.remote.request.LoginRequest
 import com.madiwist.twitch.feature_auth.data.data_source.remote.AuthApi
 import com.madiwist.twitch.feature_auth.domain.repository.AuthRepository
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withTimeout
 import okio.IOException
 import retrofit2.HttpException
@@ -82,6 +83,10 @@ class AuthRepositoryImpl(
                 api.authenticate()
             }
             Resource.Success(Unit)
+        } catch (e: TimeoutCancellationException) {
+            Resource.Error(
+                uiText = UiText.StringResource(R.string.error_couldnt_reach_server),
+            )
         } catch (e: IOException) {
             Resource.Error(
                 uiText = UiText.StringResource(R.string.error_couldnt_reach_server),

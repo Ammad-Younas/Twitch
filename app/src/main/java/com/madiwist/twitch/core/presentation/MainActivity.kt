@@ -6,11 +6,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -20,43 +22,64 @@ import com.madiwist.twitch.core.presentation.ui.theme.TwitchTheme
 import com.madiwist.twitch.core.presentation.components.TwitchScaffold
 import com.madiwist.twitch.core.presentation.navigation.Navigation
 import com.madiwist.twitch.core.presentation.navigation.Screen
+import com.madiwist.twitch.feature_splash.SplashViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val splashViewModel: SplashViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+
+        splashViewModel.authenticate()
+
+        splashScreen.setKeepOnScreenCondition {
+            !splashViewModel.isAuthComplete.value
+        }
+
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT)
         )
+
         setContent {
-            TwitchTheme {
-                val navController = rememberNavController()
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentRoute = navBackStackEntry?.destination?.route
-                val snackbarHostState = remember { SnackbarHostState() }
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    TwitchScaffold(
-                        navController = navController,
-                        showBottomBarAndFab = currentRoute in listOf(
-                            Screen.MainFeedScreen.route,
-                            Screen.ChatScreen.route,
-                            Screen.ActivityScreen.route,
-                            Screen.ProfileScreen.route
-                        ),
+            val startDestination by splashViewModel.authDestination.collectAsState()
+
+            if (startDestination != null) {
+                TwitchTheme {
+                    val navController = rememberNavController()
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
+                    val currentRoute = navBackStackEntry?.destination?.route
+                    val snackbarHostState = remember { SnackbarHostState() }
+
+                    Surface(
                         modifier = Modifier.fillMaxSize(),
-                        onFabClick = {
-                            navController.navigate(Screen.CreatePostScreen.route)
-                        },
-                        currentRoute = currentRoute,
-                        snackbarHostState = snackbarHostState
+                        color = MaterialTheme.colorScheme.background
                     ) {
-                        Navigation(navController = navController, snackbarHostState = snackbarHostState)
+                        TwitchScaffold(
+                            navController = navController,
+                            showBottomBarAndFab = currentRoute in listOf(
+                                Screen.MainFeedScreen.route,
+                                Screen.ChatScreen.route,
+                                Screen.ActivityScreen.route,
+                                Screen.ProfileScreen.route
+                            ),
+                            modifier = Modifier.fillMaxSize(),
+                            onFabClick = {
+                                navController.navigate(Screen.CreatePostScreen.route)
+                            },
+                            currentRoute = currentRoute,
+                            snackbarHostState = snackbarHostState
+                        ) {
+                            Navigation(
+                                navController = navController,
+                                snackbarHostState = snackbarHostState,
+                                startDestination = startDestination!!
+                            )
+                        }
                     }
                 }
             }
