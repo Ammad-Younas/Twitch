@@ -154,16 +154,16 @@ fun ProfileScreen(
                     }
                     items(20){
                         Column(modifier = Modifier.fillMaxSize().padding(SpaceMedium)) {
-                            Post(
-                                post = Post(
-                                    username = "MADI",
-                                    imageUrl = "",
-                                    description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers",
-                                    likeCount = 23,
-                                    commentCount = 15
-                                ),
-                                onPostClick = {  }
-                            )
+//                            Post(
+//                                post = Post(
+//                                    username = "MADI",
+//                                    imageUrl = "",
+//                                    description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers",
+//                                    likeCount = 23,
+//                                    commentCount = 15
+//                                ),
+//                                onPostClick = {  }
+//                            )
                         }
                     }
                 }

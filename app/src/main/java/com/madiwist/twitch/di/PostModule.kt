@@ -29,13 +29,11 @@ object PostModule {
             .create(PostApi::class.java)
     }
 
-
     @Provides
     @Singleton
     fun providePostRepository(api: PostApi) : PostRepository {
         return PostRepositoryImpl(api)
     }
-
 
     @Provides
     @Singleton

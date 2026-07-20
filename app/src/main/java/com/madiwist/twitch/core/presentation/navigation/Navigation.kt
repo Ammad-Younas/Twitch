@@ -66,6 +66,7 @@ fun Navigation(
         composable(Screen.PostDetailsScreen.route) {
             val post = Post(
                 username = "MADI",
+                timestamp = System.currentTimeMillis(),
                 imageUrl = "",
                 description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry",
                 likeCount = 23,

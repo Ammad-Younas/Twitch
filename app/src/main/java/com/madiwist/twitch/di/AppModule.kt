@@ -28,7 +28,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(token: String) : OkHttpClient{
+    fun provideOkHttpClient(token: String) : OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor {
                 val modifiedRequest = it.request().newBuilder()

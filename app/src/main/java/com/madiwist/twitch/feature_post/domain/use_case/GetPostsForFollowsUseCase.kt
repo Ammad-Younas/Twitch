@@ -1,16 +1,14 @@
 package com.madiwist.twitch.feature_post.domain.use_case
 
+import androidx.paging.PagingData
 import com.madiwist.twitch.core.domain.models.Post
-import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.feature_post.domain.repository.PostRepository
+import kotlinx.coroutines.flow.Flow
 
 class GetPostsForFollowsUseCase(
     private val repository: PostRepository
 ) {
-    suspend operator fun invoke(
-        page: Int,
-        pageSize: Int
-    ) : Resource<List<Post>> {
-        return repository.getPostsForFollows(page = page, pageSize = pageSize)
+    operator fun invoke() : Flow<PagingData<Post>> {
+        return repository.posts
     }
 }

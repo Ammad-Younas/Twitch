@@ -1,9 +1,9 @@
 package com.madiwist.twitch.feature_post.domain.repository
 
+import androidx.paging.PagingData
 import com.madiwist.twitch.core.domain.models.Post
-import com.madiwist.twitch.core.util.Constants
-import com.madiwist.twitch.core.util.Resource
+import kotlinx.coroutines.flow.Flow
 
 interface PostRepository {
-    suspend fun getPostsForFollows(page: Int = 0, pageSize: Int = Constants.PAGE_SIZE_POSTS) : Resource<List<Post>>
+    val posts : Flow<PagingData<Post>>
 }

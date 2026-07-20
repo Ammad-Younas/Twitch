@@ -1,6 +1,5 @@
 package com.madiwist.twitch.feature_post.domain.util
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +35,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import coil3.compose.AsyncImage
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
@@ -50,6 +50,7 @@ fun Post(
     Column (
         modifier = Modifier
             .fillMaxWidth()
+            .padding(vertical = SpaceMedium)
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surface)
             .clickable {
@@ -57,11 +58,13 @@ fun Post(
             },
 
     ) {
-       Image(
-           painter = painterResource(R.drawable.feed_image),
+       AsyncImage(
+           model = post.imageUrl?.replace("127.0.0.1", "10.0.2.2"),
            contentDescription = "Post Image",
            modifier = Modifier.fillMaxWidth(),
-           contentScale = ContentScale.FillWidth
+           contentScale = ContentScale.FillWidth,
+           placeholder = painterResource(R.drawable.feed_image),
+           error = painterResource(R.drawable.feed_image)
        )
        Column(
            modifier = Modifier
@@ -70,7 +73,7 @@ fun Post(
        ) {
            ActionRow(
                modifier = Modifier.fillMaxWidth(),
-               username = "MADI",
+               username = post.username ?: "Unknown",
                onLikeClick = { isLiked ->
 
                },
@@ -89,9 +92,10 @@ fun Post(
            val maxLines = Constants.MAX_POST_DESCRIPTION_LINES
            val readMore = stringResource(R.string.read_more)
            val primaryColor = MaterialTheme.colorScheme.primary
-           var finalDisplayText by remember(post.description) { mutableStateOf(buildAnnotatedString { append(post.description) })
+           val description = post.description ?: ""
+           var finalDisplayText by remember(description) { mutableStateOf(buildAnnotatedString { append(description) })
            }
-           var hasOverflowed by remember(post.description) { mutableStateOf(false) }
+           var hasOverflowed by remember(description) { mutableStateOf(false) }
            Text(
                text = finalDisplayText,
                color = MaterialTheme.colorScheme.onBackground,
@@ -108,7 +112,7 @@ fun Post(
                                ).coerceAtLeast(0)
 
                        finalDisplayText = buildAnnotatedString {
-                           append(post.description.take(endIndex).trimEnd())
+                           append(description.take(endIndex).trimEnd())
                            append("... ")
 
                            withStyle(
@@ -130,13 +134,13 @@ fun Post(
                horizontalArrangement = Arrangement.SpaceBetween
            ) {
                Text(
-                   text = stringResource(R.string.post_liked_by_x_people, post.likeCount),
+                   text = stringResource(R.string.post_liked_by_x_people, post.likeCount ?: 0),
                    color = MaterialTheme.colorScheme.onPrimary,
                    style = MaterialTheme.typography.bodyMedium,
                    fontWeight = FontWeight.Bold
                )
                Text(
-                   text = stringResource(R.string.x_comments, post.commentCount),
+                   text = stringResource(R.string.x_comments, post.commentCount ?: 0),
                    color = MaterialTheme.colorScheme.onPrimary,
                    style = MaterialTheme.typography.bodyMedium,
                    fontWeight = FontWeight.Bold

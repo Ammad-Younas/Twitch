@@ -103,14 +103,14 @@ fun PostDetailsScreen(
                             )
                             Spacer(modifier = Modifier.height(SpaceMedium))
                             Text(
-                                text = post.description,
+                                text = post.description ?: "",
                                 color = MaterialTheme.colorScheme.onBackground,
                                 style = MaterialTheme.typography.bodyLarge,
                             )
                             Spacer(modifier = Modifier.height(ExtraSpaceLarge))
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
-                                text = stringResource(R.string.post_liked_by_x_people, post.likeCount),
+                                text = stringResource(R.string.post_liked_by_x_people, post.likeCount ?: 0),
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
