@@ -67,4 +67,5 @@
     <string name="error_something_went_wrong">Oops! something went wrong, please try again.</string>
     <string name="successfully_registered">Successfully Registered!</string>
     <string name="invalid_credential">Invalid Credentials!</string>
+    <string name="file_not_found">File not found</string>
 </resources>

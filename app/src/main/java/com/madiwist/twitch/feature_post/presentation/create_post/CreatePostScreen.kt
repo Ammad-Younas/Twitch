@@ -1,5 +1,7 @@
 package com.madiwist.twitch.feature_post.presentation.create_post
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -39,7 +41,6 @@ import com.madiwist.twitch.core.presentation.components.TwitchTextField
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.ui.theme.SocialIconSmall
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
-import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
 import com.madiwist.twitch.feature_post.presentation.util.PostDescriptionError
 
 @Composable
@@ -47,6 +48,12 @@ fun CreatePostScreen(
     navController: NavController,
     viewModel: CreatePostViewModel = hiltViewModel()
 ) {
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            viewModel.onEvent(CreatePostEvent.PickImage(uri))
+        }
+    )
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -75,7 +82,7 @@ fun CreatePostScreen(
                         shape = MaterialTheme.shapes.medium
                     )
                     .clickable {
-
+                        galleryLauncher.launch("image/*")
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -89,7 +96,7 @@ fun CreatePostScreen(
             TwitchTextField(
                 text = viewModel.descriptionState.value.text,
                 onValueChange = {
-                    viewModel.setDescriptionState(TwitchTextFieldState(text = it))
+                    viewModel.onEvent(CreatePostEvent.EnterDescription(it))
                 },
                 hint = stringResource(R.string.description),
                 error = when(viewModel.descriptionState.value.error){
@@ -102,7 +109,7 @@ fun CreatePostScreen(
             )
             Spacer(Modifier.height(SpaceMedium))
             Button(
-                onClick = {},
+                onClick = {viewModel.onEvent(CreatePostEvent.PostImage)},
                 modifier = Modifier.align(Alignment.End),
             ) {
                 Text(

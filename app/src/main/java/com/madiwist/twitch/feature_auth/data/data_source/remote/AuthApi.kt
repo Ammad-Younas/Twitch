@@ -1,10 +1,9 @@
 package com.madiwist.twitch.feature_auth.data.data_source.remote
 
-import com.madiwist.twitch.feature_auth.data.dto.request.CreateAccountRequest
+import com.madiwist.twitch.feature_auth.data.data_source.remote.request.CreateAccountRequest
 import com.madiwist.twitch.core.data.dto.response.BasicApiResponse
-import com.madiwist.twitch.feature_auth.data.dto.request.LoginRequest
-import com.madiwist.twitch.feature_auth.data.dto.response.AuthResponse
-import retrofit2.Response
+import com.madiwist.twitch.feature_auth.data.data_source.remote.request.LoginRequest
+import com.madiwist.twitch.feature_auth.data.data_source.remote.response.AuthResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST

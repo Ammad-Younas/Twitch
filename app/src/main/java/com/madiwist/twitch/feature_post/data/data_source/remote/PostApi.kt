@@ -1,7 +1,15 @@
 package com.madiwist.twitch.feature_post.data.data_source.remote
 
+import com.madiwist.twitch.core.data.dto.response.BasicApiResponse
 import com.madiwist.twitch.core.domain.models.Post
+import com.madiwist.twitch.feature_post.data.data_source.remote.request.CreatePostRequest
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Multipart
+import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Query
 
 interface PostApi {
@@ -11,6 +19,13 @@ interface PostApi {
         @Query("page") page: Int,
         @Query("pageSize") pageSize: Int
     ) : List<Post>
+
+    @Multipart
+    @POST("/api/post/create")
+    suspend fun createPost(
+        @Part postData : MultipartBody.Part,
+        @Part postImage: MultipartBody.Part
+    ) : BasicApiResponse<Unit>
 
     companion object {
         const val BASE_URL = "http://10.0.2.2:8001/"
