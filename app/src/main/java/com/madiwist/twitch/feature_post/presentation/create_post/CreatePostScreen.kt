@@ -25,10 +25,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -46,26 +51,29 @@ import androidx.navigation.NavController
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.components.CropAspectRatio
 import com.madiwist.twitch.core.presentation.components.CropShape
-import com.madiwist.twitch.core.presentation.components.rememberImageCropperLauncher
-import com.madiwist.twitch.core.presentation.components.rememberImageCropperState
 import com.madiwist.twitch.core.presentation.components.TwitchTextField
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
+import com.madiwist.twitch.core.presentation.components.rememberImageCropperLauncher
+import com.madiwist.twitch.core.presentation.components.rememberImageCropperState
 import com.madiwist.twitch.core.presentation.ui.theme.SocialIconSmall
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
+import com.madiwist.twitch.core.presentation.util.UiEvent
+import com.madiwist.twitch.core.presentation.util.asString
+import com.madiwist.twitch.feature_post.presentation.util.PostConstants
 import com.madiwist.twitch.feature_post.presentation.util.PostDescriptionError
+import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun CreatePostScreen(
     navController: NavController,
-    viewModel: CreatePostViewModel = hiltViewModel()
+    viewModel: CreatePostViewModel = hiltViewModel(),
+    snackbarHostState: SnackbarHostState,
 ) {
     val cropperState = rememberImageCropperState(
         initialAspectRatio = CropAspectRatio.Ratio16x9,
         initialShape = CropShape.RECTANGLE,
     )
-
     var croppedBitmap by remember { mutableStateOf<Bitmap?>(null) }
-
     val openGallery = rememberImageCropperLauncher(
         state = cropperState,
         onCropComplete = { bitmap ->
@@ -73,6 +81,27 @@ fun CreatePostScreen(
             viewModel.onEvent(CreatePostEvent.CropImage(bitmap))
         },
     )
+    val createPostState = viewModel.createPostState.value
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.eventFlow.collect { event ->
+            when (event) {
+                is UiEvent.SnackbarEvent -> {
+                    snackbarHostState.showSnackbar(
+                        message = event.uiText.asString(context),
+                        duration = SnackbarDuration.Short
+                    )
+                }
+                is UiEvent.NavigateUp -> {
+                    navController.navigateUp()
+                }
+                is UiEvent.Navigate -> {
+                    navController.navigate(event.route)
+                }
+            }
+        }
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TwitchToolBar(
@@ -131,6 +160,7 @@ fun CreatePostScreen(
                 minLines = 3,
                 maxLines = 3,
                 singleLine = false,
+                maxLength = PostConstants.MAX_POST_DESCRIPTION_LENGTH
             )
 
             Spacer(Modifier.height(SpaceMedium))
@@ -138,19 +168,28 @@ fun CreatePostScreen(
             Button(
                 onClick = { viewModel.onEvent(CreatePostEvent.PostImage) },
                 modifier = Modifier.align(Alignment.End),
+                enabled = !createPostState.isLoading,
             ) {
-                Text(
-                    text = stringResource(R.string.post),
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                )
-                Spacer(Modifier.width(8.dp))
-                Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.Send,
-                    contentDescription = stringResource(R.string.send),
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(SocialIconSmall),
-                )
+                if (createPostState.isLoading) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text(
+                        text = stringResource(R.string.post),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.Send,
+                        contentDescription = stringResource(R.string.send),
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(SocialIconSmall),
+                    )
+                }
             }
         }
     }

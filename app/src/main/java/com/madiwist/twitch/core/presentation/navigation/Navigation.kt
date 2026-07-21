@@ -56,7 +56,10 @@ fun Navigation(
             ProfileScreen(navController = navController)
         }
         composable(Screen.CreatePostScreen.route) {
-            CreatePostScreen(navController = navController)
+            CreatePostScreen(
+                navController = navController,
+                snackbarHostState = snackbarHostState,
+            )
         }
         composable(Screen.PostDetailsScreen.route) {
             val post = Post(

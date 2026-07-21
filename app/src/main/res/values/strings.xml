@@ -69,4 +69,7 @@
     <string name="invalid_credential">Invalid Credentials!</string>
     <string name="file_not_found">File not found</string>
     <string name="post_imag">Post Image</string>
+    <string name="post_published">Post Published!</string>
+    <string name="error_description_blank">Description can\'t be blank</string>
+    <string name="error_no_image_provided">Please choose a photo</string>
 </resources>
