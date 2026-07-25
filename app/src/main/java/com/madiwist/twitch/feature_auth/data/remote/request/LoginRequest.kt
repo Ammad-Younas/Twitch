@@ -1,4 +1,4 @@
-package com.madiwist.twitch.feature_auth.data.data_source.remote.request
+package com.madiwist.twitch.feature_auth.data.remote.request
 
 data class LoginRequest(
     val email: String,

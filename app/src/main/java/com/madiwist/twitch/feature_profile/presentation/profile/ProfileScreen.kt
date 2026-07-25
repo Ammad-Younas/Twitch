@@ -20,8 +20,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -34,31 +37,39 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil3.compose.rememberAsyncImagePainter
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.core.domain.models.User
-import com.madiwist.twitch.feature_post.domain.util.Post
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
-import com.madiwist.twitch.feature_profile.presentation.profile.components.BannerSection
-import com.madiwist.twitch.feature_profile.presentation.profile.components.ProfileHeaderSection
+import com.madiwist.twitch.core.presentation.navigation.Screen
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
-import com.madiwist.twitch.core.util.toPx
+import com.madiwist.twitch.core.presentation.util.UiEvent
+import com.madiwist.twitch.core.presentation.util.asString
 import com.madiwist.twitch.core.util.Constants
+import com.madiwist.twitch.core.util.toPx
+import com.madiwist.twitch.feature_post.domain.util.Post
+import com.madiwist.twitch.feature_profile.presentation.profile.components.BannerSection
+import com.madiwist.twitch.feature_profile.presentation.profile.components.ProfileHeaderSection
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ProfileScreen(
     navController: NavController,
+    snackbarHostState: SnackbarHostState,
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val toolBarHeightCollapsed = 100.dp
@@ -81,7 +92,6 @@ fun ProfileScreen(
         containerWidth / 4f - (Constants.PROFILE_PICTURE_SIZE_LARGE / 2f).toPx() - SpaceSmall.toPx()
     }
 
-
     val nestedScrollConnection = remember(maxOffset) {
         object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
@@ -100,6 +110,25 @@ fun ProfileScreen(
             }
         }
     }
+
+    val profileState = viewModel.profileState.value
+    val context = LocalContext.current
+
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when(event) {
+                is UiEvent.SnackbarEvent -> {
+                    snackbarHostState.showSnackbar(
+                        message = event.uiText.asString(context),
+                        duration = SnackbarDuration.Short
+                    )
+                }
+                else -> Unit
+            }
+        }
+    }
+
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -129,16 +158,21 @@ fun ProfileScreen(
                         Spacer(Modifier.height((toolBarHeightExpanded) - Constants.PROFILE_PICTURE_SIZE_LARGE / 2f))
                     }
                     item {
-                        ProfileHeaderSection(
-                            user = User(
-                                username = "MADI",
-                                description = "BoxWithConstraints scope is not used, BoxWithConstraints scope is not usedBoxWithConstraints scope is not used, BoxWithConstraints scope is not used",
-                                profilePictureUrl = "",
-                                postCount = 35,
-                                followerCount = 353,
-                                followingCountL = 435
+                        profileState.profile?.let { profile ->
+                            ProfileHeaderSection(
+                                user = User(
+                                    userId = profile.userId,
+                                    username = profile.username,
+                                    description = profile.bio,
+                                    profilePictureUrl = profile.profilePictureUrl,
+                                    postCount = profile.postCount,
+                                    followerCount = profile.followerCount,
+                                    followingCountL = profile.followingCount
+                                ),
+                                isOwnProfile = profile.isOwnProfile,
+                                onEditClick = { navController.navigate(Screen.EditProfileScreen.route) }
                             )
-                        )
+                        }
                     }
                     item {
                         Spacer(Modifier.height(SpaceLarge))
@@ -153,66 +187,80 @@ fun ProfileScreen(
                         Spacer(Modifier.height(SpaceLarge))
                     }
                     items(20){
+
                         Column(modifier = Modifier.fillMaxSize().padding(SpaceMedium)) {
-//                            Post(
-//                                post = Post(
-//                                    username = "MADI",
-//                                    imageUrl = "",
-//                                    description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers",
-//                                    likeCount = 23,
-//                                    commentCount = 15
-//                                ),
-//                                onPostClick = {  }
-//                            )
+                            Post(
+                                post = Post(
+                                    username = "MADI",
+                                    imageUrl = "",
+                                    description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers",
+                                    likeCount = 23,
+                                    commentCount = 15,
+                                    timestamp = System.currentTimeMillis()
+                                ),
+                                onPostClick = {  }
+                            )
                         }
                     }
                 }
                 Column(
                     modifier = Modifier.align(Alignment.TopCenter),
                 ) {
-                    BannerSection(
-                        modifier = Modifier
-                            .height(
-                                (bannerHeight * expandedRatio).coerceIn(
-                                    minimumValue = toolBarHeightCollapsed,
-                                    maximumValue = bannerHeight
-                                )
+                    profileState.profile?.let { profile ->
+                        BannerSection(
+                            modifier = Modifier
+                                .height(
+                                    (bannerHeight * expandedRatio).coerceIn(
+                                        minimumValue = toolBarHeightCollapsed,
+                                        maximumValue = bannerHeight
+                                    )
+                                ),
+                            leftIconModifier = Modifier.graphicsLayer {
+                                translationY = (1f - expandedRatio) * (-iconCollapsedOffsetY.toPx())
+                                translationX = (1 - expandedRatio) * iconHorizontalCenterLength
+
+                            },
+                            rightIconModifier = Modifier.graphicsLayer {
+                                translationY = (1f - expandedRatio) * (-iconCollapsedOffsetY.toPx())
+                                translationX = (1 - expandedRatio) * (-iconHorizontalCenterLength)
+
+                            },
+                            topSkillUrls = profile.topSkillUrls,
+                            shouldShowGithub = profile.githubUrl != null,
+                            shouldShowInstagram = profile.instagramUrl != null,
+                            shouldShowLinkedIn = profile.linkedinUrl != null,
+                            bannerUrl = profile.bannerUrl
+                        )
+                        Image(
+                            painter = rememberAsyncImagePainter(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(profile.profilePictureUrl)
+                                    .crossfade(true)
+                                    .build()
                             ),
-                        leftIconModifier = Modifier.graphicsLayer {
-                            translationY = (1f - expandedRatio) * (-iconCollapsedOffsetY.toPx())
-                            translationX = (1 - expandedRatio) * iconHorizontalCenterLength
-
-                        },
-                        rightIconModifier = Modifier.graphicsLayer {
-                            translationY = (1f - expandedRatio) * (-iconCollapsedOffsetY.toPx())
-                            translationX = (1 - expandedRatio) * (-iconHorizontalCenterLength)
-
-                        }
-                    )
-                    Image(
-                        painter = painterResource(R.drawable.profile_image),
-                        contentDescription = stringResource(R.string.profile_image),
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .graphicsLayer {
-                                translationY = -(Constants.PROFILE_PICTURE_SIZE_LARGE.toPx() / 2f) - (1f - expandedRatio) * imageCollapsedOffsetY.toPx()
-                                transformOrigin = TransformOrigin(
-                                    pivotFractionX = 0.5f,
-                                    pivotFractionY = 0f
-                                )
-                                val scale = 0.5f + expandedRatio * 0.5f
-                                scaleX = scale
-                                scaleY = scale
-                            }
-                            .size(Constants.PROFILE_PICTURE_SIZE_LARGE)
-                            .aspectRatio(1f)
-                            .clip(CircleShape)
-                            .border(
-                                width = 2.dp,
-                                color = Color.White,
-                                shape = CircleShape
-                        ),
-                    )
+                            contentDescription = stringResource(R.string.profile_image),
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .graphicsLayer {
+                                    translationY = -(Constants.PROFILE_PICTURE_SIZE_LARGE.toPx() / 2f) - (1f - expandedRatio) * imageCollapsedOffsetY.toPx()
+                                    transformOrigin = TransformOrigin(
+                                        pivotFractionX = 0.5f,
+                                        pivotFractionY = 0f
+                                    )
+                                    val scale = 0.5f + expandedRatio * 0.5f
+                                    scaleX = scale
+                                    scaleY = scale
+                                }
+                                .size(Constants.PROFILE_PICTURE_SIZE_LARGE)
+                                .aspectRatio(1f)
+                                .clip(CircleShape)
+                                .border(
+                                    width = 2.dp,
+                                    color = Color.White,
+                                    shape = CircleShape
+                                ),
+                        )
+                    }
                 }
             }
         }

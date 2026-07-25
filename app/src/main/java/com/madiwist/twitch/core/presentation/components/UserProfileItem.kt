@@ -21,11 +21,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.madiwist.twitch.R
+import coil3.compose.rememberAsyncImagePainter
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.madiwist.twitch.core.domain.models.User
 import com.madiwist.twitch.core.presentation.ui.theme.Shapes
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
@@ -60,7 +62,12 @@ fun UserProfileItem(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Image(
-                painter = painterResource(R.drawable.profile_image),
+                painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(user.profilePictureUrl)
+                        .crossfade(true)
+                        .build()
+                ),
                 contentDescription = null,
                 modifier = Modifier.clip(Shapes.extraLarge).size(Constants.PROFILE_PICTURE_SIZE_LARGE - 75.dp)
             )

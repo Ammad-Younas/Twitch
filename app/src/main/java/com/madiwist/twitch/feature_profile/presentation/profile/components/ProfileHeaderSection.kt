@@ -79,14 +79,7 @@ fun ProfileHeaderSection(
         )
         Spacer(Modifier.height(SpaceLarge))
         ProfileStats(
-            user = User(
-                username = "MADI",
-                description = "BoxWithConstraints scope is not used, BoxWithConstraints scope is not usedBoxWithConstraints scope is not used, BoxWithConstraints scope is not used",
-                profilePictureUrl = "",
-                postCount = 35,
-                followerCount = 353,
-                followingCountL = 435
-            ),
+            user = user,
             onFollowCLick = {},
             isOwnProfile = isOwnProfile
         )

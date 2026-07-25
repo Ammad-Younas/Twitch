@@ -3,8 +3,10 @@ package com.madiwist.twitch.core.presentation.navigation
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.feature_activity.presentation.activity.ActivityScreen
 import com.madiwist.twitch.feature_auth.presentation.login.LoginScreen
@@ -52,8 +54,20 @@ fun Navigation(
         composable(Screen.ActivityScreen.route) {
             ActivityScreen(navController = navController)
         }
-        composable(Screen.ProfileScreen.route) {
-            ProfileScreen(navController = navController)
+        composable(
+            route = Screen.ProfileScreen.route + "?userId={userId}",
+            arguments = listOf(
+                navArgument(name = "userId"){
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) {
+            ProfileScreen(
+                navController = navController,
+                snackbarHostState = snackbarHostState,
+            )
         }
         composable(Screen.CreatePostScreen.route) {
             CreatePostScreen(

@@ -56,7 +56,7 @@ fun ProfileStats(
             )
         }
         Spacer(Modifier.height(SpaceLarge))
-        if (isOwnProfile){
+        if (!isOwnProfile){
             Button(
                 onClick = onFollowCLick,
                 modifier = Modifier

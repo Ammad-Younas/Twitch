@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
                                 Screen.MainFeedScreen.route,
                                 Screen.ChatScreen.route,
                                 Screen.ActivityScreen.route,
-                                Screen.ProfileScreen.route
+                                Screen.ProfileScreen.route + "?userId={userId}"
                             ),
                             modifier = Modifier.fillMaxSize(),
                             onFabClick = {

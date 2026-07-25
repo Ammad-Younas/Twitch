@@ -7,9 +7,9 @@ import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.SimpleResource
 import com.madiwist.twitch.core.util.UiText
-import com.madiwist.twitch.feature_auth.data.data_source.remote.request.CreateAccountRequest
-import com.madiwist.twitch.feature_auth.data.data_source.remote.request.LoginRequest
-import com.madiwist.twitch.feature_auth.data.data_source.remote.AuthApi
+import com.madiwist.twitch.feature_auth.data.remote.request.CreateAccountRequest
+import com.madiwist.twitch.feature_auth.data.remote.request.LoginRequest
+import com.madiwist.twitch.feature_auth.data.remote.AuthApi
 import com.madiwist.twitch.feature_auth.domain.repository.AuthRepository
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withTimeout

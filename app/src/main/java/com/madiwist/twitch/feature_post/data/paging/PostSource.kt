@@ -1,10 +1,10 @@
-package com.madiwist.twitch.feature_post.data.data_source.paging
+package com.madiwist.twitch.feature_post.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.core.util.Constants
-import com.madiwist.twitch.feature_post.data.data_source.remote.PostApi
+import com.madiwist.twitch.feature_post.data.remote.PostApi
 import retrofit2.HttpException
 import java.io.IOException
 

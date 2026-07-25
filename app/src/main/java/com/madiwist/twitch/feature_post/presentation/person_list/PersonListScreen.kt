@@ -53,6 +53,7 @@ fun PersonListScreen(
                 items(10) {
                     UserProfileItem(
                         user = User(
+                            userId = "6a5fd504ce7b4289845b4f12",
                             username = "MADI",
                             description = "BoxWithConstraints scope is not used, com.madiwist.twitch BoxWithConstraints scope is not usedBoxWithConstraints scope is not used, BoxWithConstraints scope is not used",
                             profilePictureUrl = "",

@@ -93,6 +93,7 @@ dependencies {
 
     // Coil (Image Loading)
     implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     // JSON to Kotlin Object Mapping
     implementation(libs.converter.gson)

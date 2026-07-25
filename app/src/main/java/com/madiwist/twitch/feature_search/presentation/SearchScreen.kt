@@ -24,13 +24,13 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.models.User
+import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
 import com.madiwist.twitch.core.presentation.components.TwitchTextField
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.components.UserProfileItem
+import com.madiwist.twitch.core.presentation.navigation.Screen
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
-import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
-import com.madiwist.twitch.feature_profile.presentation.util.EditProfileError
 
 @Composable
 fun SearchScreen(
@@ -70,19 +70,21 @@ fun SearchScreen(
                 items(10) {
                     UserProfileItem(
                         user = User(
-                            username = "MADI",
-                            description = "BoxWithConstraints scope is not used, BoxWithConstraints scope is not usedBoxWithConstraints scope is not used, BoxWithConstraints scope is not used",
-                            profilePictureUrl = "",
-                            postCount = 35,
-                            followerCount = 353,
-                            followingCountL = 435
+                            userId = "6a5fd504ce7b4289845b4f12",
+                            username = "Ammad",
+                            description = "This is test bio",
+                            profilePictureUrl = "http://10.0.2.2:8001/posts/79741234.png",
+                            postCount = 330,
+                            followerCount = 12,
+                            followingCountL = 7
                         ),
                         actionIcon = {
                             Icon(
                                 imageVector = Icons.Default.PersonAdd,
                                 contentDescription = null
                             )
-                        }
+                        },
+                        onItemClick = { navController.navigate(Screen.ProfileScreen.route + "?userId=6a5fd504ce7b4289845b4f12") }
                     )
                     Spacer(Modifier.height(8.dp))
                 }

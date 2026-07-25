@@ -16,8 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import coil3.compose.rememberAsyncImagePainter
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
 import com.madiwist.twitch.core.util.toPx
@@ -28,6 +32,11 @@ fun BannerSection(
     modifier: Modifier = Modifier,
     leftIconModifier: Modifier = Modifier,
     rightIconModifier: Modifier = Modifier,
+    bannerUrl: String? = null,
+    topSkillUrls : List<String> = emptyList(),
+    shouldShowGithub: Boolean = false,
+    shouldShowInstagram: Boolean = false,
+    shouldShowLinkedIn: Boolean = false,
     onGitHubClick: () -> Unit = {},
     onInstagramClick: () -> Unit = {},
     onLinkedInClick: () -> Unit = {}
@@ -38,7 +47,12 @@ fun BannerSection(
         Image(
             modifier = modifier
                 .fillMaxSize(),
-            painter = painterResource(R.drawable.profile_banner),
+            painter = rememberAsyncImagePainter(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(bannerUrl)
+                    .crossfade(true)
+                    .build()
+            ),
             contentDescription = stringResource(R.string.banner_image),
             contentScale = ContentScale.Crop
         )
@@ -59,21 +73,33 @@ fun BannerSection(
                 .align(Alignment.BottomStart)
                 .padding(SpaceSmall)
         ) {
-            Image(
-                painter = painterResource(R.drawable.js),
-                contentDescription = "JS",
-                modifier = Modifier.size(Constants.PROFILE_ICONS_SIZE)
-            )
-            Image(
-                painter = painterResource(R.drawable.kotlin),
-                contentDescription = "Kotlin",
-                modifier = Modifier.size(Constants.PROFILE_ICONS_SIZE)
-            )
-            Image(
-                painter = painterResource(R.drawable.android),
-                contentDescription = "JS",
-                modifier = Modifier.size(Constants.PROFILE_ICONS_SIZE)
-            )
+            topSkillUrls.forEach { skillUrl ->
+                Image(
+                    painter = rememberAsyncImagePainter(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(skillUrl)
+                            .crossfade(true)
+                            .build()
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier.size(Constants.PROFILE_ICONS_SIZE)
+                )
+            }
+//            Image(
+//                painter = painterResource(R.drawable.js),
+//                contentDescription = "JS",
+//                modifier = Modifier.size(Constants.PROFILE_ICONS_SIZE)
+//            )
+//            Image(
+//                painter = painterResource(R.drawable.kotlin),
+//                contentDescription = "Kotlin",
+//                modifier = Modifier.size(Constants.PROFILE_ICONS_SIZE)
+//            )
+//            Image(
+//                painter = painterResource(R.drawable.android),
+//                contentDescription = "JS",
+//                modifier = Modifier.size(Constants.PROFILE_ICONS_SIZE)
+//            )
         }
         Row(
             modifier = rightIconModifier
@@ -81,38 +107,44 @@ fun BannerSection(
                 .align(Alignment.BottomEnd)
                 .padding(SpaceSmall)
         ) {
-            IconButton (
-                onClick = onGitHubClick ,
-                modifier = Modifier
-                    .height(Constants.PROFILE_ICONS_SIZE)
-                    .size(Constants.PROFILE_ICONS_SIZE)
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.github),
-                    contentDescription = "Github",
-                )
+            if (shouldShowGithub) {
+                IconButton (
+                    onClick = onGitHubClick ,
+                    modifier = Modifier
+                        .height(Constants.PROFILE_ICONS_SIZE)
+                        .size(Constants.PROFILE_ICONS_SIZE)
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.github),
+                        contentDescription = "Github",
+                    )
+                }
             }
-            IconButton (
-                onClick = onInstagramClick,
-                modifier = Modifier
-                    .height(Constants.PROFILE_ICONS_SIZE)
-                    .size(Constants.PROFILE_ICONS_SIZE)
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.instagram),
-                    contentDescription = "Instagram",
-                )
+            if (shouldShowInstagram){
+                IconButton (
+                    onClick = onInstagramClick,
+                    modifier = Modifier
+                        .height(Constants.PROFILE_ICONS_SIZE)
+                        .size(Constants.PROFILE_ICONS_SIZE)
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.instagram),
+                        contentDescription = "Instagram",
+                    )
+                }
             }
-            IconButton (
-                onClick = onLinkedInClick,
-                modifier = Modifier
-                    .height(Constants.PROFILE_ICONS_SIZE)
-                    .size(Constants.PROFILE_ICONS_SIZE)
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.linkedin),
-                    contentDescription = "LinkedIn",
-                )
+            if (shouldShowLinkedIn){
+                IconButton (
+                    onClick = onLinkedInClick,
+                    modifier = Modifier
+                        .height(Constants.PROFILE_ICONS_SIZE)
+                        .size(Constants.PROFILE_ICONS_SIZE)
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.linkedin),
+                        contentDescription = "LinkedIn",
+                    )
+                }
             }
         }
     }

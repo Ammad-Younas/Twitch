@@ -12,9 +12,9 @@ import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.SimpleResource
 import com.madiwist.twitch.core.util.UiText
-import com.madiwist.twitch.feature_post.data.data_source.paging.PostSource
-import com.madiwist.twitch.feature_post.data.data_source.remote.PostApi
-import com.madiwist.twitch.feature_post.data.data_source.remote.request.CreatePostRequest
+import com.madiwist.twitch.feature_post.data.paging.PostSource
+import com.madiwist.twitch.feature_post.data.remote.PostApi
+import com.madiwist.twitch.feature_post.data.remote.request.CreatePostRequest
 import com.madiwist.twitch.feature_post.domain.repository.PostRepository
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody

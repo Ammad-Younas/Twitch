@@ -1,4 +1,4 @@
-package com.madiwist.twitch.feature_post.data.data_source.remote
+package com.madiwist.twitch.feature_post.data.remote
 
 import com.madiwist.twitch.core.data.dto.response.BasicApiResponse
 import com.madiwist.twitch.core.domain.models.Post
@@ -25,6 +25,7 @@ interface PostApi {
     ) : BasicApiResponse<Unit>
 
     companion object {
-        const val BASE_URL = "http://10.39.22.212:8001/"
+        const val BASE_URL = "http://10.0.2.2:8001/"
+//        const val BASE_URL = "http://10.39.22.212:8001/"
     }
 }
