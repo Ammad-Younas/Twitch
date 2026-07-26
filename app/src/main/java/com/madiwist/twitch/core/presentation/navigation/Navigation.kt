@@ -32,27 +32,34 @@ fun Navigation(
     ) {
         composable(Screen.LoginScreen.route) {
             LoginScreen(
-                navController = navController,
+                onNavigate = navController::navigate,
                 snackbarHostState = snackbarHostState
             )
         }
         composable(Screen.RegisterScreen.route) {
             RegisterScreen(
-                navController = navController,
+                onPopBackStack = navController::popBackStack,
                 snackbarHostState = snackbarHostState
             )
         }
         composable(Screen.MainFeedScreen.route) {
             MainFeedScreen(
-                navController = navController,
+                onNavigate = navController::navigate,
+                onNavigateUp = navController::navigateUp,
                 snackbarHostState = snackbarHostState
             )
         }
         composable(Screen.ChatScreen.route) {
-            ChatScreen(navController = navController)
+            ChatScreen(
+                onNavigate = navController::navigate,
+                onNavigateUp = navController::navigateUp,
+            )
         }
         composable(Screen.ActivityScreen.route) {
-            ActivityScreen(navController = navController)
+            ActivityScreen(
+                onNavigate = navController::navigate,
+                onNavigateUp = navController::navigateUp,
+            )
         }
         composable(
             route = Screen.ProfileScreen.route + "?userId={userId}",
@@ -65,13 +72,15 @@ fun Navigation(
             )
         ) {
             ProfileScreen(
-                navController = navController,
+                onNavigate = navController::navigate,
+                onNavigateUp = navController::navigateUp,
                 snackbarHostState = snackbarHostState,
             )
         }
         composable(Screen.CreatePostScreen.route) {
             CreatePostScreen(
-                navController = navController,
+                onNavigate = navController::navigate,
+                onNavigateUp = navController::navigateUp,
                 snackbarHostState = snackbarHostState,
             )
         }
@@ -84,16 +93,29 @@ fun Navigation(
                 likeCount = 23,
                 commentCount = 15
             )
-            PostDetailsScreen(navController = navController, post = post)
+            PostDetailsScreen(
+                onNavigate = navController::navigate,
+                onNavigateUp = navController::navigateUp,
+                post = post
+            )
         }
         composable(Screen.SearchScreen.route) {
-            SearchScreen(navController = navController)
+            SearchScreen(
+                onNavigate = navController::navigate,
+                onNavigateUp = navController::navigateUp,
+            )
         }
         composable(Screen.EditProfileScreen.route) {
-            EditProfileScreen(navController = navController)
+            EditProfileScreen(
+                onNavigate = navController::navigate,
+                onNavigateUp = navController::navigateUp,
+            )
         }
         composable(Screen.PersonListScreen.route) {
-            PersonListScreen(navController = navController)
+            PersonListScreen(
+                onNavigate = navController::navigate,
+                onNavigateUp = navController::navigateUp,
+            )
         }
     }
 }

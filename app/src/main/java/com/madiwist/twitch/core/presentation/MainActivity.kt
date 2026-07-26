@@ -60,7 +60,6 @@ class MainActivity : ComponentActivity() {
                         color = MaterialTheme.colorScheme.background
                     ) {
                         TwitchScaffold(
-                            navController = navController,
                             showBottomBarAndFab = currentRoute in listOf(
                                 Screen.MainFeedScreen.route,
                                 Screen.ChatScreen.route,
@@ -70,6 +69,17 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.fillMaxSize(),
                             onFabClick = {
                                 navController.navigate(Screen.CreatePostScreen.route)
+                            },
+                            onNavigate = { route ->
+                                navController.navigate(route) {
+                                    navController.graph.startDestinationRoute?.let { route ->
+                                        popUpTo(route) {
+                                            saveState = true
+                                        }
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
                             },
                             currentRoute = currentRoute,
                             snackbarHostState = snackbarHostState

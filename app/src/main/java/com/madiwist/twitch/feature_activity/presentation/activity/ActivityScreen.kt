@@ -20,26 +20,26 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.models.Activity
-import com.madiwist.twitch.feature_activity.domain.util.ActivityAction
-import com.madiwist.twitch.core.util.DateFormatUtil
-import com.madiwist.twitch.feature_activity.presentation.activity.components.ActivityItem
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
+import com.madiwist.twitch.core.util.DateFormatUtil
+import com.madiwist.twitch.feature_activity.domain.util.ActivityAction
+import com.madiwist.twitch.feature_activity.presentation.activity.components.ActivityItem
 import kotlin.random.Random
 
 @Composable
 fun ActivityScreen(
-    navController: NavController,
+    onNavigate: (String) -> Unit = {},
+    onNavigateUp: () -> Unit = {},
     viewModel: ActivityViewModel = hiltViewModel()
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         TwitchToolBar(
-            navController = navController,
+            onNavigateUp = onNavigateUp,
             modifier = Modifier.fillMaxWidth(),
             title = {
                 Text(stringResource(R.string.your_activity))

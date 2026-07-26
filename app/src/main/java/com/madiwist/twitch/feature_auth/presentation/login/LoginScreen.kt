@@ -40,7 +40,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.components.TwitchTextField
 import com.madiwist.twitch.core.presentation.navigation.Screen
@@ -54,8 +53,8 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun LoginScreen(
-    navController: NavController,
     snackbarHostState: SnackbarHostState,
+    onNavigate: (String) -> Unit = {},
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val scrollState = rememberScrollState()
@@ -74,7 +73,7 @@ fun LoginScreen(
                     )
                 }
                 is UiEvent.Navigate -> {
-                    navController.navigate(event.route)
+                    onNavigate(event.route)
                 }
                 is UiEvent.NavigateUp -> Unit
             }
@@ -175,7 +174,7 @@ fun LoginScreen(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .clickable {
-                        navController.navigate((Screen.RegisterScreen.route))
+                        onNavigate((Screen.RegisterScreen.route))
                     },
                 text = buildAnnotatedString {
                     append(stringResource(R.string.dont_have_an_account_yet))

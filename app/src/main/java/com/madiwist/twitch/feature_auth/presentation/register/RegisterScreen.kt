@@ -40,7 +40,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.components.TwitchTextField
 import com.madiwist.twitch.core.presentation.ui.theme.ExtraSpaceLarge
@@ -54,7 +53,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun RegisterScreen(
-    navController: NavController,
+    onPopBackStack: () -> Unit = {},
     snackbarHostState: SnackbarHostState,
     viewModel: RegisterViewModel = hiltViewModel()
 ) {
@@ -198,7 +197,7 @@ fun RegisterScreen(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .clickable {
-                        navController.popBackStack()
+                        onPopBackStack()
                     },
                 text = buildAnnotatedString {
                     append(stringResource(R.string.already_have_an_account))

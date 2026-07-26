@@ -24,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.madiwist.twitch.R
@@ -37,8 +36,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun MainFeedScreen (
-    navController: NavController,
     snackbarHostState: SnackbarHostState,
+    onNavigate: (String) -> Unit = {},
+    onNavigateUp: () -> Unit = {},
     viewModel: MainFeedViewModel = hiltViewModel()
 ) {
     val posts = viewModel.posts.collectAsLazyPagingItems()
@@ -48,7 +48,7 @@ fun MainFeedScreen (
     TwitchScaffold(
         topBar = {
             TwitchToolBar(
-                navController = navController,
+                onNavigateUp = onNavigateUp,
                 modifier = Modifier.fillMaxWidth(),
                 title = {
                     Text(stringResource(R.string.your_feed))
@@ -57,7 +57,7 @@ fun MainFeedScreen (
                 navActions = {
                     IconButton(
                         onClick = {
-                            navController.navigate(Screen.SearchScreen.route)
+                            onNavigate(Screen.SearchScreen.route)
                         }
                     ) {
                         Icon(
@@ -68,7 +68,7 @@ fun MainFeedScreen (
                 }
             )
         },
-        navController = navController,
+        onNavigate = onNavigate,
         showBottomBarAndFab = false,
         snackbarHostState = snackbarHostState
     ) {
@@ -99,7 +99,7 @@ fun MainFeedScreen (
                         Post(
                             post = it,
                             onPostClick = {
-                                navController.navigate(Screen.PostDetailsScreen.route)
+                                onNavigate(Screen.PostDetailsScreen.route)
                             }
                         )
                     }

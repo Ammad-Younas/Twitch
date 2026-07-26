@@ -12,14 +12,13 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
 import com.madiwist.twitch.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TwitchToolBar(
-    navController: NavController,
     modifier: Modifier = Modifier,
+    onNavigateUp: () -> Unit = {},
     showBackArrow: Boolean = false,
     navActions: @Composable RowScope.() -> Unit = {},
     title: @Composable () -> Unit = {}
@@ -36,7 +35,7 @@ fun TwitchToolBar(
         navigationIcon = {
             if (showBackArrow) {
                 IconButton(
-                    onClick = { navController.navigateUp() }
+                    onClick = { onNavigateUp() }
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,

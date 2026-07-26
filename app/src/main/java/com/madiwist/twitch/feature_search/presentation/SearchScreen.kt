@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.models.User
 import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
@@ -34,14 +33,15 @@ import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 
 @Composable
 fun SearchScreen(
-    navController: NavController,
+    onNavigate: (String) -> Unit = {},
+    onNavigateUp: () -> Unit = {},
     viewModel: SearchViewModel = hiltViewModel()
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
         TwitchToolBar(
-            navController = navController,
+            onNavigateUp = onNavigateUp,
             modifier = Modifier.fillMaxWidth(),
             title = {
                 Text(stringResource(R.string.search_for_users))
@@ -84,7 +84,7 @@ fun SearchScreen(
                                 contentDescription = null
                             )
                         },
-                        onItemClick = { navController.navigate(Screen.ProfileScreen.route + "?userId=6a6634d8b6ab2f99f5923312") }
+                        onItemClick = { onNavigate(Screen.ProfileScreen.route + "?userId=6a6634d8b6ab2f99f5923312") }
                     )
                     Spacer(Modifier.height(8.dp))
                 }

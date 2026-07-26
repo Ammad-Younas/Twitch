@@ -41,11 +41,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.models.Comment
 import com.madiwist.twitch.core.domain.models.Post
-import com.madiwist.twitch.feature_post.domain.util.ActionRow
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.ui.theme.ExtraSpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.ExtraSpaceSmall
@@ -54,17 +52,19 @@ import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
 import com.madiwist.twitch.core.util.Constants
+import com.madiwist.twitch.feature_post.domain.util.ActionRow
 
 @Composable
 fun PostDetailsScreen(
-    navController: NavController,
+    onNavigate: (String) -> Unit = {},
+    onNavigateUp: () -> Unit = {},
     post: Post,
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         TwitchToolBar(
-            navController = navController,
+            onNavigateUp = onNavigateUp,
             modifier = Modifier.fillMaxWidth(),
             title = {
                 Text(stringResource(R.string.your_feed))

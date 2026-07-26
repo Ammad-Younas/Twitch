@@ -47,21 +47,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.madiwist.twitch.R
+import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
 import com.madiwist.twitch.core.presentation.components.TwitchTextField
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
-import com.madiwist.twitch.feature_profile.presentation.edit_profile.components.SkillsChips
 import com.madiwist.twitch.core.presentation.ui.theme.ExtraSpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
-import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
 import com.madiwist.twitch.core.util.Constants
+import com.madiwist.twitch.feature_profile.presentation.edit_profile.components.SkillsChips
 import com.madiwist.twitch.feature_profile.presentation.util.EditProfileError
 
 @Composable
 fun EditProfileScreen(
-    navController: NavController,
+    onNavigate: (String) -> Unit = {},
+    onNavigateUp: () -> Unit = {},
     viewModel: EditProfileViewModel = hiltViewModel()
 ) {
 
@@ -72,7 +72,7 @@ fun EditProfileScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         TwitchToolBar(
-            navController = navController,
+            onNavigateUp = onNavigateUp,
             modifier = Modifier.fillMaxWidth(),
             title = {
                 Text(stringResource(R.string.edit_profile))

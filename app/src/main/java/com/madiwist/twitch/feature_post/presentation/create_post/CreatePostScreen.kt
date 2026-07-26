@@ -47,7 +47,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.components.CropAspectRatio
 import com.madiwist.twitch.core.presentation.components.CropShape
@@ -61,11 +60,11 @@ import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.core.presentation.util.asString
 import com.madiwist.twitch.feature_post.presentation.util.PostConstants
 import com.madiwist.twitch.feature_post.presentation.util.PostDescriptionError
-import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun CreatePostScreen(
-    navController: NavController,
+    onNavigate: (String) -> Unit = {},
+    onNavigateUp: () -> Unit = {},
     viewModel: CreatePostViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState,
 ) {
@@ -94,10 +93,10 @@ fun CreatePostScreen(
                     )
                 }
                 is UiEvent.NavigateUp -> {
-                    navController.navigateUp()
+                    onNavigateUp()
                 }
                 is UiEvent.Navigate -> {
-                    navController.navigate(event.route)
+                    onNavigate(event.route)
                 }
             }
         }
@@ -105,7 +104,7 @@ fun CreatePostScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         TwitchToolBar(
-            navController = navController,
+            onNavigateUp = onNavigateUp,
             modifier = Modifier.fillMaxWidth(),
             title = { Text(stringResource(R.string.create_post)) },
             showBackArrow = true,

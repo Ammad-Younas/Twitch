@@ -45,7 +45,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -68,8 +67,9 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ProfileScreen(
-    navController: NavController,
     snackbarHostState: SnackbarHostState,
+    onNavigate: (String) -> Unit = {},
+    onNavigateUp: () -> Unit = {},
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val toolBarHeightCollapsed = 100.dp
@@ -134,7 +134,7 @@ fun ProfileScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         TwitchToolBar(
-            navController = navController,
+            onNavigateUp = onNavigateUp,
             modifier = Modifier.fillMaxWidth(),
             title = {
                 Text(stringResource(R.string.your_profile))
@@ -170,7 +170,7 @@ fun ProfileScreen(
                                     followingCount = profile.followingCount
                                 ),
                                 isOwnProfile = profile.isOwnProfile,
-                                onEditClick = { navController.navigate(Screen.EditProfileScreen.route) }
+                                onEditClick = { onNavigate(Screen.EditProfileScreen.route) }
                             )
                         }
                     }
@@ -198,7 +198,7 @@ fun ProfileScreen(
                                     commentCount = 15,
                                     timestamp = System.currentTimeMillis()
                                 ),
-                                onPostClick = {  }
+                                onPostClick = { onNavigate(Screen.PostDetailsScreen.route) }
                             )
                         }
                     }

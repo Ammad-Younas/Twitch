@@ -25,7 +25,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.madiwist.twitch.core.domain.models.BottomNavItem
 import com.madiwist.twitch.core.util.NavItems
 
@@ -33,7 +32,7 @@ import com.madiwist.twitch.core.util.NavItems
 @Composable
 fun TwitchScaffold(
     modifier: Modifier = Modifier,
-    navController: NavController,
+    onNavigate: (String) -> Unit = {},
     snackbarHostState: SnackbarHostState,
     currentRoute: String? = null,
     showBottomBarAndFab: Boolean = true,
@@ -100,12 +99,12 @@ fun TwitchScaffold(
                             BottomNavigationItem(
                                 icon = bottomNavItem.icon,
                                 contentDescription = bottomNavItem.contentDescription,
-                                selected = bottomNavItem.route == currentRoute,
+                                selected = bottomNavItem.route?.let { currentRoute?.startsWith(it) == true } ?: false,
                                 alertCount = bottomNavItem.alertCount,
                                 onClick = {
                                     bottomNavItem.route?.let { route ->
-                                        if (route != currentRoute) {
-                                            navController.navigate(route)
+                                        if (currentRoute?.startsWith(route) != true) {
+                                            onNavigate(route)
                                         }
                                     }
                                 },
