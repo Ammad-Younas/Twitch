@@ -1,11 +1,4 @@
-- [x] Add Coil network dependency
-    - [x] Add `coil-network-okhttp` to `libs.versions.toml`
-    - [x] Add dependency to `app/build.gradle.kts`
-    - [x] Sync Gradle
-- [x] Fix profile stats and logic
-    - [x] Update `ProfileHeaderSection.kt` to use real user data for stats
-    - [x] Fix inverted logic in `ProfileStats.kt` for "Follow" button visibility
-    - [x] Fix typo in `ProfileScreen.kt` mapping for `followingCountL`
-    - [x] Fix hardcoded data and image loading in `SearchScreen.kt` / `UserProfileItem.kt`
+- [x] Backend Changes (Ktor)
+    - [x] Update `User.kt` to explicitly encode null defaults
 - [x] Verification
-    - [x] Build the project
+    - [x] Verify backend compilation

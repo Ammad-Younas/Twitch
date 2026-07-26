@@ -47,7 +47,7 @@ fun ProfileStats(
                 text = stringResource(R.string.followers)
             )
             ProfileNumber(
-                number = user.followingCountL,
+                number = user.followingCount,
                 text = stringResource(R.string.following)
             )
             ProfileNumber(

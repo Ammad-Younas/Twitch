@@ -1,49 +1,41 @@
-# Fix Profile Image and Stats Loading
+# Ensure All User Fields are Present in MongoDB
 
-The user is experiencing issues where profile and banner images are not loading on the profile screen, and the stats (followers, following, posts) are showing incorrect (hardcoded) values.
-
-## Analysis of the Issues
-
-### 1. Images Not Loading (Coil 3 Network Dependency)
-The project uses **Coil 3** (`io.coil-kt.coil3:coil-compose:3.5.0`). In Coil 3, the network engine is no longer included by default in the core/compose artifacts to support Kotlin Multiplatform. On Android, you must explicitly add the network engine dependency to load images from `http`/`https`.
-
-### 2. Hardcoded Profile Stats
-`ProfileHeaderSection.kt` contains hardcoded values for followers, following, and post counts within the `ProfileStats` call, ignoring the `User` object passed to it.
-
-### 3. Backend URL Discrepancy
-The MongoDB database contains URLs pointing to the `/posts/` directory for profile images (e.g., `http://10.0.2.2:8001/posts/79741234.png`), while the backend constants suggest they should be in `/profile_picture/`. However, the files are physically located in the `uploads/posts/` directory on the backend, so the current URLs in the database are "correct" for the current file structure but indicate a logical bug in the backend upload/storage process.
+The user is reporting that the `gitHubUrl`, `instagramUrl`, and `linkedInUrl` fields are missing from the MongoDB documents when a new user is created. This is because `kotlinx.serialization` (used by the MongoDB Kotlin driver) omits nullable fields with a default value of `null` during serialization by default.
 
 ## Proposed Changes
 
-### Android App (Frontend)
+### Backend (Ktor)
 
-#### [MODIFY] [build.gradle.kts](file:///D:/MaDi/Practice/App_Development/Twitch/app/build.gradle.kts)
-- Add `io.coil-kt.coil3:coil-network-okhttp` dependency to enable network image loading.
+#### [MODIFY] [User.kt](file:///D:/MaDi/Practice/Ktor/Twitch_Backend/Twitch/src/main/kotlin/data/models/User.kt)
+- Add `@EncodeDefault(EncodeDefault.Mode.ALWAYS)` to `gitHubUrl`, `instagramUrl`, and `linkedInUrl`.
+- This ensures that even if these fields are `null`, they will be explicitly stored as `BSON NULL` in MongoDB, making them visible in MongoDB Compass.
+- Note: This requires the `kotlinx.serialization.ExperimentalSerializationApi`.
 
-#### [MODIFY] [libs.versions.toml](file:///D:/MaDi/Practice/App_Development/Twitch/gradle/libs.versions.toml)
-- Add `coil-network-okhttp` library definition.
+```kotlin
+@Serializable
+data class User(
+    // ... other fields
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val gitHubUrl: String? = null,
 
-#### [MODIFY] [ProfileHeaderSection.kt](file:///D:/MaDi/Practice/App_Development/Twitch/app/src/main/java/com/madiwist/twitch/feature_profile/presentation/profile/components/ProfileHeaderSection.kt)
-- Update `ProfileStats` call to use the `user` parameter instead of hardcoded values.
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val instagramUrl: String? = null,
 
-#### [MODIFY] [ProfileStats.kt](file:///D:/MaDi/Practice/App_Development/Twitch/app/src/main/java/com/madiwist/twitch/feature_profile/presentation/profile/components/ProfileStats.kt)
-- Correct the logic for showing the "Follow" button: it should be shown only if `isOwnProfile` is **false**.
-
-#### [MODIFY] [ProfileScreen.kt](file:///D:/MaDi/Practice/App_Development/Twitch/app/src/main/java/com/madiwist/twitch/feature_profile/presentation/profile/ProfileScreen.kt)
-- Fix the typo where `followerCount` was passed as `followingCountL`.
-
-### Backend (Recommendations)
-
-> [!TIP]
-> To maintain a clean project structure, you should ensure that profile pictures are stored in the `uploads/profile_picture` directory and served via the `/profile_picture/` URL, rather than using the `posts` directory for everything.
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val linkedInUrl: String? = null,
+    // ...
+)
+```
 
 ## Verification Plan
 
 ### Automated Tests
-- Build the project to ensure dependencies are resolved correctly.
+- Build the backend project to ensure no compilation errors with the new annotations.
 
 ### Manual Verification
-1. Run the app in the emulator.
-2. Navigate to a profile from the search screen.
-3. Verify that the profile image and banner image load correctly.
-4. Verify that the follower, following, and post counts match the data in the database (12, 7, 330 for Ammad).
+1. Create a new user through the app's sign-up flow.
+2. Open MongoDB Compass and verify that the `users` collection contains the new document.
+3. Check that `gitHubUrl`, `instagramUrl`, and `linkedInUrl` are present in the document and set to `null`.

@@ -59,7 +59,7 @@ fun PersonListScreen(
                             profilePictureUrl = "",
                             postCount = 35,
                             followerCount = 353,
-                            followingCountL = 435
+                            followingCount = 435
                         ),
                         actionIcon = {
                             Icon(

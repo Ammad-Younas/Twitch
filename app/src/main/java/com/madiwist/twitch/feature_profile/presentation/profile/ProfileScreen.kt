@@ -167,7 +167,7 @@ fun ProfileScreen(
                                     profilePictureUrl = profile.profilePictureUrl,
                                     postCount = profile.postCount,
                                     followerCount = profile.followerCount,
-                                    followingCountL = profile.followingCount
+                                    followingCount = profile.followingCount
                                 ),
                                 isOwnProfile = profile.isOwnProfile,
                                 onEditClick = { navController.navigate(Screen.EditProfileScreen.route) }
@@ -226,9 +226,9 @@ fun ProfileScreen(
 
                             },
                             topSkillUrls = profile.topSkillUrls,
-                            shouldShowGithub = profile.githubUrl != null,
+                            shouldShowGithub = profile.gitHubUrl != null,
                             shouldShowInstagram = profile.instagramUrl != null,
-                            shouldShowLinkedIn = profile.linkedinUrl != null,
+                            shouldShowLinkedIn = profile.linkedInUrl != null,
                             bannerUrl = profile.bannerUrl
                         )
                         Image(

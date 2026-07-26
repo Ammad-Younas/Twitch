@@ -70,13 +70,13 @@ fun SearchScreen(
                 items(10) {
                     UserProfileItem(
                         user = User(
-                            userId = "6a5fd504ce7b4289845b4f12",
+                            userId = "6a6634d8b6ab2f99f5923312",
                             username = "Ammad",
                             description = "This is test bio",
                             profilePictureUrl = "http://10.0.2.2:8001/posts/79741234.png",
                             postCount = 330,
                             followerCount = 12,
-                            followingCountL = 7
+                            followingCount = 7
                         ),
                         actionIcon = {
                             Icon(
@@ -84,7 +84,7 @@ fun SearchScreen(
                                 contentDescription = null
                             )
                         },
-                        onItemClick = { navController.navigate(Screen.ProfileScreen.route + "?userId=6a5fd504ce7b4289845b4f12") }
+                        onItemClick = { navController.navigate(Screen.ProfileScreen.route + "?userId=6a6634d8b6ab2f99f5923312") }
                     )
                     Spacer(Modifier.height(8.dp))
                 }
