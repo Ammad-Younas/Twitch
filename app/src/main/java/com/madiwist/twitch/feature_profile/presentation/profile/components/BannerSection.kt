@@ -86,21 +86,6 @@ fun BannerSection(
                     modifier = Modifier.size(Constants.PROFILE_ICONS_SIZE)
                 )
             }
-//            Image(
-//                painter = painterResource(R.drawable.js),
-//                contentDescription = "JS",
-//                modifier = Modifier.size(Constants.PROFILE_ICONS_SIZE)
-//            )
-//            Image(
-//                painter = painterResource(R.drawable.kotlin),
-//                contentDescription = "Kotlin",
-//                modifier = Modifier.size(Constants.PROFILE_ICONS_SIZE)
-//            )
-//            Image(
-//                painter = painterResource(R.drawable.android),
-//                contentDescription = "JS",
-//                modifier = Modifier.size(Constants.PROFILE_ICONS_SIZE)
-//            )
         }
         Row(
             modifier = rightIconModifier
