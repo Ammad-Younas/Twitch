@@ -30,14 +30,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.util.Constants
-import kotlin.jvm.Throws
 
 @Composable
-@Throws(IllegalArgumentException::class)
 fun RowScope.BottomNavigationItem(
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
-    contentDescription: Int? = null,
+    contentDescription: String? = null,
     selected: Boolean = false,
     alertCount: Int? = null,
     selectedColor: Color = MaterialTheme.colorScheme.primary,
@@ -86,7 +84,7 @@ fun RowScope.BottomNavigationItem(
                 if (icon != null){
                     Icon(
                         imageVector = icon,
-                        contentDescription = contentDescription.toString(),
+                        contentDescription = contentDescription,
                         modifier = Modifier
                             .align(Alignment.Center)
                             .size(Constants.ENGAGEMENT_ICON_SIZE)

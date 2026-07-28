@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.madiwist.twitch.core.domain.models.BottomNavItem
 import com.madiwist.twitch.core.util.NavItems
@@ -98,14 +99,14 @@ fun TwitchScaffold(
                         bottomNavItemsList.forEach { bottomNavItem ->
                             BottomNavigationItem(
                                 icon = bottomNavItem.icon,
-                                contentDescription = bottomNavItem.contentDescription,
-                                selected = bottomNavItem.route?.let { currentRoute?.startsWith(it) == true } ?: false,
+                                contentDescription = bottomNavItem.contentDescription?.let { stringResource(it) },
+                                selected = bottomNavItem.route?.let { route ->
+                                    currentRoute?.split("?")?.get(0) == route
+                                } ?: false,
                                 alertCount = bottomNavItem.alertCount,
                                 onClick = {
                                     bottomNavItem.route?.let { route ->
-                                        if (currentRoute?.startsWith(route) != true) {
-                                            onNavigate(route)
-                                        }
+                                        onNavigate(route)
                                     }
                                 },
                                 enabled = bottomNavItem.icon != null,

@@ -91,7 +91,7 @@ fun EditProfileScreen(
         state = bannerCropperState,
         onCropComplete = { bitmap ->
             bannerCroppedBitmap = bitmap
-            viewModel.onEvent(EditProfileEvent.CropBannerImage(bannerCroppedBitmap))
+            viewModel.onEvent(EditProfileEvent.CropBannerImage(bitmap))
         },
     )
 
@@ -105,8 +105,8 @@ fun EditProfileScreen(
     val profileOpenGallery = rememberImageCropperLauncher(
         state = profileImageCropperState,
         onCropComplete = { bitmap ->
-            bannerCroppedBitmap = bitmap
-            viewModel.onEvent(EditProfileEvent.CropProfileImage(profileImageCroppedBitmap))
+            profileImageCroppedBitmap = bitmap
+            viewModel.onEvent(EditProfileEvent.CropProfileImage(bitmap))
         },
     )
 
@@ -122,6 +122,9 @@ fun EditProfileScreen(
                         message = event.uiText.asString(context),
                         duration = SnackbarDuration.Short
                     )
+                }
+                is UiEvent.NavigateUp -> {
+                    onNavigateUp()
                 }
                 else -> {}
             }
@@ -161,13 +164,13 @@ fun EditProfileScreen(
             BannerEditSection(
                 bannerImage = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(profileState.profile?.bannerUrl)
+                        .data(bannerCroppedBitmap ?: profileState.profile?.bannerUrl)
                         .crossfade(true)
                         .build()
                 ),
                 profileImage = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(profileState.profile?.profilePictureUrl)
+                        .data(profileImageCroppedBitmap ?: profileState.profile?.profilePictureUrl)
                         .crossfade(true)
                         .build()
                 ),

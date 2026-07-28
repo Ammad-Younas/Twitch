@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.madiwist.twitch.core.presentation.components.TwitchScaffold
@@ -60,11 +61,11 @@ class MainActivity : ComponentActivity() {
                         color = MaterialTheme.colorScheme.background
                     ) {
                         TwitchScaffold(
-                            showBottomBarAndFab = currentRoute in listOf(
+                            showBottomBarAndFab = currentRoute?.split("?")?.get(0) in listOf(
                                 Screen.MainFeedScreen.route,
                                 Screen.ChatScreen.route,
                                 Screen.ActivityScreen.route,
-                                Screen.ProfileScreen.route + "?userId={userId}"
+                                Screen.ProfileScreen.route
                             ),
                             modifier = Modifier.fillMaxSize(),
                             onFabClick = {
@@ -72,13 +73,11 @@ class MainActivity : ComponentActivity() {
                             },
                             onNavigate = { route ->
                                 navController.navigate(route) {
-                                    navController.graph.startDestinationRoute?.let { route ->
-                                        popUpTo(route) {
-                                            saveState = true
-                                        }
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = route != Screen.MainFeedScreen.route
                                     }
                                     launchSingleTop = true
-                                    restoreState = true
+                                    restoreState = route != Screen.MainFeedScreen.route
                                 }
                             },
                             currentRoute = currentRoute,

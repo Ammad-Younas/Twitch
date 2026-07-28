@@ -35,9 +35,8 @@ class ProfileViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-        savedStateHandle.get<String>("userId")?.let { userId ->
-            getProfile(userId)
-        }
+        val userId = savedStateHandle.get<String>("userId") ?: ""
+        getProfile(userId)
     }
 
     fun setExpandedRatio(ratio: Float) {

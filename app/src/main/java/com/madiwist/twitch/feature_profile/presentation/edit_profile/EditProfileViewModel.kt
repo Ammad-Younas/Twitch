@@ -67,10 +67,9 @@ class EditProfileViewModel @Inject constructor(
 
 
     init {
-        savedStateHandle.get<String>("userId")?.let { userId ->
-            getProfile(userId)
-            getSkills()
-        }
+        val userId = savedStateHandle.get<String>("userId") ?: ""
+        getProfile(userId)
+        getSkills()
     }
 
 
@@ -147,14 +146,18 @@ class EditProfileViewModel @Inject constructor(
     }
 
 
-    private fun updateProfile(bannerImageBitmap: Bitmap, profileImageBitmap: Bitmap) {
+    private fun updateProfile(bannerImageBitmap: Bitmap?, profileImageBitmap: Bitmap?) {
         viewModelScope.launch {
             _profileState.value = profileState.value.copy(isLoading = true)
-            val bannerImageUri: Uri = withContext(Dispatchers.IO) {
-                saveBitmapToCache("banner", bannerImageBitmap)
+            val bannerImageUri: Uri? = bannerImageBitmap?.let {
+                withContext(Dispatchers.IO) {
+                    saveBitmapToCache("banner", it)
+                }
             }
-            val profileImageUri: Uri = withContext(Dispatchers.IO) {
-                saveBitmapToCache("profile", profileImageBitmap)
+            val profileImageUri: Uri? = profileImageBitmap?.let {
+                withContext(Dispatchers.IO) {
+                    saveBitmapToCache("profile", it)
+                }
             }
             val result = profileUseCase.updateProfile(
                 bannerUri = bannerImageUri,
@@ -172,6 +175,7 @@ class EditProfileViewModel @Inject constructor(
                 is Resource.Success -> {
                     _profileState.value = profileState.value.copy(isLoading = false)
                     _eventFlow.emit(UiEvent.SnackbarEvent(UiText.StringResource(R.string.updated_profile)))
+                    _eventFlow.emit(UiEvent.NavigateUp)
                 }
                 is Resource.Error -> {
                     _profileState.value = profileState.value.copy(isLoading = false)
@@ -223,21 +227,7 @@ class EditProfileViewModel @Inject constructor(
             }
 
             is EditProfileEvent.UpdateProfile -> {
-                val bannerCurrentBitmap = bannerImageCroppedBitmap.value
-                val profileCurrentBitmap = profilePictureCroppedBitmap.value
-                if (bannerCurrentBitmap == null) {
-                    _eventFlow.tryEmit(
-                        UiEvent.SnackbarEvent(UiText.StringResource(R.string.error_no_banner_provided))
-                    )
-                    return
-                }
-                if (profileCurrentBitmap == null) {
-                    _eventFlow.tryEmit(
-                        UiEvent.SnackbarEvent(UiText.StringResource(R.string.error_no_profile_provided))
-                    )
-                    return
-                }
-                updateProfile(bannerCurrentBitmap, profileCurrentBitmap)
+                updateProfile(bannerImageCroppedBitmap.value, profilePictureCroppedBitmap.value)
             }
         }
     }

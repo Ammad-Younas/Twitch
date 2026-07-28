@@ -1,6 +1,7 @@
 package com.madiwist.twitch.feature_post.presentation.main_feed
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,7 +28,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.madiwist.twitch.R
-import com.madiwist.twitch.core.presentation.components.TwitchScaffold
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.navigation.Screen
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
@@ -45,33 +45,29 @@ fun MainFeedScreen (
     val mainFeedState = viewModel.mainfeedState.value
     val scope = rememberCoroutineScope()
 
-    TwitchScaffold(
-        topBar = {
-            TwitchToolBar(
-                onNavigateUp = onNavigateUp,
-                modifier = Modifier.fillMaxWidth(),
-                title = {
-                    Text(stringResource(R.string.your_feed))
-                },
-                showBackArrow = false,
-                navActions = {
-                    IconButton(
-                        onClick = {
-                            onNavigate(Screen.SearchScreen.route)
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Search,
-                            contentDescription = stringResource(R.string.Search)
-                        )
-                    }
-                }
-            )
-        },
-        onNavigate = onNavigate,
-        showBottomBarAndFab = false,
-        snackbarHostState = snackbarHostState
+    Column(
+        modifier = Modifier.fillMaxSize()
     ) {
+        TwitchToolBar(
+            onNavigateUp = onNavigateUp,
+            modifier = Modifier.fillMaxWidth(),
+            title = {
+                Text(stringResource(R.string.your_feed))
+            },
+            showBackArrow = false,
+            navActions = {
+                IconButton(
+                    onClick = {
+                        onNavigate(Screen.SearchScreen.route)
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Search,
+                        contentDescription = stringResource(R.string.Search)
+                    )
+                }
+            }
+        )
         Box(modifier = Modifier.fillMaxSize()){
             if (mainFeedState.isLoadingFirstTime) {
                 CircularProgressIndicator(

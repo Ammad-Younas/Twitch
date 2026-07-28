@@ -1,0 +1,2 @@
+- [x] Fix social icons visibility (use `!isNullOrBlank()`)
+- [ ] Implement Profile navigation from Posts (Pending user decision)
