@@ -51,8 +51,6 @@ class CreatePostViewModel @Inject constructor(
             is CreatePostEvent.EnterDescription -> {
                 _descriptionState.value = descriptionState.value.copy(text = event.value)
             }
-            is CreatePostEvent.PickImage -> Unit
-
             is CreatePostEvent.CropImage -> {
                 _croppedBitmap.value = event.bitmap
             }

@@ -1,7 +1,9 @@
 package com.madiwist.twitch.feature_profile.presentation.edit_profile
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,15 +24,20 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,22 +45,30 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import coil3.compose.rememberAsyncImagePainter
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.madiwist.twitch.R
-import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
+import com.madiwist.twitch.core.presentation.components.CropAspectRatio
+import com.madiwist.twitch.core.presentation.components.CropShape
 import com.madiwist.twitch.core.presentation.components.TwitchTextField
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
+import com.madiwist.twitch.core.presentation.components.rememberImageCropperLauncher
+import com.madiwist.twitch.core.presentation.components.rememberImageCropperState
 import com.madiwist.twitch.core.presentation.ui.theme.ExtraSpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
+import com.madiwist.twitch.core.presentation.util.UiEvent
+import com.madiwist.twitch.core.presentation.util.asString
 import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.feature_profile.presentation.edit_profile.components.SkillsChips
 import com.madiwist.twitch.feature_profile.presentation.util.EditProfileError
@@ -62,11 +77,56 @@ import com.madiwist.twitch.feature_profile.presentation.util.EditProfileError
 fun EditProfileScreen(
     onNavigate: (String) -> Unit = {},
     onNavigateUp: () -> Unit = {},
+    snackbarHostState: SnackbarHostState,
     viewModel: EditProfileViewModel = hiltViewModel()
 ) {
 
-    val availableSkills = remember { listOf("JS", "C++", "Kotlin", "Python", "Android", "Jetpack Compose") }
-    val selectedSkills = viewModel.selectedSkills.value
+    val bannerCropperState = rememberImageCropperState(
+        initialAspectRatio = CropAspectRatio.Ratio16x9,
+        initialShape = CropShape.RECTANGLE,
+    )
+    var bannerCroppedBitmap by remember { mutableStateOf<Bitmap?>(null) }
+
+    val bannerOpenGallery = rememberImageCropperLauncher(
+        state = bannerCropperState,
+        onCropComplete = { bitmap ->
+            bannerCroppedBitmap = bitmap
+            viewModel.onEvent(EditProfileEvent.CropBannerImage(bannerCroppedBitmap))
+        },
+    )
+
+
+    val profileImageCropperState = rememberImageCropperState(
+        initialAspectRatio = CropAspectRatio.Square,
+        initialShape = CropShape.CIRCLE,
+    )
+    var profileImageCroppedBitmap by remember { mutableStateOf<Bitmap?>(null) }
+
+    val profileOpenGallery = rememberImageCropperLauncher(
+        state = profileImageCropperState,
+        onCropComplete = { bitmap ->
+            bannerCroppedBitmap = bitmap
+            viewModel.onEvent(EditProfileEvent.CropProfileImage(profileImageCroppedBitmap))
+        },
+    )
+
+    val profileState = viewModel.profileState.value
+
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.eventFlow.collect { event ->
+            when (event) {
+                is UiEvent.SnackbarEvent -> {
+                    snackbarHostState.showSnackbar(
+                        message = event.uiText.asString(context),
+                        duration = SnackbarDuration.Short
+                    )
+                }
+                else -> {}
+            }
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -81,7 +141,7 @@ fun EditProfileScreen(
             navActions = {
                 IconButton(
                     onClick = {
-
+                        viewModel.onEvent(EditProfileEvent.UpdateProfile)
                     }
                 ) {
                     Icon(
@@ -99,8 +159,24 @@ fun EditProfileScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             BannerEditSection(
-                bannerImage = painterResource(R.drawable.profile_banner),
-                profileImage = painterResource(R.drawable.profile_image)
+                bannerImage = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(profileState.profile?.bannerUrl)
+                        .crossfade(true)
+                        .build()
+                ),
+                profileImage = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(profileState.profile?.profilePictureUrl)
+                        .crossfade(true)
+                        .build()
+                ),
+                onBannerClick = {
+                    bannerOpenGallery()
+                },
+                onProfileImageClick = {
+                    profileOpenGallery()
+                }
             )
             Spacer(Modifier.height(SpaceLarge))
             Column(
@@ -111,7 +187,7 @@ fun EditProfileScreen(
                 TwitchTextField(
                     text = viewModel.usernameState.value.text,
                     onValueChange = {
-                        viewModel.setUsernameState(state = TwitchTextFieldState(text = it))
+                        viewModel.onEvent(EditProfileEvent.EnteredUsername(it))
                     },
                     hint = stringResource(R.string.username),
                     error = when(viewModel.usernameState.value.error){
@@ -124,7 +200,7 @@ fun EditProfileScreen(
                 TwitchTextField(
                     text = viewModel.instagramState.value.text,
                     onValueChange = {
-                        viewModel.setInstagramState(state = TwitchTextFieldState(text = it))
+                        viewModel.onEvent(EditProfileEvent.EnteredInstagramUrl(it))
                     },
                     hint = stringResource(R.string.instagram),
                     error = when(viewModel.instagramState.value.error){
@@ -139,7 +215,7 @@ fun EditProfileScreen(
                 TwitchTextField(
                     text = viewModel.linkedinState.value.text,
                     onValueChange = {
-                        viewModel.setLinkedinState(state = TwitchTextFieldState(text = it))
+                        viewModel.onEvent(EditProfileEvent.EnteredLinkedinUrl(it))
                     },
                     hint = stringResource(R.string.linkedin),
                     error = when(viewModel.linkedinState.value.error){
@@ -152,7 +228,7 @@ fun EditProfileScreen(
                 TwitchTextField(
                     text = viewModel.githubState.value.text,
                     onValueChange = {
-                        viewModel.setGithubState(state = TwitchTextFieldState(text = it))
+                        viewModel.onEvent(EditProfileEvent.EnteredGithubUrl(it))
                     },
                     hint = stringResource(R.string.github),
                     error = when(viewModel.githubState.value.error){
@@ -165,14 +241,13 @@ fun EditProfileScreen(
                 TwitchTextField(
                     text = viewModel.bioState.value.text,
                     onValueChange = {
-                        viewModel.setBioState(state = TwitchTextFieldState(text = it))
+                        viewModel.onEvent(EditProfileEvent.EnteredBio(it))
                     },
                     hint = stringResource(R.string.bio),
                     error = when(viewModel.bioState.value.error){
                         is EditProfileError.FieldEmpty -> stringResource(R.string.field_cant_be_empty)
                         else -> ""
                     },
-                    leadingIcon = Icons.Default.Description,
                     minLines = 3,
                     maxLines = 3,
                     singleLine = false
@@ -193,14 +268,12 @@ fun EditProfileScreen(
                     horizontalArrangement = Arrangement.spacedBy(SpaceLarge, Alignment.CenterHorizontally),
                     verticalArrangement = Arrangement.spacedBy(SpaceSmall)
                 ) {
-                    availableSkills.forEach { skill ->
-                        val isSelected = selectedSkills.contains(skill)
+                    viewModel.skillsState.value.skills.forEach { skill ->
                         SkillsChips(
-                            text = skill,
-                            selected = isSelected,
-                            enabled = isSelected || selectedSkills.size < 3,
+                            text = skill.name,
+                            selected = skill in viewModel.skillsState.value.selectedSkills,
                             onSelectedChange = {
-                                viewModel.toggleSkillSelection(skill)
+                                viewModel.onEvent(EditProfileEvent.SetSkillsSelected(skill))
                             }
                         )
                     }
@@ -231,7 +304,10 @@ fun BannerEditSection(
             contentDescription = stringResource(R.string.banner_image),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(bannerHeight),
+                .height(bannerHeight)
+                .clickable {
+                    onBannerClick()
+                },
             contentScale = ContentScale.Crop
         )
         Image(
@@ -246,7 +322,10 @@ fun BannerEditSection(
                     width = 2.dp,
                     color = Color.White,
                     shape = CircleShape
-                ),
+                )
+                .clickable{
+                    onProfileImageClick()
+                },
         )
     }
 }

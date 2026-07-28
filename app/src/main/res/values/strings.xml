@@ -72,4 +72,10 @@
     <string name="post_published">Post Published!</string>
     <string name="error_description_blank">Description can\'t be blank</string>
     <string name="error_no_image_provided">Please choose a photo</string>
+    <string name="error_couldnt_load_profile">Oops! couldn\'t load profile</string>
+    <string name="error_couldnt_load_skills">Oops! couldn\'t load skills</string>
+    <string name="error_username_empty">Username can\'t be empty</string>
+    <string name="error_no_banner_provided">Please select your banner image</string>
+    <string name="error_no_profile_provided">Please select your profile image</string>
+    <string name="updated_profile">Profile updated!</string>
 </resources>

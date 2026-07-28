@@ -1,10 +1,13 @@
 package com.madiwist.twitch.di
 
+import com.google.gson.Gson
 import com.madiwist.twitch.feature_profile.data.remote.ProfileApi
 import com.madiwist.twitch.feature_profile.data.repository.ProfileRepositoryImpl
 import com.madiwist.twitch.feature_profile.domain.repository.ProfileRepository
 import com.madiwist.twitch.feature_profile.domain.user_case.GetProfileUseCase
+import com.madiwist.twitch.feature_profile.domain.user_case.GetSkillUseCase
 import com.madiwist.twitch.feature_profile.domain.user_case.ProfileUserCases
+import com.madiwist.twitch.feature_profile.domain.user_case.UpdateProfileUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,8 +34,11 @@ object ProfileModule {
 
     @Provides
     @Singleton
-    fun provideProfileRepository(api: ProfileApi) : ProfileRepository {
-        return ProfileRepositoryImpl(api)
+    fun provideProfileRepository(
+        api: ProfileApi,
+        gson: Gson
+    ) : ProfileRepository {
+        return ProfileRepositoryImpl(api, gson)
     }
 
 
@@ -40,7 +46,9 @@ object ProfileModule {
     @Singleton
     fun provideProfileUseCase(repository: ProfileRepository) : ProfileUserCases {
         return ProfileUserCases(
-            getProfile = GetProfileUseCase(repository)
+            getProfile = GetProfileUseCase(repository),
+            getSkills = GetSkillUseCase(repository),
+            updateProfile = UpdateProfileUseCase(repository)
         )
     }
 

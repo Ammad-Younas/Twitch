@@ -26,6 +26,7 @@ import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
 import com.madiwist.twitch.core.util.toPx
 import com.madiwist.twitch.core.util.Constants
+import com.madiwist.twitch.feature_profile.domain.model.Skill
 
 @Composable
 fun BannerSection(
@@ -33,7 +34,7 @@ fun BannerSection(
     leftIconModifier: Modifier = Modifier,
     rightIconModifier: Modifier = Modifier,
     bannerUrl: String? = null,
-    topSkillUrls : List<String> = emptyList(),
+    topSkillUrls : List<Skill> = emptyList(),
     shouldShowGithub: Boolean = false,
     shouldShowInstagram: Boolean = false,
     shouldShowLinkedIn: Boolean = false,
@@ -77,7 +78,7 @@ fun BannerSection(
                 Image(
                     painter = rememberAsyncImagePainter(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data(skillUrl)
+                            .data(skillUrl.imageUrl)
                             .crossfade(true)
                             .build()
                     ),

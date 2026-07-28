@@ -77,6 +77,21 @@ fun Navigation(
                 snackbarHostState = snackbarHostState,
             )
         }
+        composable(
+            route = Screen.EditProfileScreen.route + "/{userId}",
+            arguments = listOf(
+                navArgument(name = "userId"){
+                    type = NavType.StringType
+                }
+            )
+
+        ) {
+            EditProfileScreen(
+                onNavigate = navController::navigate,
+                onNavigateUp = navController::navigateUp,
+                snackbarHostState = snackbarHostState,
+            )
+        }
         composable(Screen.CreatePostScreen.route) {
             CreatePostScreen(
                 onNavigate = navController::navigate,
@@ -101,12 +116,6 @@ fun Navigation(
         }
         composable(Screen.SearchScreen.route) {
             SearchScreen(
-                onNavigate = navController::navigate,
-                onNavigateUp = navController::navigateUp,
-            )
-        }
-        composable(Screen.EditProfileScreen.route) {
-            EditProfileScreen(
                 onNavigate = navController::navigate,
                 onNavigateUp = navController::navigateUp,
             )

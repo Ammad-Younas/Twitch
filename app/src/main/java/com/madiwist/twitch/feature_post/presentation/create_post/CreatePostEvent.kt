@@ -5,7 +5,6 @@ import android.net.Uri
 
 sealed class CreatePostEvent {
     data class EnterDescription(val value: String) : CreatePostEvent()
-    data class PickImage(val uri: Uri?) : CreatePostEvent()
     data class CropImage(val bitmap: Bitmap?) : CreatePostEvent()
     object PostImage : CreatePostEvent()
 }
