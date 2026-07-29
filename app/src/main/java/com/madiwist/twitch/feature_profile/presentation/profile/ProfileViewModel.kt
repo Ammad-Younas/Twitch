@@ -9,17 +9,21 @@ import androidx.lifecycle.viewModelScope
 import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText
+import com.madiwist.twitch.feature_post.domain.use_case.PostUseCases
 import com.madiwist.twitch.feature_profile.domain.user_case.ProfileUserCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val profileUseCase: ProfileUserCases,
-    savedStateHandle: SavedStateHandle,
+    postUseCases: PostUseCases,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val _profileState = mutableStateOf(ProfileState())
@@ -35,9 +39,14 @@ class ProfileViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-        val userId = savedStateHandle.get<String>("userId") ?: ""
-        getProfile(userId)
+        postUseCases.getPostCreatedEventUseCase()
+            .onEach {
+                val userId = savedStateHandle.get<String>("userId") ?: ""
+                getProfile(userId)
+            }
+            .launchIn(viewModelScope)
     }
+
 
     fun setExpandedRatio(ratio: Float) {
         _expandedRatio.floatValue = ratio
@@ -53,7 +62,7 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    private fun getProfile(userId: String) {
+    fun getProfile(userId: String) {
         viewModelScope.launch {
             _profileState.value = profileState.value.copy(isLoading = true)
             when (val result = profileUseCase.getProfile(userId)) {

@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.madiwist.twitch.R
@@ -13,6 +12,7 @@ import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
 import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText
+import com.madiwist.twitch.core.util.saveBitmapToCache
 import com.madiwist.twitch.feature_post.domain.use_case.CreatePostState
 import com.madiwist.twitch.feature_post.domain.use_case.PostUseCases
 import com.madiwist.twitch.feature_post.presentation.util.PostConstants
@@ -23,8 +23,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -74,7 +72,7 @@ class CreatePostViewModel @Inject constructor(
                     val startTime = System.currentTimeMillis()
 
                     val imageUri: Uri = withContext(Dispatchers.IO) {
-                        saveBitmapToCache(currentBitmap)
+                        getApplication<Application>().saveBitmapToCache(currentBitmap, "post_image")
                     }
                     val result = postUseCases.createPostUseCase(
                         description = currentDescription,
@@ -101,14 +99,5 @@ class CreatePostViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    private fun saveBitmapToCache(bitmap: Bitmap): Uri {
-        val cacheDir = getApplication<Application>().cacheDir
-        val file = File(cacheDir, "post_image_${System.currentTimeMillis()}.jpg")
-        FileOutputStream(file).use { out ->
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
-        }
-        return file.toUri()
     }
 }

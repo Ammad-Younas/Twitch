@@ -60,7 +60,7 @@ fun Post(
     ) {
        AsyncImage(
            model = post.imageUrl?.replace("127.0.0.1", "10.0.2.2"),
-           contentDescription = "Post Image",
+           contentDescription = stringResource(R.string.post_image),
            modifier = Modifier.fillMaxWidth(),
            contentScale = ContentScale.FillWidth,
            placeholder = painterResource(R.drawable.feed_image),

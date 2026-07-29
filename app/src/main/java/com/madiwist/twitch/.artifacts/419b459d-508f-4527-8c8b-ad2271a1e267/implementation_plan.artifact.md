@@ -1,40 +1,43 @@
-# Bug Fix: Profile Navigation and Social Icons
+# Implement Instant Post Updates
 
-This plan addresses two issues:
-1. Navigation to Profile Screen from Posts.
-2. Incorrect display of social icons when URLs are empty strings.
+This plan introduces a refresh mechanism to ensure that new posts appear immediately on the Feed and Profile screens after being published.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> I will be adding `userId` to the `Post` domain model. This assumes that your backend API already provides this field in the JSON response for posts. If it doesn't, we might need to adjust how we identify the user.
-> I will also change the social icon visibility check from `!= null` to `!isNullOrBlank()` to handle empty strings stored in the database.
+> I will be adding a `SharedFlow` to the `PostRepository` to broadcast post creation events. ViewModels will listen to this flow to trigger data refreshes.
+> This will ensure that when you navigate back from `CreatePostScreen`, the `MainFeedScreen` and `ProfileScreen` will already be refreshing or have refreshed.
 
 ## Proposed Changes
 
-### Core Domain Models
-#### [MODIFY] [Post.kt](file:///D:/MaDi/Practice/App_Development/Twitch/app/src/main/java/com/madiwist/twitch/core/domain/models/Post.kt)
-- Add `userId: String?` to the `Post` data class.
-
 ### Feature: Post
-#### [MODIFY] [Post.kt](file:///D:/MaDi/Practice/App_Development/Twitch/app/src/main/java/com/madiwist/twitch/feature_post/domain/util/Post.kt)
-- Update the `Post` composable to accept an `onUsernameClick` callback that passes the `userId`.
-- Implement the click listener on the username text.
+Implementing the refresh event mechanism.
 
-#### [MODIFY] [MainFeedScreen.kt](file:///D:/MaDi/Practice/App_Development/Twitch/app/src/main/java/com/madiwist/twitch/feature_post/presentation/main_feed/MainFeedScreen.kt)
-- Pass a navigation lambda to the `Post` component that navigates to the `ProfileScreen` with the correct `userId`.
+#### [MODIFY] [PostRepository.kt](file:///D:/MaDi/Practice/App_Development/Twitch/app/src/main/java/com/madiwist/twitch/feature_post/domain/repository/PostRepository.kt)
+- Add `val onPostCreated: SharedFlow<Unit>` to the interface.
+
+#### [MODIFY] [PostRepositoryImpl.kt](file:///D:/MaDi/Practice/App_Development/Twitch/app/src/main/java/com/madiwist/twitch/feature_post/data/repository/PostRepositoryImpl.kt)
+- Implement `onPostCreated` as a `MutableSharedFlow`.
+- Emit a value to this flow after a successful `createPost` API call.
+
+#### [MODIFY] [MainFeedViewModel.kt](file:///D:/MaDi/Practice/App_Development/Twitch/app/src/main/java/com/madiwist/twitch/feature_post/presentation/main_feed/MainFeedViewModel.kt)
+- In `init`, collect the `onPostCreated` flow from the repository.
+- When a value is received, trigger a refresh of the paging data (we might need a way to reach the `LazyPagingItems` or just expose a refresh trigger).
+- *Alternative*: Just expose the flow to the UI and let `MainFeedScreen` call `posts.refresh()`.
+
+#### [MODIFY] [CreatePostViewModel.kt](file:///D:/MaDi/Practice/App_Development/Twitch/app/src/main/java/com/madiwist/twitch/feature_post/presentation/create_post/CreatePostViewModel.kt)
+- No changes needed here if `PostRepositoryImpl` handles the emission inside `createPost`.
 
 ### Feature: Profile
-#### [MODIFY] [ProfileScreen.kt](file:///D:/MaDi/Practice/App_Development/Twitch/app/src/main/java/com/madiwist/twitch/feature_profile/presentation/profile/ProfileScreen.kt)
-- Update the `BannerSection` call to use `!isNullOrBlank()` for social link visibility checks.
-
-#### [MODIFY] [BannerSection.kt](file:///D:/MaDi/Practice/App_Development/Twitch/app/src/main/java/com/madiwist/twitch/feature_profile/presentation/profile/components/BannerSection.kt)
-- (Optional) Ensure the `BannerSection` itself is robust against empty strings if needed, though the check in `ProfileScreen` should suffice.
+#### [MODIFY] [ProfileViewModel.kt](file:///D:/MaDi/Practice/App_Development/Twitch/app/src/main/java/com/madiwist/twitch/feature_profile/presentation/profile/ProfileViewModel.kt)
+- Collect `onPostCreated` flow from `PostRepository`.
+- Call `getProfile()` when a new post is created to update post counts (and eventually actual user posts).
 
 ## Verification Plan
 
 ### Manual Verification
-1. Open the app and go to the Main Feed.
-2. Click on a username in a post. Verify it navigates to that user's profile.
-3. Go to your own Profile. Verify that only icons for non-empty social links are displayed (as per the MongoDB state in your screenshot).
-4. Go to Edit Profile, clear a social link, and save. Verify the icon disappears from the Profile screen.
+1. Open the app to the Main Feed.
+2. Click the FAB to Create Post.
+3. Publish a post.
+4. Verify that you are navigated back and the Feed automatically refreshes to show the new post at the top.
+5. Go to your Profile and verify the post count has increased (if applicable) or the post list is updated.

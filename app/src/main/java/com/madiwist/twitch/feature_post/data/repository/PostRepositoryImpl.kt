@@ -17,6 +17,9 @@ import com.madiwist.twitch.feature_post.data.remote.PostApi
 import com.madiwist.twitch.feature_post.data.remote.request.CreatePostRequest
 import com.madiwist.twitch.feature_post.domain.repository.PostRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
@@ -26,6 +29,10 @@ class PostRepositoryImpl (
     private val api: PostApi,
     private val gson: Gson,
 ) : PostRepository {
+
+    private val _onPostCreated = MutableSharedFlow<Unit>()
+    override val onPostCreated: SharedFlow<Unit> = _onPostCreated.asSharedFlow()
+
     override val posts: Flow<PagingData<Post>>
         get() = Pager(PagingConfig(pageSize = Constants.PAGE_SIZE_POSTS)) {
             PostSource(api)
@@ -47,6 +54,7 @@ class PostRepositoryImpl (
                 )
             )
             if (response.success) {
+                _onPostCreated.emit(Unit)
                 Resource.Success(Unit)
             } else {
                 response.message?.let { msg ->

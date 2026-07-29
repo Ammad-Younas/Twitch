@@ -1,2 +1,6 @@
-- [x] Fix social icons visibility (use `!isNullOrBlank()`)
-- [ ] Implement Profile navigation from Posts (Pending user decision)
+- [ ] Update `PostRepository` with `onPostCreated` event flow
+- [ ] Emit event in `PostRepositoryImpl` after successful post creation
+- [ ] Handle refresh in `MainFeedViewModel`
+- [ ] Handle refresh in `ProfileViewModel`
+- [ ] Update UI to trigger paging refresh (if needed)
+- [ ] Verify instant updates

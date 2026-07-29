@@ -68,7 +68,7 @@
     <string name="successfully_registered">Successfully Registered!</string>
     <string name="invalid_credential">Invalid Credentials!</string>
     <string name="file_not_found">File not found</string>
-    <string name="post_imag">Post Image</string>
+    <string name="post_image">Post Image</string>
     <string name="post_published">Post Published!</string>
     <string name="error_description_blank">Description can\'t be blank</string>
     <string name="error_no_image_provided">Please choose a photo</string>
@@ -78,4 +78,8 @@
     <string name="error_no_banner_provided">Please select your banner image</string>
     <string name="error_no_profile_provided">Please select your profile image</string>
     <string name="updated_profile">Profile updated!</string>
+    <string name="logout">Logout</string>
+    <string name="error_invalid_github_url">Invalid GitHub URL</string>
+    <string name="error_invalid_instagram_url">Invalid Instagram URL</string>
+    <string name="error_invalid_linkedin_url">Invalid Linkedin URL</string>
 </resources>

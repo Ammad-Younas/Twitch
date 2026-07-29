@@ -19,6 +19,11 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -67,6 +72,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ProfileScreen(
+    userId: String,
     snackbarHostState: SnackbarHostState,
     onNavigate: (String) -> Unit = {},
     onNavigateUp: () -> Unit = {},
@@ -116,6 +122,7 @@ fun ProfileScreen(
 
 
     LaunchedEffect(key1 = true) {
+        viewModel.getProfile(userId)
         viewModel.eventFlow.collectLatest { event ->
             when(event) {
                 is UiEvent.SnackbarEvent -> {
@@ -140,6 +147,32 @@ fun ProfileScreen(
                 Text(stringResource(R.string.your_profile))
             },
             showBackArrow = false,
+            navActions = {
+                profileState.profile?.let { profile ->
+                    if (profile.isOwnProfile) {
+                        IconButton(
+                            onClick = {
+
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.Logout,
+                                contentDescription = stringResource(R.string.logout)
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                onNavigate(Screen.EditProfileScreen.route + "/${profile.userId}")
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Edit,
+                                contentDescription = stringResource(R.string.edit)
+                            )
+                        }
+                    }
+                }
+            }
         )
         Column(
             modifier = Modifier
@@ -169,8 +202,7 @@ fun ProfileScreen(
                                     followerCount = profile.followerCount,
                                     followingCount = profile.followingCount
                                 ),
-                                isOwnProfile = profile.isOwnProfile,
-                                onEditClick = { onNavigate(Screen.EditProfileScreen.route + "/${profile.userId}") }
+                                isOwnProfile = profile.isOwnProfile
                             )
                         }
                     }
@@ -184,10 +216,9 @@ fun ProfileScreen(
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center
                         )
-                        Spacer(Modifier.height(SpaceLarge))
+                        Spacer(Modifier.height(SpaceSmall))
                     }
                     items(20){
-
                         Column(modifier = Modifier.fillMaxSize().padding(SpaceMedium)) {
                             Post(
                                 post = Post(

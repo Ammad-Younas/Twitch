@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +32,7 @@ import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.navigation.Screen
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
+import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.feature_post.domain.util.Post
 import kotlinx.coroutines.launch
 
@@ -44,6 +46,17 @@ fun MainFeedScreen (
     val posts = viewModel.posts.collectAsLazyPagingItems()
     val mainFeedState = viewModel.mainfeedState.value
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collect { event ->
+            when (event) {
+                is UiEvent.Refresh -> {
+                    posts.refresh()
+                }
+                else -> Unit
+            }
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()

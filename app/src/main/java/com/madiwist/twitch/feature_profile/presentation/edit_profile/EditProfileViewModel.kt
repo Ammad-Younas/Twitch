@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -14,7 +13,7 @@ import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
 import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText
-import com.madiwist.twitch.feature_profile.domain.model.Skill
+import com.madiwist.twitch.core.util.saveBitmapToCache
 import com.madiwist.twitch.feature_profile.domain.model.UpdateProfileData
 import com.madiwist.twitch.feature_profile.domain.user_case.ProfileUserCases
 import com.madiwist.twitch.feature_profile.presentation.profile.ProfileState
@@ -24,8 +23,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
 import javax.inject.Inject
 
 @HiltViewModel
@@ -88,10 +85,8 @@ class EditProfileViewModel @Inject constructor(
                     }
 
                     _usernameState.value = usernameState.value.copy(text = profile.username)
-                    _instagramState.value =
-                        _instagramState.value.copy(text = profile.instagramUrl ?: "")
-                    _linkedinState.value =
-                        _linkedinState.value.copy(text = profile.linkedInUrl ?: "")
+                    _instagramState.value = _instagramState.value.copy(text = profile.instagramUrl ?: "")
+                    _linkedinState.value = _linkedinState.value.copy(text = profile.linkedInUrl ?: "")
                     _githubState.value = _githubState.value.copy(text = profile.gitHubUrl ?: "")
                     _bioState.value = bioState.value.copy(text = profile.bio)
 
@@ -129,8 +124,7 @@ class EditProfileViewModel @Inject constructor(
                             )
                         )
                         return@launch
-                    }
-                    )
+                    })
                 }
 
                 is Resource.Error -> {
@@ -151,12 +145,12 @@ class EditProfileViewModel @Inject constructor(
             _profileState.value = profileState.value.copy(isLoading = true)
             val bannerImageUri: Uri? = bannerImageBitmap?.let {
                 withContext(Dispatchers.IO) {
-                    saveBitmapToCache("banner", it)
+                    getApplication<Application>().saveBitmapToCache(it, "banner")
                 }
             }
             val profileImageUri: Uri? = profileImageBitmap?.let {
                 withContext(Dispatchers.IO) {
-                    saveBitmapToCache("profile", it)
+                    getApplication<Application>().saveBitmapToCache(it, "profile")
                 }
             }
             val result = profileUseCase.updateProfile(
@@ -215,7 +209,6 @@ class EditProfileViewModel @Inject constructor(
 
             is EditProfileEvent.CropBannerImage -> {
                 _bannerImageCroppedBitmap.value = event.bitmap
-
             }
 
             is EditProfileEvent.CropProfileImage -> {
@@ -223,35 +216,17 @@ class EditProfileViewModel @Inject constructor(
             }
 
             is EditProfileEvent.SetSkillsSelected -> {
-                toggleSkillSelection(event.skill)
+                _skillsState.value = skillsState.value.copy(
+                    selectedSkills = profileUseCase.setSkills(
+                        currentSelectedSkills = skillsState.value.selectedSkills,
+                        skill = event.skill
+                    )
+                )
             }
 
             is EditProfileEvent.UpdateProfile -> {
                 updateProfile(bannerImageCroppedBitmap.value, profilePictureCroppedBitmap.value)
             }
         }
-    }
-
-
-    private fun toggleSkillSelection(skill: Skill) {
-        val currentSelectedSkills = skillsState.value.selectedSkills
-        if (currentSelectedSkills.contains(skill)) {
-            _skillsState.value = skillsState.value.copy(
-                selectedSkills = currentSelectedSkills - skill
-            )
-        } else if (currentSelectedSkills.size < 3) {
-            _skillsState.value = skillsState.value.copy(
-                selectedSkills = currentSelectedSkills + skill
-            )
-        }
-    }
-
-    private fun saveBitmapToCache(name: String, bitmap: Bitmap): Uri {
-        val cacheDir = getApplication<Application>().cacheDir
-        val file = File(cacheDir, "${name}_${System.currentTimeMillis()}.jpg")
-        FileOutputStream(file).use { out ->
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
-        }
-        return file.toUri()
     }
 }

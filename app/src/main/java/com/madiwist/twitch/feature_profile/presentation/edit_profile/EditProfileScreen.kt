@@ -271,11 +271,19 @@ fun EditProfileScreen(
                     horizontalArrangement = Arrangement.spacedBy(SpaceLarge, Alignment.CenterHorizontally),
                     verticalArrangement = Arrangement.spacedBy(SpaceSmall)
                 ) {
+
+                    val selectedSkills = viewModel.skillsState.value.selectedSkills
+                    val hasReachedLimit = selectedSkills.size >= 3
+
                     viewModel.skillsState.value.skills.forEach { skill ->
+
+                        val isSelected = skill in selectedSkills
+
                         SkillsChips(
                             text = skill.name,
-                            selected = skill in viewModel.skillsState.value.selectedSkills,
-                            onSelectedChange = {
+                            selected = isSelected,
+                            enabled = isSelected || !hasReachedLimit,
+                            onChipClick = {
                                 viewModel.onEvent(EditProfileEvent.SetSkillsSelected(skill))
                             }
                         )

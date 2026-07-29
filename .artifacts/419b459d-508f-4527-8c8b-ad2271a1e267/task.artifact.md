@@ -1,0 +1,3 @@
+- [x] Update `MainFeedViewModel` to use a more reliable event flow for refreshes
+- [x] Ensure `PostRepositoryImpl` emits the event correctly
+- [x] Verify instant updates without app restart

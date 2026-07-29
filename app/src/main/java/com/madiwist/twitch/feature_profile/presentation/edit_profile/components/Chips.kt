@@ -18,10 +18,10 @@ fun SkillsChips(
     text: String,
     selected: Boolean = false,
     enabled: Boolean = true,
-    onSelectedChange: (Boolean) -> Unit,
+    onChipClick: (Boolean) -> Unit,
 ) {
     FilterChip(
-        onClick = { onSelectedChange(!selected) },
+        onClick = { onChipClick(!selected) },
         label = {
             Text(text)
         },

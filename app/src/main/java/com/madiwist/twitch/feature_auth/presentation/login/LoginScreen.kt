@@ -75,7 +75,7 @@ fun LoginScreen(
                 is UiEvent.Navigate -> {
                     onNavigate(event.route)
                 }
-                is UiEvent.NavigateUp -> Unit
+                else -> Unit
             }
         }
     }

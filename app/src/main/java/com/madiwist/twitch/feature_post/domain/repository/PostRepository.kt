@@ -5,10 +5,12 @@ import androidx.paging.PagingData
 import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.core.util.SimpleResource
 import kotlinx.coroutines.flow.Flow
-import java.io.File
+import kotlinx.coroutines.flow.SharedFlow
 
 interface PostRepository {
+
     val posts : Flow<PagingData<Post>>
+    val onPostCreated: SharedFlow<Unit>
 
     suspend fun createPost(description: String, imageUri: Uri) : SimpleResource
 }

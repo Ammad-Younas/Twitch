@@ -98,6 +98,7 @@ fun CreatePostScreen(
                 is UiEvent.Navigate -> {
                     onNavigate(event.route)
                 }
+                else -> Unit
             }
         }
     }
@@ -135,7 +136,7 @@ fun CreatePostScreen(
                 croppedBitmap?.let { bmp ->
                     Image(
                         bitmap = bmp.asImageBitmap(),
-                        contentDescription = stringResource(R.string.post_imag),
+                        contentDescription = stringResource(R.string.post_image),
                         modifier = Modifier.matchParentSize(),
                         contentScale = ContentScale.Crop,
                     )
