@@ -117,7 +117,7 @@ fun EditProfileScreen(
     LaunchedEffect(Unit) {
         viewModel.eventFlow.collect { event ->
             when (event) {
-                is UiEvent.SnackbarEvent -> {
+                is UiEvent.ShowSnackBar -> {
                     snackbarHostState.showSnackbar(
                         message = event.uiText.asString(context),
                         duration = SnackbarDuration.Short

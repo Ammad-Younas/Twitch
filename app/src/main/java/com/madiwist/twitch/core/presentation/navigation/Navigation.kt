@@ -48,6 +48,7 @@ fun Navigation(
                 onNavigateUp = navController::navigateUp,
                 snackbarHostState = snackbarHostState
             )
+
         }
         composable(Screen.ChatScreen.route) {
             ChatScreen(

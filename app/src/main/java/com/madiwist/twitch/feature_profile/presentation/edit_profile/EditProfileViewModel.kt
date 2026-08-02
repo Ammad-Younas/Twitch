@@ -77,7 +77,7 @@ class EditProfileViewModel @Inject constructor(
                 is Resource.Success -> {
                     val profile = result.data ?: run {
                         _eventFlow.emit(
-                            UiEvent.SnackbarEvent(
+                            UiEvent.ShowSnackBar(
                                 UiText.StringResource(R.string.error_couldnt_load_profile)
                             )
                         )
@@ -101,7 +101,7 @@ class EditProfileViewModel @Inject constructor(
                 is Resource.Error -> {
                     _profileState.value = profileState.value.copy(isLoading = false)
                     _eventFlow.emit(
-                        UiEvent.SnackbarEvent(
+                        UiEvent.ShowSnackBar(
                             uiText = result.uiText ?: UiText.unknownError()
                         )
                     )
@@ -119,7 +119,7 @@ class EditProfileViewModel @Inject constructor(
                 is Resource.Success -> {
                     _skillsState.value = skillsState.value.copy(skills = result.data ?: run {
                         _eventFlow.emit(
-                            UiEvent.SnackbarEvent(
+                            UiEvent.ShowSnackBar(
                                 uiText = UiText.StringResource(R.string.error_couldnt_load_skills)
                             )
                         )
@@ -129,7 +129,7 @@ class EditProfileViewModel @Inject constructor(
 
                 is Resource.Error -> {
                     _eventFlow.emit(
-                        UiEvent.SnackbarEvent(
+                        UiEvent.ShowSnackBar(
                             uiText = result.uiText ?: UiText.unknownError()
                         )
                     )
@@ -168,13 +168,13 @@ class EditProfileViewModel @Inject constructor(
             when (result) {
                 is Resource.Success -> {
                     _profileState.value = profileState.value.copy(isLoading = false)
-                    _eventFlow.emit(UiEvent.SnackbarEvent(UiText.StringResource(R.string.updated_profile)))
+                    _eventFlow.emit(UiEvent.ShowSnackBar(UiText.StringResource(R.string.updated_profile)))
                     _eventFlow.emit(UiEvent.NavigateUp)
                 }
                 is Resource.Error -> {
                     _profileState.value = profileState.value.copy(isLoading = false)
                     _eventFlow.emit(
-                        UiEvent.SnackbarEvent(
+                        UiEvent.ShowSnackBar(
                             uiText = result.uiText ?: UiText.unknownError()
                         )
                     )

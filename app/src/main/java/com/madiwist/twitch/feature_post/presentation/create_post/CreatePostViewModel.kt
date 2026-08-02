@@ -57,13 +57,13 @@ class CreatePostViewModel @Inject constructor(
                 val currentDescription = descriptionState.value.text
                 if (currentBitmap == null) {
                     _eventFlow.tryEmit(
-                        UiEvent.SnackbarEvent(UiText.StringResource(R.string.error_no_image_provided))
+                        UiEvent.ShowSnackBar(UiText.StringResource(R.string.error_no_image_provided))
                     )
                     return
                 }
                 if (currentDescription.isBlank()) {
                     _eventFlow.tryEmit(
-                        UiEvent.SnackbarEvent(UiText.StringResource(R.string.error_description_blank))
+                        UiEvent.ShowSnackBar(UiText.StringResource(R.string.error_description_blank))
                     )
                     return
                 }
@@ -85,12 +85,12 @@ class CreatePostViewModel @Inject constructor(
                     _createPostState.value = CreatePostState(isLoading = false)
                     when (result) {
                         is Resource.Success -> {
-                            _eventFlow.emit(UiEvent.SnackbarEvent(UiText.StringResource(R.string.post_published)))
+                            _eventFlow.emit(UiEvent.ShowSnackBar(UiText.StringResource(R.string.post_published)))
                             _eventFlow.emit(UiEvent.NavigateUp)
                         }
                         is Resource.Error -> {
                             _eventFlow.emit(
-                                UiEvent.SnackbarEvent(
+                                UiEvent.ShowSnackBar(
                                     uiText = result.uiText ?: UiText.unknownError()
                                 )
                             )

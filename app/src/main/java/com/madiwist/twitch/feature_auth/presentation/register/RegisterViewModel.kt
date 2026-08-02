@@ -94,7 +94,7 @@ class RegisterViewModel @Inject constructor(
             when (registerResult.result) {
                 is Resource.Success -> {
                     _eventFlow.emit(
-                        UiEvent.SnackbarEvent(UiText.StringResource(R.string.successfully_registered))
+                        UiEvent.ShowSnackBar(UiText.StringResource(R.string.successfully_registered))
                     )
                     _registerState.value = RegisterState(isLoading = false)
                     _usernameState.value = TwitchTextFieldState()
@@ -103,7 +103,7 @@ class RegisterViewModel @Inject constructor(
                 }
                 is Resource.Error -> {
                     _eventFlow.emit(
-                        UiEvent.SnackbarEvent(registerResult.result.uiText ?: UiText.unknownError())
+                        UiEvent.ShowSnackBar(registerResult.result.uiText ?: UiText.unknownError())
                     )
                     _registerState.value = RegisterState(isLoading = false)
                 }

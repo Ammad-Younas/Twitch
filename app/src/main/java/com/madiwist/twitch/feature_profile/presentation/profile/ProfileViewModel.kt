@@ -75,7 +75,7 @@ class ProfileViewModel @Inject constructor(
                 is Resource.Error -> {
                     _profileState.value = profileState.value.copy(isLoading = false)
                     _eventFlow.emit(
-                        UiEvent.SnackbarEvent(
+                        UiEvent.ShowSnackBar(
                             uiText = result.uiText ?: UiText.unknownError()
                         )
                     )
