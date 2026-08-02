@@ -7,13 +7,13 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.google.gson.Gson
 import com.madiwist.twitch.R
+import com.madiwist.twitch.core.data.remote.PostApi
 import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.SimpleResource
 import com.madiwist.twitch.core.util.UiText
 import com.madiwist.twitch.feature_post.data.paging.PostSource
-import com.madiwist.twitch.feature_post.data.remote.PostApi
 import com.madiwist.twitch.feature_post.data.remote.request.CreatePostRequest
 import com.madiwist.twitch.feature_post.domain.repository.PostRepository
 import kotlinx.coroutines.flow.Flow
@@ -33,9 +33,9 @@ class PostRepositoryImpl (
     private val _onPostCreated = MutableSharedFlow<Unit>()
     override val onPostCreated: SharedFlow<Unit> = _onPostCreated.asSharedFlow()
 
-    override val posts: Flow<PagingData<Post>>
+        override val posts: Flow<PagingData<Post>>
         get() = Pager(PagingConfig(pageSize = Constants.PAGE_SIZE_POSTS)) {
-            PostSource(api)
+            PostSource(api, PostSource.Source.Follows)
         }.flow
 
     override suspend fun createPost(

@@ -1,7 +1,7 @@
 package com.madiwist.twitch.di
 
 import com.google.gson.Gson
-import com.madiwist.twitch.feature_post.data.remote.PostApi
+import com.madiwist.twitch.core.data.remote.PostApi
 import com.madiwist.twitch.feature_post.data.repository.PostRepositoryImpl
 import com.madiwist.twitch.feature_post.domain.repository.PostRepository
 import com.madiwist.twitch.feature_post.domain.use_case.CreatePostUseCase
@@ -47,7 +47,8 @@ object PostModule {
         return PostUseCases(
             getPostsForFollowsUseCase = GetPostsForFollowsUseCase(repository),
             createPostUseCase = CreatePostUseCase(repository),
-            getPostCreatedEventUseCase = GetPostCreatedEventUseCase(repository)
+            getPostCreatedEventUseCase = GetPostCreatedEventUseCase(repository),
+
         )
     }
 }

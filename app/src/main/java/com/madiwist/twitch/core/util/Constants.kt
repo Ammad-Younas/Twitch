@@ -3,7 +3,7 @@ package com.madiwist.twitch.core.util
 import androidx.compose.ui.unit.dp
 
 object Constants {
-    const val SPLASH_SCREEN_DURATION = 300L
+//    const val SPLASH_SCREEN_DURATION = 300L
     const val MAX_POST_DESCRIPTION_LINES = 3
 
     val ENGAGEMENT_ICON_SIZE = 30.dp

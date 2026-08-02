@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -50,11 +51,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.madiwist.twitch.R
-import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.core.domain.models.User
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.navigation.Screen
@@ -65,7 +67,7 @@ import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.core.presentation.util.asString
 import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.core.util.toPx
-import com.madiwist.twitch.feature_post.domain.util.Post
+import com.madiwist.twitch.feature_post.domain.util.PostItem
 import com.madiwist.twitch.feature_profile.presentation.profile.components.BannerSection
 import com.madiwist.twitch.feature_profile.presentation.profile.components.ProfileHeaderSection
 import kotlinx.coroutines.flow.collectLatest
@@ -78,6 +80,8 @@ fun ProfileScreen(
     onNavigateUp: () -> Unit = {},
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
+    val posts = viewModel.posts.collectAsLazyPagingItems()
+
     val toolBarHeightCollapsed = 100.dp
     val lazyListState = rememberLazyListState()
 
@@ -130,6 +134,9 @@ fun ProfileScreen(
                         message = event.uiText.asString(context),
                         duration = SnackbarDuration.Short
                     )
+                }
+                is UiEvent.Refresh -> {
+                    posts.refresh()
                 }
                 else -> Unit
             }
@@ -218,19 +225,46 @@ fun ProfileScreen(
                         )
                         Spacer(Modifier.height(SpaceSmall))
                     }
-                    items(20){
-                        Column(modifier = Modifier.fillMaxSize().padding(SpaceMedium)) {
-                            Post(
-                                post = Post(
-                                    username = "MADI",
-                                    imageUrl = "",
-                                    description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers",
-                                    likeCount = 23,
-                                    commentCount = 15,
-                                    timestamp = System.currentTimeMillis()
-                                ),
-                                onPostClick = { onNavigate(Screen.PostDetailsScreen.route) }
-                            )
+                    item {
+                        when (posts.loadState.refresh) {
+                            is LoadState.Loading -> {
+                                Box(modifier = Modifier.fillMaxWidth().padding(SpaceMedium), contentAlignment = Alignment.Center) {
+                                    CircularProgressIndicator()
+                                }
+                            }
+                            else -> {
+                                if (posts.itemCount == 0) {
+                                    Text(
+                                        modifier = Modifier.fillMaxWidth().padding(SpaceLarge),
+                                        text = stringResource(R.string.no_posts_found),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        textAlign = TextAlign.Center,
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    items(posts.itemCount) { index ->
+                        val post = posts[index]
+                        post?.let {
+                            Column(modifier = Modifier.fillMaxSize().padding(SpaceMedium)) {
+                                PostItem(
+                                    post = it,
+                                    onPostClick = { onNavigate(Screen.PostDetailsScreen.route) }
+                                )
+                            }
+                        }
+                    }
+
+                    item {
+                        when (posts.loadState.append) {
+                            is LoadState.Loading -> {
+                                Box(modifier = Modifier.fillMaxWidth().padding(SpaceMedium), contentAlignment = Alignment.Center) {
+                                    CircularProgressIndicator()
+                                }
+                            }
+                            else -> Unit
                         }
                     }
                 }

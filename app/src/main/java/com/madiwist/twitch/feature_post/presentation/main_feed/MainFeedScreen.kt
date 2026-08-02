@@ -33,7 +33,7 @@ import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.navigation.Screen
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
 import com.madiwist.twitch.core.presentation.util.UiEvent
-import com.madiwist.twitch.feature_post.domain.util.Post
+import com.madiwist.twitch.feature_post.domain.util.PostItem
 import kotlinx.coroutines.launch
 
 @Composable
@@ -105,7 +105,7 @@ fun MainFeedScreen (
                 items(posts.itemCount) { index ->
                     val post = posts[index]
                     post?.let {
-                        Post(
+                        PostItem(
                             post = it,
                             onPostClick = {
                                 onNavigate(Screen.PostDetailsScreen.route)

@@ -1,9 +1,11 @@
 package com.madiwist.twitch.di
 
 import com.google.gson.Gson
+import com.madiwist.twitch.core.data.remote.PostApi
 import com.madiwist.twitch.feature_profile.data.remote.ProfileApi
 import com.madiwist.twitch.feature_profile.data.repository.ProfileRepositoryImpl
 import com.madiwist.twitch.feature_profile.domain.repository.ProfileRepository
+import com.madiwist.twitch.feature_profile.domain.user_case.GetPostsForProfileUserCase
 import com.madiwist.twitch.feature_profile.domain.user_case.GetProfileUseCase
 import com.madiwist.twitch.feature_profile.domain.user_case.GetSkillUseCase
 import com.madiwist.twitch.feature_profile.domain.user_case.ProfileUserCases
@@ -36,10 +38,11 @@ object ProfileModule {
     @Provides
     @Singleton
     fun provideProfileRepository(
-        api: ProfileApi,
+        profileApi: ProfileApi,
+        postApi: PostApi,
         gson: Gson
     ) : ProfileRepository {
-        return ProfileRepositoryImpl(api, gson)
+        return ProfileRepositoryImpl(profileApi, postApi, gson)
     }
 
 
@@ -50,7 +53,8 @@ object ProfileModule {
             getProfile = GetProfileUseCase(repository),
             getSkills = GetSkillUseCase(repository),
             updateProfile = UpdateProfileUseCase(repository),
-            setSkills = SetSkillSelectedUseCase()
+            setSkills = SetSkillSelectedUseCase(),
+            getPosts = GetPostsForProfileUserCase(repository)
         )
     }
 

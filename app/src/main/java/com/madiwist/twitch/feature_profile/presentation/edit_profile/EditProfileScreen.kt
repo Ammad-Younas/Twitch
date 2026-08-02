@@ -2,6 +2,7 @@ package com.madiwist.twitch.feature_profile.presentation.edit_profile
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,6 +24,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material3.Icon
@@ -46,8 +47,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -69,7 +68,6 @@ import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
 import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.core.presentation.util.asString
-import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.feature_profile.presentation.edit_profile.components.SkillsChips
 import com.madiwist.twitch.feature_profile.presentation.util.EditProfileError
 
@@ -298,60 +296,84 @@ fun EditProfileScreen(
 fun BannerEditSection(
     bannerImage: Painter,
     profileImage: Painter,
-    onBannerClick: () -> Unit = {},
-    onProfileImageClick: () -> Unit = {},
+    onBannerClick: () -> Unit,
+    onProfileImageClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val containerWidth = LocalWindowInfo.current.containerSize.width
-    val bannerHeight = with(LocalDensity.current) { (containerWidth.toDp() / 2.5f) }
+    val bannerHeight = 180.dp
+    val profilePictureSize = 100.dp
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .height(bannerHeight + Constants.PROFILE_PICTURE_SIZE_LARGE / 2f),
-        contentAlignment = Alignment.TopCenter
+            .height(bannerHeight + (profilePictureSize / 2))
     ) {
-        Image(
-            painter = bannerImage,
-            contentDescription = stringResource(R.string.banner_image),
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(bannerHeight)
-                .clickable {
-                    onBannerClick()
-                },
-            contentScale = ContentScale.Crop
-        )
-        Image(
-            painter = profileImage,
-            contentDescription = stringResource(R.string.profile_image),
+                .clickable { onBannerClick() }
+        ) {
+            Image(
+                painter = bannerImage,
+                contentDescription = stringResource(R.string.banner_image),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.3f))
+            )
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(SpaceSmall)
+                    .size(36.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f))
+                    .clickable { onBannerClick() },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = stringResource(R.string.edit),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+        Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .size(Constants.PROFILE_PICTURE_SIZE_LARGE)
-                .aspectRatio(1f)
-                .clip(CircleShape)
+                .size(profilePictureSize)
                 .border(
-                    width = 2.dp,
-                    color = Color.White,
+                    width = 3.dp,
+                    color = MaterialTheme.colorScheme.background,
                     shape = CircleShape
                 )
-                .clickable{
-                    onProfileImageClick()
-                },
-        )
+                .clip(CircleShape)
+                .clickable { onProfileImageClick() }
+        ) {
+            Image(
+                painter = profileImage,
+                contentDescription = stringResource(R.string.profile_image),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.4f))
+            )
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = stringResource(R.string.edit),
+                tint = Color.White,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(24.dp)
+            )
+        }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

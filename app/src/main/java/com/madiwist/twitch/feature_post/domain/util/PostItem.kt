@@ -43,7 +43,7 @@ import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
 import com.madiwist.twitch.core.util.Constants
 
 @Composable
-fun Post(
+fun PostItem(
     post: Post,
     onPostClick: () -> Unit = {}
 ) {

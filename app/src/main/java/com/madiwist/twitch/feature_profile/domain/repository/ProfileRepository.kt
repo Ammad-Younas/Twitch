@@ -1,13 +1,21 @@
 package com.madiwist.twitch.feature_profile.domain.repository
 
 import android.net.Uri
+import androidx.paging.PagingData
+import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.SimpleResource
 import com.madiwist.twitch.feature_profile.domain.model.Profile
 import com.madiwist.twitch.feature_profile.domain.model.Skill
 import com.madiwist.twitch.feature_profile.domain.model.UpdateProfileData
+import kotlinx.coroutines.flow.Flow
 
 interface ProfileRepository {
+
+//    val posts : Flow<PagingData<Post>>
+
+    fun getPostsPaged(userId: String) : Flow<PagingData<Post>>
+
     suspend fun getProfile(userId: String): Resource<Profile>
     suspend fun getSkills(): Resource<List<Skill>>
     suspend fun updateProfile(

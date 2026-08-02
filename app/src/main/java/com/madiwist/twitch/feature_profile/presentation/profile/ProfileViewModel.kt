@@ -6,14 +6,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText
 import com.madiwist.twitch.feature_post.domain.use_case.PostUseCases
 import com.madiwist.twitch.feature_profile.domain.user_case.ProfileUserCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -23,7 +28,7 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val profileUseCase: ProfileUserCases,
     postUseCases: PostUseCases,
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val _profileState = mutableStateOf(ProfileState())
@@ -35,14 +40,24 @@ class ProfileViewModel @Inject constructor(
     private val _expandedRatio = mutableFloatStateOf(1f)
     val expandedRatio: State<Float> = _expandedRatio
 
-    private val _eventFlow = MutableSharedFlow<UiEvent>()
+    private val _eventFlow = MutableSharedFlow<UiEvent>(replay = 1)
     val eventFlow = _eventFlow.asSharedFlow()
+
+    private val _userId = MutableStateFlow(savedStateHandle.get<String>("userId") ?: "")
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val posts = _userId
+        .filter { it.isNotEmpty() }
+        .flatMapLatest { userId ->
+            profileUseCase.getPosts(userId)
+        }.cachedIn(viewModelScope)
 
     init {
         postUseCases.getPostCreatedEventUseCase()
             .onEach {
-                val userId = savedStateHandle.get<String>("userId") ?: ""
+                val userId = _userId.value
                 getProfile(userId)
+                _eventFlow.emit(UiEvent.Refresh)
             }
             .launchIn(viewModelScope)
     }
@@ -67,10 +82,16 @@ class ProfileViewModel @Inject constructor(
             _profileState.value = profileState.value.copy(isLoading = true)
             when (val result = profileUseCase.getProfile(userId)) {
                 is Resource.Success -> {
+                    val profile = result.data
                     _profileState.value = profileState.value.copy(
-                        profile = result.data,
+                        profile = profile,
                         isLoading = false
                     )
+                    profile?.userId?.let { id ->
+                        if (_userId.value != id) {
+                            _userId.value = id
+                        }
+                    }
                 }
                 is Resource.Error -> {
                     _profileState.value = profileState.value.copy(isLoading = false)
