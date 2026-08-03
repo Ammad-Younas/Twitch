@@ -63,8 +63,6 @@ fun PostItem(
            contentDescription = stringResource(R.string.post_image),
            modifier = Modifier.fillMaxWidth(),
            contentScale = ContentScale.FillWidth,
-           placeholder = painterResource(R.drawable.feed_image),
-           error = painterResource(R.drawable.feed_image)
        )
        Column(
            modifier = Modifier

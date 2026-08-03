@@ -34,13 +34,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import coil3.compose.rememberAsyncImagePainter
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.models.Comment
 import com.madiwist.twitch.core.domain.models.Post
@@ -84,10 +87,12 @@ fun PostDetailsScreen(
                 item {
                     Column {
                         Image(
-                            painter = painterResource(R.drawable.feed_image),
-                            contentDescription = "Post Image",
-                            modifier = Modifier.fillMaxWidth(),
-                            contentScale = ContentScale.FillWidth
+                            painter = rememberAsyncImagePainter(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data("")
+                                    .build()
+                            ),
+                            contentDescription = null
                         )
                         Column(
                             modifier = Modifier
