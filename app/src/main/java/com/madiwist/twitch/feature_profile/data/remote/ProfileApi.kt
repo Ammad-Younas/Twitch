@@ -1,6 +1,7 @@
 package com.madiwist.twitch.feature_profile.data.remote
 
 import com.madiwist.twitch.core.data.dto.response.BasicApiResponse
+import com.madiwist.twitch.core.data.dto.response.UserItemDto
 import com.madiwist.twitch.feature_profile.data.remote.response.ProfileResponse
 import com.madiwist.twitch.feature_profile.data.remote.response.SkillDto
 import okhttp3.MultipartBody
@@ -18,6 +19,12 @@ interface ProfileApi {
 
     @GET("/api/skills/get")
     suspend fun getSkills() : BasicApiResponse<List<SkillDto>>
+
+    @GET("/api/user/search")
+    suspend fun searchUser(
+        @Query("query") query: String
+    ) : List<UserItemDto>
+
 
     @Multipart
     @PUT("/api/user/update")

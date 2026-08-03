@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.data.remote.PostApi
 import com.madiwist.twitch.core.domain.models.Post
+import com.madiwist.twitch.core.domain.models.UserItem
 import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.SimpleResource
@@ -125,5 +126,22 @@ class ProfileRepositoryImpl(
         return Pager(PagingConfig(pageSize = Constants.PAGE_SIZE_POSTS)) {
             PostSource(postApi, PostSource.Source.Profile(userId))
         }.flow
+    }
+
+    override suspend fun searchUser(query: String): Resource<List<UserItem>> {
+        return try {
+            val response = profileApi.searchUser(query)
+                Resource.Success(
+                    data = response.map { it.toUserItem() }
+                )
+        } catch (e: IOException) {
+            Resource.Error(
+                uiText = UiText.StringResource(R.string.error_couldnt_reach_server),
+            )
+        } catch (e: HttpException) {
+            Resource.Error(
+                uiText = UiText.StringResource(R.string.error_something_went_wrong)
+            )
+        }
     }
 }

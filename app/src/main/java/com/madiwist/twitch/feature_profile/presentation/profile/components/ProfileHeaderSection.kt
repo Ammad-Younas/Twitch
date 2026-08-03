@@ -21,7 +21,8 @@ import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
 fun ProfileHeaderSection(
     user: User,
     modifier: Modifier = Modifier,
-    isOwnProfile: Boolean = true
+    isOwnProfile: Boolean = true,
+    isFollowing: Boolean = true,
 ) {
     Column(
         modifier = modifier
@@ -53,7 +54,8 @@ fun ProfileHeaderSection(
         ProfileStats(
             user = user,
             onFollowCLick = {},
-            isOwnProfile = isOwnProfile
+            isOwnProfile = isOwnProfile,
+            isFollowing = isFollowing
         )
     }
 }

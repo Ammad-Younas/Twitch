@@ -9,6 +9,7 @@ import com.madiwist.twitch.feature_profile.domain.user_case.GetPostsForProfileUs
 import com.madiwist.twitch.feature_profile.domain.user_case.GetProfileUseCase
 import com.madiwist.twitch.feature_profile.domain.user_case.GetSkillUseCase
 import com.madiwist.twitch.feature_profile.domain.user_case.ProfileUserCases
+import com.madiwist.twitch.feature_profile.domain.user_case.SearchUserUseCase
 import com.madiwist.twitch.feature_profile.domain.user_case.SetSkillSelectedUseCase
 import com.madiwist.twitch.feature_profile.domain.user_case.UpdateProfileUseCase
 import dagger.Module
@@ -54,7 +55,8 @@ object ProfileModule {
             getSkills = GetSkillUseCase(repository),
             updateProfile = UpdateProfileUseCase(repository),
             setSkills = SetSkillSelectedUseCase(),
-            getPosts = GetPostsForProfileUserCase(repository)
+            getPosts = GetPostsForProfileUserCase(repository),
+            searchUser = SearchUserUseCase(repository)
         )
     }
 

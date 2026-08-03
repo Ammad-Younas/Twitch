@@ -1,9 +1,11 @@
 package com.madiwist.twitch.feature_search.presentation
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
@@ -11,19 +13,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonAdd
+import androidx.compose.material.icons.filled.PersonRemove
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.models.User
-import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
 import com.madiwist.twitch.core.presentation.components.TwitchTextField
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.components.UserProfileItem
@@ -37,8 +42,11 @@ fun SearchScreen(
     onNavigateUp: () -> Unit = {},
     viewModel: SearchViewModel = hiltViewModel()
 ) {
+
+    val searchState = viewModel.searchState.value
+
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxSize()
     ) {
         TwitchToolBar(
             onNavigateUp = onNavigateUp,
@@ -48,46 +56,65 @@ fun SearchScreen(
             },
             showBackArrow = true,
         )
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceMedium)
-                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+        Box(
+            modifier = Modifier.fillMaxSize()
         ) {
-            TwitchTextField(
-                text = viewModel.searchState.value.text,
-                onValueChange = {
-                    viewModel.setSearchState(state = TwitchTextFieldState(text = it))
-                },
-                hint = stringResource(R.string.search),
-                error = "",
-                leadingIcon = Icons.Filled.Search
-            )
-            Spacer(Modifier.height(SpaceLarge))
-            LazyColumn(
-                modifier = Modifier.weight(1f),
+            Column(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                items(10) {
-                    UserProfileItem(
-                        user = User(
-                            userId = "6a6634d8b6ab2f99f5923312",
-                            username = "Ammad",
-                            description = "This is test bio",
-                            profilePictureUrl = "http://10.0.2.2:8001/posts/79741234.png",
-                            postCount = 330,
-                            followerCount = 12,
-                            followingCount = 7
-                        ),
-                        actionIcon = {
-                            Icon(
-                                imageVector = Icons.Default.PersonAdd,
-                                contentDescription = null
-                            )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(SpaceMedium)
+                        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+                ) {
+                    TwitchTextField(
+                        text = viewModel.searchFieldState.value.text,
+                        onValueChange = {
+                            viewModel.onEvent(SearchEvent.Query(it))
                         },
-                        onItemClick = { onNavigate(Screen.ProfileScreen.route + "?userId=6a6634d8b6ab2f99f5923312") }
+                        hint = stringResource(R.string.search),
+                        leadingIcon = Icons.Filled.Search
                     )
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(SpaceLarge))
+                    LazyColumn(
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        items(searchState.userItems) { user ->
+                            UserProfileItem(
+                                user = User(
+                                    userId = user.userId,
+                                    username = user.username,
+                                    description = user.bio,
+                                    profilePictureUrl = user.profilePictureUrl,
+                                    postCount = 0,
+                                    followerCount = 0,
+                                    followingCount = 0
+                                ),
+                                actionIcon = {
+                                    if (user.isFollowing){
+                                        Icon(
+                                            imageVector = Icons.Default.PersonRemove,
+                                            contentDescription = null
+                                        )
+                                    } else {
+                                        Icon(
+                                            imageVector = Icons.Default.PersonAdd,
+                                            contentDescription = null
+                                        )
+                                    }
+                                },
+                                onItemClick = { onNavigate(Screen.ProfileScreen.route + "?userId=${user.userId}") }
+                            )
+                            Spacer(Modifier.height(8.dp))
+                        }
+                    }
                 }
+            }
+            if (searchState.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
         }
     }

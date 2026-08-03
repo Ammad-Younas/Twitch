@@ -1,21 +1,21 @@
-package com.madiwist.twitch.feature_profile.data.remote.response
+package com.madiwist.twitch.core.data.dto.response
 
-import com.madiwist.twitch.feature_profile.domain.model.UserItem
+import com.madiwist.twitch.core.domain.models.UserItem
 
-data class UserResponseItem(
+data class UserItemDto(
     val userId: String,
     val username: String,
     val profilePictureUrl: String,
     val bio: String,
     val isFollowing: Boolean,
 ) {
-    fun toUserItem() : UserItem {
+    fun toUserItem(): UserItem {
         return UserItem(
             userId = userId,
             username = username,
             profilePictureUrl = profilePictureUrl,
             bio = bio,
-            isFollowing = isFollowing,
+            isFollowing = isFollowing
         )
     }
 }

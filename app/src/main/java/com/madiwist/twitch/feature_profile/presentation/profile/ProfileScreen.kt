@@ -1,6 +1,5 @@
 package com.madiwist.twitch.feature_profile.presentation.profile
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,7 +53,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.SubcomposeAsyncImage
-import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.madiwist.twitch.R
@@ -218,6 +216,7 @@ fun ProfileScreen(
                                     followerCount = profile.followerCount,
                                     followingCount = profile.followingCount
                                 ),
+                                isFollowing = profile.isFollowing,
                                 isOwnProfile = profile.isOwnProfile
                             )
                         }

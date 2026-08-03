@@ -1,4 +1,4 @@
-package com.madiwist.twitch.feature_profile.domain.model
+package com.madiwist.twitch.core.domain.models
 
 data class UserItem(
     val userId: String,
