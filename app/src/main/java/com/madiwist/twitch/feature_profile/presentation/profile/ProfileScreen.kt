@@ -154,9 +154,15 @@ fun ProfileScreen(
             onNavigateUp = onNavigateUp,
             modifier = Modifier.fillMaxWidth(),
             title = {
-                Text(stringResource(R.string.your_profile))
+                Text(
+                    if (profileState.profile?.isOwnProfile == true) {
+                        stringResource(R.string.your_profile)
+                    } else {
+                        profileState.profile?.username ?: ""
+                    }
+                )
             },
-            showBackArrow = false,
+            showBackArrow = userId.isNotBlank(),
             navActions = {
                 profileState.profile?.let { profile ->
                     if (profile.isOwnProfile) {

@@ -61,12 +61,15 @@ class MainActivity : ComponentActivity() {
                         color = MaterialTheme.colorScheme.background
                     ) {
                         TwitchScaffold(
-                            showBottomBarAndFab = currentRoute?.split("?")?.get(0) in listOf(
+                            showBottomBarAndFab = when (currentRoute?.split("?")?.get(0)) {
                                 Screen.MainFeedScreen.route,
                                 Screen.ChatScreen.route,
-                                Screen.ActivityScreen.route,
-                                Screen.ProfileScreen.route
-                            ),
+                                Screen.ActivityScreen.route -> true
+                                Screen.ProfileScreen.route -> {
+                                    navBackStackEntry?.arguments?.getString("userId") == null
+                                }
+                                else -> false
+                            },
                             modifier = Modifier.fillMaxSize(),
                             onFabClick = {
                                 navController.navigate(Screen.CreatePostScreen.route)
