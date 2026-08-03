@@ -83,4 +83,5 @@
     <string name="error_invalid_instagram_url">Invalid Instagram URL</string>
     <string name="error_invalid_linkedin_url">Invalid Linkedin URL</string>
     <string name="no_posts_found">No posts found</string>
+    <string name="broken_image">Broken Image</string>
 </resources>

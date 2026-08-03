@@ -1,7 +1,7 @@
 package com.madiwist.twitch.feature_post.presentation.post_detail
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,19 +35,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import coil3.compose.rememberAsyncImagePainter
+import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.models.Comment
 import com.madiwist.twitch.core.domain.models.Post
+import com.madiwist.twitch.core.presentation.components.BrokenImage
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.ui.theme.ExtraSpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.ExtraSpaceSmall
@@ -54,6 +56,7 @@ import com.madiwist.twitch.core.presentation.ui.theme.Shapes
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
+import com.madiwist.twitch.core.presentation.util.ErrorImageLoading
 import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.feature_post.domain.util.ActionRow
 
@@ -86,13 +89,30 @@ fun PostDetailsScreen(
             ) {
                 item {
                     Column {
-                        Image(
-                            painter = rememberAsyncImagePainter(
-                                model = ImageRequest.Builder(LocalContext.current)
-                                    .data("")
-                                    .build()
-                            ),
-                            contentDescription = null
+                        SubcomposeAsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(post.imageUrl?.replace("127.0.0.1", "10.0.2.2"))
+                                .crossfade(true)
+                                .build(),
+                            contentDescription = stringResource(R.string.post_image),
+                            modifier = Modifier.fillMaxWidth(),
+                            contentScale = ContentScale.FillWidth,
+                            loading = {
+                                Box(
+                                    modifier = Modifier.
+                                    fillMaxWidth().
+                                    height(200.dp),
+                                    contentAlignment = Alignment.Center)
+                                {
+                                    CircularProgressIndicator()
+                                }
+                            },
+                            error = {
+                                BrokenImage(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    errorImageLoading = ErrorImageLoading.POST_TYPE
+                                )
+                            }
                         )
                         Column(
                             modifier = Modifier
@@ -101,10 +121,10 @@ fun PostDetailsScreen(
                             ActionRow(
                                 modifier = Modifier.fillMaxWidth(),
                                 username = "MADI",
-                                onLikeClick = { isLiked -> },
+                                onLikeClick = {  },
                                 onCommentClick = { },
                                 onShareClick = { },
-                                onUsernameClick = { username -> }
+                                onUsernameClick = {  }
                             )
                             Spacer(modifier = Modifier.height(SpaceMedium))
                             Text(
@@ -212,10 +232,24 @@ fun Comment(
                 Row (
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
+                    SubcomposeAsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(comment.profilePictureUrl)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = null,
                         modifier = Modifier.clip(Shapes.extraLarge).size(30.dp),
-                        painter = painterResource(R.drawable.app_logo),
-                        contentDescription = null
+                        loading = {
+                            Box(modifier = Modifier.size(30.dp), contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator()
+                            }
+                        },
+                        error = {
+                            BrokenImage(
+                                modifier = Modifier.size(30.dp),
+                                errorImageLoading = ErrorImageLoading.PROFILE_TYPE
+                            )
+                        }
                     )
                     Spacer(Modifier.width(SpaceMedium))
                     Text(

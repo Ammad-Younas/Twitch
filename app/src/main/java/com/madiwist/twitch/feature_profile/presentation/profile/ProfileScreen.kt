@@ -53,16 +53,19 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.models.User
+import com.madiwist.twitch.core.presentation.components.BrokenImage
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.navigation.Screen
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
+import com.madiwist.twitch.core.presentation.util.ErrorImageLoading
 import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.core.presentation.util.asString
 import com.madiwist.twitch.core.util.Constants
@@ -296,13 +299,11 @@ fun ProfileScreen(
                             shouldShowLinkedIn = !profile.linkedInUrl.isNullOrBlank(),
                             bannerUrl = profile.bannerUrl
                         )
-                        Image(
-                            painter = rememberAsyncImagePainter(
-                                model = ImageRequest.Builder(LocalContext.current)
-                                    .data(profile.profilePictureUrl)
-                                    .crossfade(true)
-                                    .build()
-                            ),
+                        SubcomposeAsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(profile.profilePictureUrl)
+                                .crossfade(true)
+                                .build(),
                             contentDescription = stringResource(R.string.profile_image),
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
@@ -324,6 +325,17 @@ fun ProfileScreen(
                                     color = Color.White,
                                     shape = CircleShape
                                 ),
+                            loading = {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    CircularProgressIndicator()
+                                }
+                            },
+                            error = {
+                                BrokenImage(
+                                    modifier = Modifier.size(100.dp),
+                                    errorImageLoading = ErrorImageLoading.PROFILE_TYPE
+                                )
+                            }
                         )
                     }
                 }

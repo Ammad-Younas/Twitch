@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,13 +21,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.madiwist.twitch.R
+import com.madiwist.twitch.core.presentation.components.BrokenImage
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
-import com.madiwist.twitch.core.util.toPx
+import com.madiwist.twitch.core.presentation.util.ErrorImageLoading
 import com.madiwist.twitch.core.util.Constants
+import com.madiwist.twitch.core.util.toPx
 import com.madiwist.twitch.feature_profile.domain.model.Skill
 
 @Composable
@@ -45,17 +51,31 @@ fun BannerSection(
     BoxWithConstraints(
         modifier = modifier.padding(bottom = SpaceSmall)
     ) {
-        Image(
+        SubcomposeAsyncImage(
             modifier = modifier
                 .fillMaxSize(),
-            painter = rememberAsyncImagePainter(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(bannerUrl)
-                    .crossfade(true)
-                    .build()
-            ),
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(bannerUrl)
+                .crossfade(true)
+                .build(),
             contentDescription = stringResource(R.string.banner_image),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
+            loading = {
+                Box(
+                    modifier = Modifier.
+                    fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                )
+                {
+                    CircularProgressIndicator()
+                }
+            },
+            error = {
+                BrokenImage(
+                    modifier = Modifier.fillMaxSize().offset(y = (-15).dp),
+                    errorImageLoading = ErrorImageLoading.BANNER_TYPE
+                )
+            }
         )
         Box(
             modifier = Modifier.fillMaxSize().background(

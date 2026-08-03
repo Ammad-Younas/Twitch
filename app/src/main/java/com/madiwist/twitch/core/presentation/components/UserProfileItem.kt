@@ -1,7 +1,7 @@
 package com.madiwist.twitch.core.presentation.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,13 +26,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.rememberAsyncImagePainter
+import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.madiwist.twitch.core.domain.models.User
 import com.madiwist.twitch.core.presentation.ui.theme.Shapes
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
+import com.madiwist.twitch.core.presentation.util.ErrorImageLoading
 import com.madiwist.twitch.core.util.Constants
 
 @Composable
@@ -61,15 +63,28 @@ fun UserProfileItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(user.profilePictureUrl)
-                        .crossfade(true)
-                        .build()
-                ),
+            SubcomposeAsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(user.profilePictureUrl)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = null,
-                modifier = Modifier.clip(Shapes.extraLarge).size(Constants.PROFILE_PICTURE_SIZE_LARGE - 75.dp)
+                modifier = Modifier.clip(Shapes.extraLarge).size(Constants.PROFILE_PICTURE_SIZE_LARGE - 75.dp),
+                loading = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize(), 
+                        contentAlignment = Alignment.Center) 
+                    {
+                        CircularProgressIndicator()
+                    }
+                },
+                error = {
+                    BrokenImage(
+                        modifier = Modifier.fillMaxSize(),
+                        errorImageLoading = ErrorImageLoading.PROFILE_TYPE
+                    )
+                }
             )
             Spacer(Modifier.width(SpaceMedium))
             Column(

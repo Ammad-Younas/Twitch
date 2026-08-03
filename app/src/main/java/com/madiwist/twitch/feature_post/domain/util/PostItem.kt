@@ -3,6 +3,7 @@ package com.madiwist.twitch.feature_post.domain.util
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.material.icons.automirrored.filled.Comment
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,21 +27,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import coil3.compose.AsyncImage
+import androidx.compose.ui.unit.dp
+import coil3.compose.SubcomposeAsyncImage
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.models.Post
+import com.madiwist.twitch.core.presentation.components.BrokenImage
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
+import com.madiwist.twitch.core.presentation.util.ErrorImageLoading
 import com.madiwist.twitch.core.util.Constants
 
 @Composable
@@ -58,11 +63,22 @@ fun PostItem(
             },
 
     ) {
-       AsyncImage(
+       SubcomposeAsyncImage(
            model = post.imageUrl?.replace("127.0.0.1", "10.0.2.2"),
            contentDescription = stringResource(R.string.post_image),
            modifier = Modifier.fillMaxWidth(),
            contentScale = ContentScale.FillWidth,
+           loading = {
+               Box(modifier = Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
+                   CircularProgressIndicator()
+               }
+           },
+           error = {
+               BrokenImage(
+                   modifier = Modifier.fillMaxWidth(),
+                   errorImageLoading = ErrorImageLoading.POST_TYPE
+               )
+           }
        )
        Column(
            modifier = Modifier

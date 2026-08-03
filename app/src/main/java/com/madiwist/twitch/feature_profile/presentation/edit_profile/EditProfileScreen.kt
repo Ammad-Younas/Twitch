@@ -1,7 +1,6 @@
 package com.madiwist.twitch.feature_profile.presentation.edit_profile
 
 import android.graphics.Bitmap
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Done
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -43,7 +43,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -53,11 +52,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import coil3.compose.rememberAsyncImagePainter
+import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.madiwist.twitch.R
+import com.madiwist.twitch.core.presentation.components.BrokenImage
 import com.madiwist.twitch.core.presentation.components.CropAspectRatio
+import com.madiwist.twitch.core.presentation.util.ErrorImageLoading
 import com.madiwist.twitch.core.presentation.components.CropShape
 import com.madiwist.twitch.core.presentation.components.TwitchTextField
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
@@ -160,18 +161,8 @@ fun EditProfileScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             BannerEditSection(
-                bannerImage = rememberAsyncImagePainter(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(bannerCroppedBitmap ?: profileState.profile?.bannerUrl)
-                        .crossfade(true)
-                        .build()
-                ),
-                profileImage = rememberAsyncImagePainter(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(profileImageCroppedBitmap ?: profileState.profile?.profilePictureUrl)
-                        .crossfade(true)
-                        .build()
-                ),
+                bannerUrl = bannerCroppedBitmap ?: profileState.profile?.bannerUrl,
+                profileUrl = profileImageCroppedBitmap ?: profileState.profile?.profilePictureUrl,
                 onBannerClick = {
                     bannerOpenGallery()
                 },
@@ -294,8 +285,8 @@ fun EditProfileScreen(
 
 @Composable
 fun BannerEditSection(
-    bannerImage: Painter,
-    profileImage: Painter,
+    bannerUrl: Any?,
+    profileUrl: Any?,
     onBannerClick: () -> Unit,
     onProfileImageClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -314,11 +305,25 @@ fun BannerEditSection(
                 .height(bannerHeight)
                 .clickable { onBannerClick() }
         ) {
-            Image(
-                painter = bannerImage,
+            SubcomposeAsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(bannerUrl)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = stringResource(R.string.banner_image),
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                loading = {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                },
+                error = {
+                    BrokenImage(
+                        modifier = Modifier.fillMaxSize(),
+                        errorImageLoading = ErrorImageLoading.BANNER_TYPE
+                    )
+                }
             )
             Box(
                 modifier = Modifier
@@ -355,11 +360,25 @@ fun BannerEditSection(
                 .clip(CircleShape)
                 .clickable { onProfileImageClick() }
         ) {
-            Image(
-                painter = profileImage,
+            SubcomposeAsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(profileUrl)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = stringResource(R.string.profile_image),
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                loading = {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                },
+                error = {
+                    BrokenImage(
+                        modifier = Modifier.fillMaxSize(),
+                        errorImageLoading = ErrorImageLoading.PROFILE_TYPE
+                    )
+                }
             )
             Box(
                 modifier = Modifier
