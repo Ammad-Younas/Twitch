@@ -23,4 +23,6 @@ interface ProfileRepository {
         profileImageUri: Uri?,
         userProfileData: UpdateProfileData
     ) : SimpleResource
+    suspend fun followUser(userId: String) : SimpleResource
+    suspend fun unfollowUser(userId: String) : SimpleResource
 }

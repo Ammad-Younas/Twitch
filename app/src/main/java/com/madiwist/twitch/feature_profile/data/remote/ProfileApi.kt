@@ -2,11 +2,15 @@ package com.madiwist.twitch.feature_profile.data.remote
 
 import com.madiwist.twitch.core.data.dto.response.BasicApiResponse
 import com.madiwist.twitch.core.data.dto.response.UserItemDto
+import com.madiwist.twitch.feature_profile.data.remote.request.FollowUpdateRequest
 import com.madiwist.twitch.feature_profile.data.remote.response.ProfileResponse
 import com.madiwist.twitch.feature_profile.data.remote.response.SkillDto
 import okhttp3.MultipartBody
+import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
+import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Query
@@ -26,6 +30,18 @@ interface ProfileApi {
     ) : List<UserItemDto>
 
 
+    @POST("/api/following/follow")
+    suspend fun followUser(
+        @Body request: FollowUpdateRequest
+    ) : BasicApiResponse<Unit>
+
+
+    @DELETE("/api/following/unfollow")
+    suspend fun unfollowUser(
+        @Query("userId") userId: String
+    ) : BasicApiResponse<Unit>
+
+
     @Multipart
     @PUT("/api/user/update")
     suspend fun updateProfile(
@@ -36,7 +52,6 @@ interface ProfileApi {
 
 
     companion object {
-        const val BASE_URL = "http://10.0.2.2:8001/"
-//        const val BASE_URL = "http://10.39.22.212:8001/"
+        const val BASE_URL = "http://192.168.100.135:8001/"
     }
 }

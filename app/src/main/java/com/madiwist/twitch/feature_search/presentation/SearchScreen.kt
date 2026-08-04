@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.PersonRemove
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -92,15 +93,18 @@ fun SearchScreen(
                                     followingCount = 0
                                 ),
                                 actionIcon = {
-                                    if (user.isFollowing){
+                                    IconButton(
+                                        onClick = {
+                                            viewModel.onEvent(SearchEvent.ToggleFollowState(user.userId))
+                                        }
+                                    ) {
                                         Icon(
-                                            imageVector = Icons.Default.PersonRemove,
-                                            contentDescription = null
-                                        )
-                                    } else {
-                                        Icon(
-                                            imageVector = Icons.Default.PersonAdd,
-                                            contentDescription = null
+                                            imageVector = if (user.isFollowing){
+                                                Icons.Default.PersonRemove
+                                            } else {
+                                                Icons.Default.PersonAdd
+                                            },
+                                            contentDescription = null,
                                         )
                                     }
                                 },

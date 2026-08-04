@@ -31,6 +31,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.navigation.Screen
+import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
 import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.feature_post.domain.util.PostItem
@@ -81,7 +82,11 @@ fun MainFeedScreen (
                 }
             }
         )
-        Box(modifier = Modifier.fillMaxSize()){
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = SpaceSmall)
+        ){
             if (mainFeedState.isLoadingFirstTime) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center)

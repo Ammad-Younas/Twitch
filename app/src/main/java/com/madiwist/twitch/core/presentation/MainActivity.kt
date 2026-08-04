@@ -1,5 +1,6 @@
 package com.madiwist.twitch.core.presentation
 
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -23,11 +24,16 @@ import com.madiwist.twitch.core.presentation.components.TwitchScaffold
 import com.madiwist.twitch.core.presentation.navigation.Navigation
 import com.madiwist.twitch.core.presentation.navigation.Screen
 import com.madiwist.twitch.core.presentation.ui.theme.TwitchTheme
+import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.feature_splash.SplashViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
 
     private val splashViewModel: SplashViewModel by viewModels()
 
@@ -66,7 +72,9 @@ class MainActivity : ComponentActivity() {
                                 Screen.ChatScreen.route,
                                 Screen.ActivityScreen.route -> true
                                 Screen.ProfileScreen.route -> {
-                                    navBackStackEntry?.arguments?.getString("userId") == null
+                                    val userId = navBackStackEntry?.arguments?.getString("userId")
+                                    val ownUserId = sharedPreferences.getString(Constants.KEY_USER_ID, "")
+                                    userId == null || userId == ownUserId
                                 }
                                 else -> false
                             },
