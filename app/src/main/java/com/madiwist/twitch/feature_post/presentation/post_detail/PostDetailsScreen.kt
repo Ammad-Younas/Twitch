@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
@@ -32,7 +30,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -95,11 +92,14 @@ fun PostDetailsScreen(
                     modifier = Modifier.weight(1f)
                 ) {
                     item {
-                        Column {
-                            postDetailsState.post?.let { post ->
+                        Column(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            val post = postDetailsState.post
+                            if (post != null) {
                                 SubcomposeAsyncImage(
                                     model = ImageRequest.Builder(LocalContext.current)
-                                        .data(postDetailsState.post.imageUrl?.replace("127.0.0.1", "10.0.2.2"))
+                                        .data(post.imageUrl?.replace("127.0.0.1", "10.0.2.2"))
                                         .crossfade(true)
                                         .build(),
                                     contentDescription = stringResource(R.string.post_image),
@@ -107,54 +107,61 @@ fun PostDetailsScreen(
                                     contentScale = ContentScale.FillWidth,
                                     loading = {
                                         Box(
-                                            modifier = Modifier.
-                                            fillMaxWidth().
-                                            height(200.dp),
-                                            contentAlignment = Alignment.Center)
-                                        {
+                                            modifier = Modifier.fillMaxWidth().height(200.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
                                             CircularProgressIndicator()
                                         }
                                     },
                                     error = {
                                         BrokenImage(
-                                            modifier = Modifier.fillMaxWidth(),
+                                            modifier = Modifier.fillMaxWidth().height(200.dp),
                                             errorImageLoading = ErrorImageLoading.POST_TYPE
                                         )
                                     }
                                 )
                                 Column(
-                                    modifier = Modifier
-                                        .padding(SpaceMedium)
+                                    modifier = Modifier.padding(SpaceMedium)
                                 ) {
                                     ActionRow(
                                         modifier = Modifier.fillMaxWidth(),
-                                        username = postDetailsState.post.username ?: "",
-                                        onLikeClick = {  },
+                                        username = post.username ?: "",
+                                        onLikeClick = { },
                                         onCommentClick = { },
                                         onShareClick = { },
-                                        onUsernameClick = {  }
+                                        onUsernameClick = { }
                                     )
                                     Spacer(modifier = Modifier.height(SpaceMedium))
                                     Text(
-                                        text = postDetailsState.post.description ?: "",
+                                        text = post.description ?: "",
                                         color = MaterialTheme.colorScheme.onBackground,
                                         style = MaterialTheme.typography.bodyLarge,
                                     )
                                     Spacer(modifier = Modifier.height(ExtraSpaceLarge))
                                     Text(
                                         modifier = Modifier.fillMaxWidth(),
-                                        text = stringResource(R.string.post_liked_by_x_people, postDetailsState.post.likeCount ?: 0),
+                                        text = stringResource(
+                                            R.string.post_liked_by_x_people,
+                                            post.likeCount ?: 0
+                                        ),
                                         color = MaterialTheme.colorScheme.onPrimary,
                                         style = MaterialTheme.typography.headlineSmall,
                                         fontWeight = FontWeight.Bold,
                                         textAlign = TextAlign.Center
                                     )
                                 }
+                            } else if (postDetailsState.isLoadingPost) {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth().height(300.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
                             }
                         }
                     }
                     items(10) {
-                        Comment(
+                        CommentItem(
                             modifier = Modifier.fillMaxWidth(),
                             comment = Comment(
                                 commentId = 1,
@@ -211,17 +218,12 @@ fun PostDetailsScreen(
                     }
                 }
             }
-            if (postDetailsState.isLoadingPost){
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
         }
     }
 }
 
 @Composable
-fun Comment(
+fun CommentItem(
     modifier: Modifier = Modifier,
     comment: Comment = Comment(),
     onLikeClick : (Boolean) -> Unit = {},

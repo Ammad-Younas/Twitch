@@ -7,6 +7,6 @@ data class Post(
     val username: String?,
     val timestamp: Long?,
     val description: String?,
-    val likeCount: Int = 0,
-    val commentCount: Int = 0,
+    val likeCount: Int?,
+    val commentCount: Int?,
 )

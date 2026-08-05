@@ -15,13 +15,8 @@ data class PostDto(
     val commentCount: Int = 0,
 ) {
     fun toPost(): Post {
-        val idString = when (id) {
-            is String -> id
-            is Map<*, *> -> id["\$oid"]?.toString() ?: id.toString()
-            else -> id?.toString() ?: ""
-        }
         return Post(
-            id = idString,
+            id = id?.toString() ?: "",
             imageUrl = imageUrl,
             userId = userId,
             username = username,
