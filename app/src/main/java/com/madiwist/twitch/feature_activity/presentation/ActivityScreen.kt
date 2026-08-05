@@ -67,7 +67,8 @@ fun ActivityScreen(
                         val activity = activities[index]
                         activity?.let {
                             ActivityItem(
-                                activity = it
+                                activity = it,
+                                onNavigate = onNavigate
                             )
                         }
                         Spacer(Modifier.height(8.dp))

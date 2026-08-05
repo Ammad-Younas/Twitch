@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ActivityViewModel @Inject constructor(
-    private val getActivities: GetActivityUseCase
+    getActivities: GetActivityUseCase
 ) : ViewModel() {
 
     private val _activityState = mutableStateOf(ActivityState())
