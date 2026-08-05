@@ -6,6 +6,7 @@ import com.madiwist.twitch.feature_post.data.repository.PostRepositoryImpl
 import com.madiwist.twitch.feature_post.domain.repository.PostRepository
 import com.madiwist.twitch.feature_post.domain.use_case.CreatePostUseCase
 import com.madiwist.twitch.feature_post.domain.use_case.GetPostCreatedEventUseCase
+import com.madiwist.twitch.feature_post.domain.use_case.GetPostDetailsUseCase
 import com.madiwist.twitch.feature_post.domain.use_case.GetPostsForFollowsUseCase
 import com.madiwist.twitch.feature_post.domain.use_case.PostUseCases
 import dagger.Module
@@ -48,7 +49,7 @@ object PostModule {
             getPostsForFollowsUseCase = GetPostsForFollowsUseCase(repository),
             createPostUseCase = CreatePostUseCase(repository),
             getPostCreatedEventUseCase = GetPostCreatedEventUseCase(repository),
-
+            getPostDetailsUseCase = GetPostDetailsUseCase(repository)
         )
     }
 }

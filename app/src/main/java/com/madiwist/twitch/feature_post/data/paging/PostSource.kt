@@ -2,9 +2,9 @@ package com.madiwist.twitch.feature_post.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.madiwist.twitch.core.data.remote.PostApi
 import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.core.util.Constants
-import com.madiwist.twitch.core.data.remote.PostApi
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -32,7 +32,7 @@ class PostSource (
                 }
             }
             LoadResult.Page(
-                data = posts,
+                data = posts.map { it.toPost() },
                 prevKey = if (nextPage == 0) null else nextPage - 1,
                 nextKey = if (posts.isEmpty()) null else nextPage + 1
             )

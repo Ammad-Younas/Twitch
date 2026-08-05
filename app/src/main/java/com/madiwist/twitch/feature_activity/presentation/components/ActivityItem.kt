@@ -24,14 +24,14 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.models.Activity
-import com.madiwist.twitch.core.presentation.navigation.Screen
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
 import com.madiwist.twitch.feature_activity.domain.util.ActivityType
 
 @Composable
 fun ActivityItem (
-    onNavigate: (String) -> Unit = {},
+    onUserClick: (String) -> Unit = {},
+    onParentClick: (String) -> Unit = {},
     activity: Activity
 ) {
     Card(
@@ -64,45 +64,13 @@ fun ActivityItem (
                 is ActivityType.FollowedUser -> ""
             }
 
-
-
-//            Text(
-//                text = buildAnnotatedString {
-//                    withStyle(
-//                        SpanStyle(
-//                            color = MaterialTheme.colorScheme.onPrimary,
-//                            fontWeight = FontWeight.Bold
-//                        )
-//                    ) {
-//                        append(activity.username)
-//                    }
-//
-//                    append(" ")
-//                    append(actionText)
-//
-//                    if (targetText.isNotBlank()) {
-//                        append(" ")
-//                        withStyle(
-//                            SpanStyle(
-//                                color = MaterialTheme.colorScheme.onPrimary,
-//                                fontWeight = FontWeight.Bold
-//                            )
-//                        ) {
-//                            append(targetText)
-//                        }
-//                    }
-//                },
-//                style = MaterialTheme.typography.bodyLarge
-//            )
-
-
             Text(
                 text = buildAnnotatedString {
                     withLink(
                         LinkAnnotation.Clickable(
                             tag = "USERNAME",
                             linkInteractionListener = {
-                                onNavigate(Screen.ProfileScreen.route + "?userId=${activity.userId}")
+                                onUserClick(activity.userId)
                             }
                         )
                     ) {
@@ -126,16 +94,7 @@ fun ActivityItem (
                             LinkAnnotation.Clickable(
                                 tag = "TARGET",
                                 linkInteractionListener = {
-                                    when (activity.activityType) {
-                                        is ActivityType.LikedPost -> {
-                                        }
-                                        is ActivityType.CommentedOnPost -> {
-                                        }
-                                        is ActivityType.LikedComment -> {
-                                        }
-                                        is ActivityType.FollowedUser -> {
-                                        }
-                                    }
+                                    onParentClick(activity.parentId)
                                 }
                             )
                         ) {

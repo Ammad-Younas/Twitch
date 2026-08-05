@@ -73,21 +73,24 @@ class ProfileRepositoryImpl(
         return try {
             val response = profileApi.updateProfile(
 
-                bannerImage = bannerFile?.let { banner->
+                bannerImage = bannerFile?.let { banner ->
                     MultipartBody.Part.createFormData(
                         name = "banner_image",
                         filename = banner.name,
                         body = banner.asRequestBody(),
                     )
                 },
-                profileImage = profilePictureFile?.let { profile->
+                profileImage = profilePictureFile?.let { profile ->
                     MultipartBody.Part.createFormData(
                         name = "profile_picture",
                         filename = profile.name,
                         body = profile.asRequestBody(),
                     )
                 },
-                updateProfileData = MultipartBody.Part.createFormData("update_profile_data", gson.toJson(userProfileData))
+                updateProfileData = MultipartBody.Part.createFormData(
+                    "update_profile_data",
+                    gson.toJson(userProfileData)
+                )
 
             )
             if (response.success) {
@@ -140,9 +143,9 @@ class ProfileRepositoryImpl(
     override suspend fun searchUser(query: String): Resource<List<UserItem>> {
         return try {
             val response = profileApi.searchUser(query)
-                Resource.Success(
-                    data = response.map { it.toUserItem() }
-                )
+            Resource.Success(
+                data = response.map { it.toUserItem() }
+            )
         } catch (e: IOException) {
             Resource.Error(
                 uiText = UiText.StringResource(R.string.error_couldnt_reach_server),

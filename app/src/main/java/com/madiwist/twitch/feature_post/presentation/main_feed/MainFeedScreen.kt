@@ -113,7 +113,7 @@ fun MainFeedScreen (
                         PostItem(
                             post = it,
                             onPostClick = {
-                                onNavigate(Screen.PostDetailsScreen.route)
+                                onNavigate(Screen.PostDetailsScreen.route + "/${it.id}")
                             }
                         )
                     }

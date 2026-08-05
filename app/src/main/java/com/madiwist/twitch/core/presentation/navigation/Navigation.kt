@@ -101,19 +101,16 @@ fun Navigation(
                 snackbarHostState = snackbarHostState,
             )
         }
-        composable(Screen.PostDetailsScreen.route) {
-            val post = Post(
-                username = "MADI",
-                timestamp = System.currentTimeMillis(),
-                imageUrl = "",
-                description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry",
-                likeCount = 23,
-                commentCount = 15
+        composable(
+            route = Screen.PostDetailsScreen.route + "/{postId}",
+            arguments = listOf(
+                navArgument(name = "postId"){
+                    type = NavType.StringType
+                }
             )
+        ) {
             PostDetailsScreen(
-                onNavigate = navController::navigate,
                 onNavigateUp = navController::navigateUp,
-                post = post
             )
         }
         composable(Screen.SearchScreen.route) {

@@ -16,6 +16,7 @@ import com.madiwist.twitch.core.util.UiText
 import com.madiwist.twitch.feature_post.data.paging.PostSource
 import com.madiwist.twitch.feature_post.data.remote.request.CreatePostRequest
 import com.madiwist.twitch.feature_post.domain.repository.PostRepository
+import com.madiwist.twitch.feature_profile.data.remote.request.FollowUpdateRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -56,6 +57,27 @@ class PostRepositoryImpl (
             if (response.success) {
                 _onPostCreated.emit(Unit)
                 Resource.Success(Unit)
+            } else {
+                response.message?.let { msg ->
+                    Resource.Error(UiText.DynamicString(msg))
+                } ?: Resource.Error(UiText.StringResource(R.string.unknown_error))
+            }
+        } catch (e: IOException) {
+            Resource.Error(
+                uiText = UiText.StringResource(R.string.error_couldnt_reach_server),
+            )
+        } catch (e: HttpException) {
+            Resource.Error(
+                uiText = UiText.StringResource(R.string.error_something_went_wrong)
+            )
+        }
+    }
+
+    override suspend fun getPostDetails(postId: String): Resource<Post> {
+        return try {
+            val response = api.getPostDetails(postId)
+            if (response.success) {
+                Resource.Success(response.data?.toPost())
             } else {
                 response.message?.let { msg ->
                     Resource.Error(UiText.DynamicString(msg))

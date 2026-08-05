@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
@@ -30,6 +32,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,12 +45,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.models.Comment
-import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.core.presentation.components.BrokenImage
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.ui.theme.ExtraSpaceLarge
@@ -62,10 +65,11 @@ import com.madiwist.twitch.feature_post.domain.util.ActionRow
 
 @Composable
 fun PostDetailsScreen(
-    onNavigate: (String) -> Unit = {},
     onNavigateUp: () -> Unit = {},
-    post: Post,
+    viewModel: PostDetailsViewModel = hiltViewModel()
 ) {
+    val postDetailsState = viewModel.postDetailsState.value
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -77,129 +81,140 @@ fun PostDetailsScreen(
             },
             showBackArrow = true,
         )
-        Column(
+        Box(
             modifier = Modifier
-                .weight(1f)
-                .padding(SpaceSmall)
-                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-                .clip(MaterialTheme.shapes.medium)
+                .fillMaxSize()
         ) {
-            LazyColumn(
-                modifier = Modifier.weight(1f)
+            Column(
+                modifier = Modifier
+                    .padding(SpaceSmall)
+                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+                    .clip(MaterialTheme.shapes.medium)
             ) {
-                item {
-                    Column {
-                        SubcomposeAsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(post.imageUrl?.replace("127.0.0.1", "10.0.2.2"))
-                                .crossfade(true)
-                                .build(),
-                            contentDescription = stringResource(R.string.post_image),
-                            modifier = Modifier.fillMaxWidth(),
-                            contentScale = ContentScale.FillWidth,
-                            loading = {
-                                Box(
-                                    modifier = Modifier.
-                                    fillMaxWidth().
-                                    height(200.dp),
-                                    contentAlignment = Alignment.Center)
-                                {
-                                    CircularProgressIndicator()
-                                }
-                            },
-                            error = {
-                                BrokenImage(
+                LazyColumn(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    item {
+                        Column {
+                            postDetailsState.post?.let { post ->
+                                SubcomposeAsyncImage(
+                                    model = ImageRequest.Builder(LocalContext.current)
+                                        .data(postDetailsState.post.imageUrl?.replace("127.0.0.1", "10.0.2.2"))
+                                        .crossfade(true)
+                                        .build(),
+                                    contentDescription = stringResource(R.string.post_image),
                                     modifier = Modifier.fillMaxWidth(),
-                                    errorImageLoading = ErrorImageLoading.POST_TYPE
+                                    contentScale = ContentScale.FillWidth,
+                                    loading = {
+                                        Box(
+                                            modifier = Modifier.
+                                            fillMaxWidth().
+                                            height(200.dp),
+                                            contentAlignment = Alignment.Center)
+                                        {
+                                            CircularProgressIndicator()
+                                        }
+                                    },
+                                    error = {
+                                        BrokenImage(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            errorImageLoading = ErrorImageLoading.POST_TYPE
+                                        )
+                                    }
                                 )
+                                Column(
+                                    modifier = Modifier
+                                        .padding(SpaceMedium)
+                                ) {
+                                    ActionRow(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        username = postDetailsState.post.username ?: "",
+                                        onLikeClick = {  },
+                                        onCommentClick = { },
+                                        onShareClick = { },
+                                        onUsernameClick = {  }
+                                    )
+                                    Spacer(modifier = Modifier.height(SpaceMedium))
+                                    Text(
+                                        text = postDetailsState.post.description ?: "",
+                                        color = MaterialTheme.colorScheme.onBackground,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                    )
+                                    Spacer(modifier = Modifier.height(ExtraSpaceLarge))
+                                    Text(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        text = stringResource(R.string.post_liked_by_x_people, postDetailsState.post.likeCount ?: 0),
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        style = MaterialTheme.typography.headlineSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
                             }
-                        )
-                        Column(
-                            modifier = Modifier
-                                .padding(SpaceMedium)
-                        ) {
-                            ActionRow(
-                                modifier = Modifier.fillMaxWidth(),
-                                username = "MADI",
-                                onLikeClick = {  },
-                                onCommentClick = { },
-                                onShareClick = { },
-                                onUsernameClick = {  }
-                            )
-                            Spacer(modifier = Modifier.height(SpaceMedium))
-                            Text(
-                                text = post.description ?: "",
-                                color = MaterialTheme.colorScheme.onBackground,
-                                style = MaterialTheme.typography.bodyLarge,
-                            )
-                            Spacer(modifier = Modifier.height(ExtraSpaceLarge))
-                            Text(
-                                modifier = Modifier.fillMaxWidth(),
-                                text = stringResource(R.string.post_liked_by_x_people, post.likeCount ?: 0),
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center
-                            )
                         }
                     }
-                }
-                items(10) {
-                    Comment(
-                        modifier = Modifier.fillMaxWidth(),
-                        comment = Comment(
-                            commentId = 1,
-                            username = "MADI",
-                            profilePictureUrl = "",
-                            comment = "Lorem Ipsum is simply dummy text of the printing and typesetting industry, Lorem Ipsum.",
-                            timeStamp = System.currentTimeMillis(),
-                            likeCount = 11,
-                            isLiked = true
+                    items(10) {
+                        Comment(
+                            modifier = Modifier.fillMaxWidth(),
+                            comment = Comment(
+                                commentId = 1,
+                                username = "MADI",
+                                profilePictureUrl = "",
+                                comment = "Lorem Ipsum is simply dummy text of the printing and typesetting industry, Lorem Ipsum.",
+                                timeStamp = System.currentTimeMillis(),
+                                likeCount = 11,
+                                isLiked = true
+                            )
                         )
-                    )
+                    }
                 }
-            }
-            Spacer(Modifier.height(SpaceMedium))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = SpaceMedium,
-                        end = SpaceMedium,
-                        top = SpaceSmall,
-                        bottom = SpaceLarge
-                    ),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextField(
+                Spacer(Modifier.height(SpaceMedium))
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text
-                    ),
-                    value = "",
-                    onValueChange = { },
-                    placeholder = {
-                        Text(
-                            "Enter a comment",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    },
-                    maxLines = 3
-                )
-                Spacer(Modifier.width(SpaceMedium))
-                IconButton(
-                    onClick = { },
-                    modifier = Modifier.size(30.dp)
+                        .padding(
+                            start = SpaceMedium,
+                            end = SpaceMedium,
+                            top = SpaceSmall,
+                            bottom = SpaceLarge
+                        ),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.Send,
-                        contentDescription = "",
-                        tint = MaterialTheme.colorScheme.primary
+                    TextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text
+                        ),
+                        value = "",
+                        onValueChange = { },
+                        placeholder = {
+                            Text(
+                                "Enter a comment",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        },
+                        maxLines = 3,
                     )
+                    Spacer(Modifier.width(SpaceMedium))
+                    IconButton(
+                        onClick = { },
+                        modifier = Modifier.size(30.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.Send,
+                            contentDescription = "",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
+            }
+            if (postDetailsState.isLoadingPost){
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
         }
     }

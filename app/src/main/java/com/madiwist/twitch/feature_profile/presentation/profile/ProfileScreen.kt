@@ -259,7 +259,7 @@ fun ProfileScreen(
                             Column(modifier = Modifier.fillMaxSize().padding(SpaceMedium)) {
                                 PostItem(
                                     post = it,
-                                    onPostClick = { onNavigate(Screen.PostDetailsScreen.route) }
+                                    onPostClick = { onNavigate(Screen.PostDetailsScreen.route + "/${it.id}") }
                                 )
                             }
                         }

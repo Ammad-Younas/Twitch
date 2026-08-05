@@ -17,6 +17,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,7 +28,9 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
+import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.feature_activity.presentation.components.ActivityItem
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ActivityScreen(
@@ -38,6 +41,17 @@ fun ActivityScreen(
 
     val activityState = viewModel.activityState.value
     val activities = viewModel.activities.collectAsLazyPagingItems()
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                is UiEvent.Navigate -> {
+                    onNavigate(event.route)
+                }
+                else -> Unit
+            }
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -68,7 +82,12 @@ fun ActivityScreen(
                         activity?.let {
                             ActivityItem(
                                 activity = it,
-                                onNavigate = onNavigate
+                                onUserClick = { userId ->
+                                    viewModel.onEvent(ActivityEvent.ClickedOnUser(userId)) 
+                                },
+                                onParentClick = { parentId -> 
+                                    viewModel.onEvent(ActivityEvent.ClickedOnParent(parentId)) 
+                                }
                             )
                         }
                         Spacer(Modifier.height(8.dp))
