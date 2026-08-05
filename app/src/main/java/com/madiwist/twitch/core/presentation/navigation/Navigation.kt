@@ -8,7 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.madiwist.twitch.core.domain.models.Post
-import com.madiwist.twitch.feature_activity.presentation.activity.ActivityScreen
+import com.madiwist.twitch.feature_activity.presentation.ActivityScreen
 import com.madiwist.twitch.feature_auth.presentation.login.LoginScreen
 import com.madiwist.twitch.feature_auth.presentation.register.RegisterScreen
 import com.madiwist.twitch.feature_chat.presentation.chat.ChatScreen

@@ -1,4 +1,4 @@
-package com.madiwist.twitch.feature_splash
+package com.madiwist.twitch.feature_splash.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

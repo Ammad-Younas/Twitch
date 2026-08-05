@@ -1,4 +1,4 @@
-package com.madiwist.twitch.feature_activity.presentation.activity.components
+package com.madiwist.twitch.feature_activity.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -22,9 +22,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.models.Activity
-import com.madiwist.twitch.feature_activity.domain.util.ActivityAction
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
+import com.madiwist.twitch.feature_activity.domain.util.ActivityType
 
 @Composable
 fun ActivityItem (
@@ -46,6 +46,21 @@ fun ActivityItem (
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+
+            val actionText = when (activity.activityType) {
+                is ActivityType.LikedPost -> stringResource(R.string.liked_post)
+                is ActivityType.CommentedOnPost -> stringResource(R.string.commented_on_post)
+                is ActivityType.FollowedUser -> stringResource(R.string.followed_you)
+                is ActivityType.LikedComment -> stringResource(R.string.liked_comment)
+            }
+
+            val targetText = when (activity.activityType) {
+                is ActivityType.LikedPost -> stringResource(R.string.your_post)
+                is ActivityType.CommentedOnPost -> stringResource(R.string.your_post)
+                is ActivityType.LikedComment -> stringResource(R.string.your_comment)
+                is ActivityType.FollowedUser -> ""
+            }
+
             Text(
                 text = buildAnnotatedString {
                     withStyle(
@@ -56,26 +71,20 @@ fun ActivityItem (
                     ) {
                         append(activity.username)
                     }
+
                     append(" ")
-                    when(activity.actionType){
-                        is ActivityAction.LikedPost -> {
-                            append(stringResource(R.string.liked_post))
+                    append(actionText)
+
+                    if (targetText.isNotBlank()) {
+                        append(" ")
+                        withStyle(
+                            SpanStyle(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontWeight = FontWeight.Bold
+                            )
+                        ) {
+                            append(targetText)
                         }
-                        is ActivityAction.CommentedOnPost -> {
-                            append(stringResource(R.string.commented_on_post))
-                        }
-                        is ActivityAction.FollowedYou -> {
-                            append(stringResource(R.string.followed_you))
-                        }
-                    }
-                    append(" ")
-                    withStyle(
-                        SpanStyle(
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontWeight = FontWeight.Bold
-                        )
-                    ) {
-                        append(stringResource(R.string.your_post))
                     }
                 },
                 style = MaterialTheme.typography.bodyLarge

@@ -132,7 +132,7 @@ class ProfileRepositoryImpl(
     }
 
     override fun getPostsPaged(userId: String): Flow<PagingData<Post>> {
-        return Pager(PagingConfig(pageSize = Constants.PAGE_SIZE_POSTS)) {
+        return Pager(PagingConfig(pageSize = Constants.DEFAULT_PAGE_SIZE)) {
             PostSource(postApi, PostSource.Source.Profile(userId))
         }.flow
     }

@@ -34,7 +34,7 @@ class PostRepositoryImpl (
     override val onPostCreated: SharedFlow<Unit> = _onPostCreated.asSharedFlow()
 
         override val posts: Flow<PagingData<Post>>
-        get() = Pager(PagingConfig(pageSize = Constants.PAGE_SIZE_POSTS)) {
+        get() = Pager(PagingConfig(pageSize = Constants.DEFAULT_PAGE_SIZE)) {
             PostSource(api, PostSource.Source.Follows)
         }.flow
 

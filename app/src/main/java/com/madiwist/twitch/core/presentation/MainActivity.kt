@@ -25,7 +25,7 @@ import com.madiwist.twitch.core.presentation.navigation.Navigation
 import com.madiwist.twitch.core.presentation.navigation.Screen
 import com.madiwist.twitch.core.presentation.ui.theme.TwitchTheme
 import com.madiwist.twitch.core.util.Constants
-import com.madiwist.twitch.feature_splash.SplashViewModel
+import com.madiwist.twitch.feature_splash.presentation.SplashViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
