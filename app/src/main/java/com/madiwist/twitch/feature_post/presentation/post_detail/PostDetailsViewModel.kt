@@ -30,6 +30,7 @@ class PostDetailsViewModel @Inject constructor(
     init {
         savedStateHandle.get<String>("postId")?.let { postId ->
             loadPostDetails(postId)
+            loadCommentsForPost(postId)
         }
     }
 
@@ -67,6 +68,30 @@ class PostDetailsViewModel @Inject constructor(
                 is Resource.Error -> {
                     _postDetailsState.value = postDetailsState.value.copy(
                         isLoadingPost = false
+                    )
+                    _eventFlow.emit(
+                        UiEvent.ShowSnackBar(
+                            result.uiText ?: UiText.unknownError()
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    private fun loadCommentsForPost(postId: String){
+        viewModelScope.launch {
+            _postDetailsState.value = postDetailsState.value.copy(isLoadingPost = true)
+            when(val result = postUseCases.getCommentsForPostUseCase(postId)){
+                is Resource.Success -> {
+                    _postDetailsState.value = postDetailsState.value.copy(
+                        comments = result.data ?: emptyList(),
+                        isLoadingComments = false
+                    )
+                }
+                is Resource.Error -> {
+                    _postDetailsState.value = postDetailsState.value.copy(
+                        isLoadingComments = false
                     )
                     _eventFlow.emit(
                         UiEvent.ShowSnackBar(

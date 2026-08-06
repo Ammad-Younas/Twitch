@@ -86,4 +86,5 @@
     <string name="broken_image">Broken Image</string>
     <string name="your_comment">your comment</string>
     <string name="liked_comment">liked</string>
+    <string name="enter_a_comment">Enter a comment</string>
 </resources>

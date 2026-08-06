@@ -1,6 +1,7 @@
 package com.madiwist.twitch.core.data.remote
 
 import com.madiwist.twitch.core.data.dto.response.BasicApiResponse
+import com.madiwist.twitch.feature_post.data.remote.dto.CommentDto
 import com.madiwist.twitch.feature_post.data.remote.dto.PostDto
 import okhttp3.MultipartBody
 import retrofit2.http.GET
@@ -37,6 +38,10 @@ interface PostApi {
         @Query("postId") postId: String
     ) : BasicApiResponse<PostDto>
 
+    @GET("/api/comment/get")
+    suspend fun getCommentsForPost(
+        @Query("postId") postId: String
+    ) : List<CommentDto>
 
     companion object {
         const val BASE_URL = "http://192.168.100.135:8001/"
