@@ -2,6 +2,7 @@ package com.madiwist.twitch.feature_profile.data.remote
 
 import com.madiwist.twitch.core.data.dto.response.BasicApiResponse
 import com.madiwist.twitch.core.data.dto.response.UserItemDto
+import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.feature_profile.data.remote.request.FollowUpdateRequest
 import com.madiwist.twitch.feature_profile.data.remote.response.ProfileResponse
 import com.madiwist.twitch.feature_profile.data.remote.response.SkillDto
@@ -52,6 +53,6 @@ interface ProfileApi {
 
 
     companion object {
-        const val BASE_URL = "http://192.168.100.135:8001/"
+        const val BASE_URL = Constants.BASE_URL
     }
 }

@@ -14,6 +14,6 @@ interface ActivityApi {
     ) : List<ActivityDto>
 
     companion object {
-        const val BASE_URL = "http://192.168.100.135:8001/"
+        const val BASE_URL = Constants.BASE_URL
     }
 }

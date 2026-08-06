@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.madiwist.twitch.R
+import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
 import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText
@@ -18,11 +20,17 @@ import javax.inject.Inject
 @HiltViewModel
 class PostDetailsViewModel @Inject constructor(
     private val postUseCases: PostUseCases,
-    savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _postDetailsState = mutableStateOf(PostDetailsState())
     val postDetailsState: State<PostDetailsState> = _postDetailsState
+
+    private val _commentFieldState = mutableStateOf(TwitchTextFieldState())
+    val commentFieldState: State<TwitchTextFieldState> = _commentFieldState
+
+    private val _commentState = mutableStateOf(CommentState())
+    val commentState: State<CommentState> = _commentState
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -42,7 +50,16 @@ class PostDetailsViewModel @Inject constructor(
             }
 
             is PostDetailsEvent.Comment -> {
-                TODO()
+                createComment(
+                    postId = savedStateHandle.get<String>("postId") ?: "",
+                    comment = commentFieldState.value.text
+                )
+            }
+
+            is PostDetailsEvent.EnteredComment -> {
+                _commentFieldState.value = commentFieldState.value.copy(
+                    text = event.comment
+                )
             }
 
             is PostDetailsEvent.LikeComment -> {
@@ -92,6 +109,44 @@ class PostDetailsViewModel @Inject constructor(
                 is Resource.Error -> {
                     _postDetailsState.value = postDetailsState.value.copy(
                         isLoadingComments = false
+                    )
+                    _eventFlow.emit(
+                        UiEvent.ShowSnackBar(
+                            result.uiText ?: UiText.unknownError()
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    private fun createComment(postId: String, comment: String){
+        viewModelScope.launch {
+            _commentState.value = commentState.value.copy(
+                isLoading = true
+            )
+            val result = postUseCases.createCommentUseCase(
+                postId = postId,
+                comment = comment
+            )
+            when(result) {
+                is Resource.Success -> {
+                    _commentFieldState.value = commentFieldState.value.copy(
+                        text = ""
+                    )
+                    _commentState.value = commentState.value.copy(
+                        isLoading = false
+                    )
+                    _eventFlow.emit(
+                        UiEvent.ShowSnackBar(
+                            uiText = UiText.StringResource(R.string.comment_posted)
+                        )
+                    )
+                    loadCommentsForPost(postId)
+                }
+                is Resource.Error -> {
+                    _commentState.value = commentState.value.copy(
+                        isLoading = false
                     )
                     _eventFlow.emit(
                         UiEvent.ShowSnackBar(
