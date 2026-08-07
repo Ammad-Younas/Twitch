@@ -129,6 +129,7 @@ fun ProfileScreen(
 
 
     LaunchedEffect(key1 = true) {
+        viewModel.setExpandedRatio(1f)
         viewModel.getProfile(userId)
         viewModel.eventFlow.collectLatest { event ->
             when(event) {
