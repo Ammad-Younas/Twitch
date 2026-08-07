@@ -50,7 +50,11 @@ import com.madiwist.twitch.core.util.Constants
 @Composable
 fun PostItem(
     post: Post,
-    onPostClick: () -> Unit = {}
+    onPostClick: () -> Unit = {},
+    onLikeClick: () -> Unit = {},
+    onCommentClick: () -> Unit = {},
+    onShareClick: () -> Unit = {},
+    onUsernameClick: () -> Unit = {}
 ) {
     Column (
         modifier = Modifier
@@ -88,18 +92,10 @@ fun PostItem(
            ActionRow(
                modifier = Modifier.fillMaxWidth(),
                username = post.username ?: "Unknown",
-               onLikeClick = { isLiked ->
-
-               },
-               onCommentClick = {
-
-               },
-               onShareClick = {
-
-               },
-               onUsernameClick = { username->
-
-               }
+               onLikeClick = onLikeClick,
+               onCommentClick = onCommentClick,
+               onShareClick = onShareClick,
+               onUsernameClick = onUsernameClick
            )
            Spacer(modifier = Modifier.height(SpaceSmall))
 
@@ -167,7 +163,7 @@ fun PostItem(
 @Composable
 fun EngagementButtons(
     modifier: Modifier = Modifier,
-    onLikeClick : (Boolean) -> Unit = {},
+    onLikeClick : () -> Unit = {},
     isLiked : Boolean = false,
     onCommentClick : () -> Unit = {},
     onShareClick : () -> Unit = {},
@@ -178,7 +174,7 @@ fun EngagementButtons(
     ) {
         IconButton(
             onClick = {
-                onLikeClick(!isLiked)
+                onLikeClick()
             },
             modifier = Modifier.size(Constants.ENGAGEMENT_ICON_SIZE)
         ) {
@@ -194,7 +190,7 @@ fun EngagementButtons(
                     stringResource(R.string.liked)
                 },
                 tint = if (isLiked) {
-                    Color.Red
+                    MaterialTheme.colorScheme.primary
                 } else {
                     MaterialTheme.colorScheme.onPrimary
                 }
@@ -231,12 +227,12 @@ fun EngagementButtons(
 @Composable
 fun ActionRow(
     modifier: Modifier = Modifier,
-    onLikeClick : (Boolean) -> Unit = {},
+    onLikeClick : () -> Unit = {},
     isLiked : Boolean = false,
     onCommentClick : () -> Unit = {},
     onShareClick : () -> Unit = {},
     username : String,
-    onUsernameClick : (String) -> Unit = {}
+    onUsernameClick : () -> Unit = {}
 ) {
     Row(
         modifier = modifier,
@@ -248,7 +244,7 @@ fun ActionRow(
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.clickable{
-                onUsernameClick(username)
+                onUsernameClick()
             }
         )
         EngagementButtons(

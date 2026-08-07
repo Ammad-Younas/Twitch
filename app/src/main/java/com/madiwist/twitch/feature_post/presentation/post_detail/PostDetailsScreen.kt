@@ -28,10 +28,13 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,16 +59,36 @@ import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
 import com.madiwist.twitch.core.presentation.util.ErrorImageLoading
+import com.madiwist.twitch.core.presentation.util.UiEvent
+import com.madiwist.twitch.core.presentation.util.asString
 import com.madiwist.twitch.feature_post.domain.util.ActionRow
 import com.madiwist.twitch.feature_post.presentation.post_detail.components.CommentItem
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun PostDetailsScreen(
     onNavigateUp: () -> Unit = {},
+    snackbarHostState: SnackbarHostState,
     viewModel: PostDetailsViewModel = hiltViewModel()
 ) {
     val postDetailsState = viewModel.postDetailsState.value
     val commentFieldState = viewModel.commentFieldState.value
+
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when(event) {
+                is UiEvent.ShowSnackBar -> {
+                    snackbarHostState.showSnackbar(
+                        message = event.uiText.asString(context),
+                        duration = SnackbarDuration.Short
+                    )
+                }
+                else -> Unit
+            }
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -125,11 +148,12 @@ fun PostDetailsScreen(
                             ) {
                                 ActionRow(
                                     modifier = Modifier.fillMaxWidth(),
-                                    username = post.username ?: "",
+                                    username = postDetailsState.post.username ?: "",
                                     onUsernameClick = { },
-                                    onLikeClick = { },
+                                    onLikeClick = { viewModel.onEvent(PostDetailsEvent.LikePost) },
                                     onCommentClick = { },
-                                    onShareClick = { }
+                                    onShareClick = { },
+                                    isLiked = postDetailsState.post.isLiked == true
                                 )
                                 Spacer(modifier = Modifier.height(SpaceMedium))
                                 Text(
@@ -174,7 +198,8 @@ fun PostDetailsScreen(
                         }
                     }
                     CommentItem(
-                        comment = comment
+                        comment = comment,
+                        onLikeClick = { viewModel.onEvent(PostDetailsEvent.LikeComment(comment.commentId)) }
                     )
                 }
             }
@@ -219,25 +244,29 @@ fun PostDetailsScreen(
                     )
                 )
                 Spacer(Modifier.width(SpaceMedium))
-                FilledIconButton(
-                    onClick = {
-                        viewModel.onEvent(PostDetailsEvent.Comment)
-                    },
-                    enabled = commentFieldState.text.isNotBlank(),
-                    modifier = Modifier.size(48.dp),
-                    shape = CircleShape,
-                    colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.Send,
-                        contentDescription = stringResource(R.string.send),
-                        modifier = Modifier.size(22.dp)
-                    )
+                if (viewModel.commentState.value.isLoading){
+                    CircularProgressIndicator()
+                } else {
+                    FilledIconButton(
+                        onClick = {
+                            viewModel.onEvent(PostDetailsEvent.Comment)
+                        },
+                        enabled = commentFieldState.text.isNotBlank(),
+                        modifier = Modifier.size(48.dp),
+                        shape = CircleShape,
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.Send,
+                            contentDescription = stringResource(R.string.send),
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
                 }
             }
         }

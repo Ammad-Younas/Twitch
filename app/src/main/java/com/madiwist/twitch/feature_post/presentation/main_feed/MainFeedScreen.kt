@@ -114,7 +114,7 @@ fun MainFeedScreen (
                             post = it,
                             onPostClick = {
                                 onNavigate(Screen.PostDetailsScreen.route + "/${it.id}")
-                            }
+                            },
                         )
                     }
                 }

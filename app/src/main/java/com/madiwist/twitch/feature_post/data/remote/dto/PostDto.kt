@@ -13,6 +13,7 @@ data class PostDto(
     val description: String?,
     val likeCount: Int = 0,
     val commentCount: Int = 0,
+    val isLiked: Boolean?
 ) {
     fun toPost(): Post {
         return Post(
@@ -23,7 +24,8 @@ data class PostDto(
             timestamp = timestamp,
             description = description,
             likeCount = likeCount,
-            commentCount = commentCount
+            commentCount = commentCount,
+            isLiked = isLiked
         )
     }
 }

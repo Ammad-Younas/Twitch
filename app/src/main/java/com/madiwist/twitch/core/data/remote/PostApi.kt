@@ -5,8 +5,10 @@ import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.feature_post.data.remote.dto.CommentDto
 import com.madiwist.twitch.feature_post.data.remote.dto.PostDto
 import com.madiwist.twitch.feature_post.data.remote.request.CreateCommentRequest
+import com.madiwist.twitch.feature_post.data.remote.request.LikeUpdateRequest
 import okhttp3.MultipartBody
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -47,11 +49,23 @@ interface PostApi {
         @Body request: CreateCommentRequest
     ) : BasicApiResponse<Unit>
 
-
     @GET("/api/comment/get")
     suspend fun getCommentsForPost(
         @Query("postId") postId: String
     ): List<CommentDto>
+
+
+    @POST("/api/like")
+    suspend fun likeParent(
+        @Body request: LikeUpdateRequest
+    ) : BasicApiResponse<Unit>
+
+
+    @DELETE("/api/unlike")
+    suspend fun unlikeParent(
+        @Query("parentId") parentId : String,
+        @Query("parentType") parentType : Int
+    ) : BasicApiResponse<Unit>
 
     companion object {
         const val BASE_URL = Constants.BASE_URL

@@ -11,6 +11,7 @@ import com.madiwist.twitch.feature_post.domain.use_case.GetPostCreatedEventUseCa
 import com.madiwist.twitch.feature_post.domain.use_case.GetPostDetailsUseCase
 import com.madiwist.twitch.feature_post.domain.use_case.GetPostsForFollowsUseCase
 import com.madiwist.twitch.feature_post.domain.use_case.PostUseCases
+import com.madiwist.twitch.feature_post.domain.use_case.ToggleLikeStateForParentUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -53,7 +54,8 @@ object PostModule {
             getPostCreatedEventUseCase = GetPostCreatedEventUseCase(repository),
             getPostDetailsUseCase = GetPostDetailsUseCase(repository),
             getCommentsForPostUseCase = GetCommentsForPostUseCase(repository),
-            createCommentUseCase = CreateCommentUseCase(repository)
+            createCommentUseCase = CreateCommentUseCase(repository),
+            toggleLikeStateForParentUseCase = ToggleLikeStateForParentUseCase(repository)
         )
     }
 }

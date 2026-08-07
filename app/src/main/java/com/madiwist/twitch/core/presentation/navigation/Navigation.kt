@@ -111,6 +111,7 @@ fun Navigation(
         ) {
             PostDetailsScreen(
                 onNavigateUp = navController::navigateUp,
+                snackbarHostState = snackbarHostState,
             )
         }
         composable(Screen.SearchScreen.route) {
