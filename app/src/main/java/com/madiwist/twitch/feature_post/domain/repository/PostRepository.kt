@@ -14,6 +14,7 @@ interface PostRepository {
 
     val posts : Flow<PagingData<Post>>
     val onPostCreated: SharedFlow<Unit>
+    val onLikeUpdated: SharedFlow<Unit>
 
     suspend fun createPost(description: String, imageUri: Uri) : SimpleResource
     suspend fun getPostDetails(postId: String) : Resource<Post>

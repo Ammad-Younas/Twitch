@@ -6,17 +6,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.madiwist.twitch.core.presentation.util.UiEvent
+import com.madiwist.twitch.core.util.ParentType
+import com.madiwist.twitch.core.util.Resource
+import com.madiwist.twitch.core.util.UiText
 import com.madiwist.twitch.feature_post.domain.use_case.PostUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainFeedViewModel @Inject constructor(
-    postUseCases: PostUseCases
+    private val postUseCases: PostUseCases
 ) : ViewModel() {
 
     private val _mainfeedState = mutableStateOf(MainFeedState())
@@ -29,6 +33,12 @@ class MainFeedViewModel @Inject constructor(
 
     init {
         postUseCases.getPostCreatedEventUseCase()
+            .onEach {
+                _eventFlow.emit(UiEvent.Refresh)
+            }
+            .launchIn(viewModelScope)
+
+        postUseCases.getLikeUpdatedEventUseCase()
             .onEach {
                 _eventFlow.emit(UiEvent.Refresh)
             }
@@ -47,6 +57,35 @@ class MainFeedViewModel @Inject constructor(
                     isLoadingFirstTime = false,
                     isLoadingNewPosts = false
                 )
+            }
+            is MainFeedEvent.LikePost -> {
+                toggleLikeForParent(event.postId, event.isLiked)
+            }
+        }
+    }
+
+
+    private fun toggleLikeForParent(
+        parentId: String,
+        isLiked: Boolean
+    ) {
+        viewModelScope.launch {
+            val result = postUseCases.toggleLikeStateForParentUseCase(
+                parentId = parentId,
+                parentType = ParentType.Post.type,
+                isLiked = isLiked
+            )
+            when (result) {
+                is Resource.Success -> {
+                    _eventFlow.emit(UiEvent.Refresh)
+                }
+                is Resource.Error -> {
+                    _eventFlow.emit(
+                        UiEvent.ShowSnackBar(
+                            result.uiText ?: UiText.unknownError()
+                        )
+                    )
+                }
             }
         }
     }

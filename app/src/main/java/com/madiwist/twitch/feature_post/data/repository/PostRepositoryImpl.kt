@@ -37,6 +37,9 @@ class PostRepositoryImpl (
     private val _onPostCreated = MutableSharedFlow<Unit>()
     override val onPostCreated: SharedFlow<Unit> = _onPostCreated.asSharedFlow()
 
+    private val _onLikeUpdated = MutableSharedFlow<Unit>()
+    override val onLikeUpdated: SharedFlow<Unit> = _onLikeUpdated.asSharedFlow()
+
         override val posts: Flow<PagingData<Post>>
         get() = Pager(PagingConfig(pageSize = Constants.DEFAULT_PAGE_SIZE)) {
             PostSource(api, PostSource.Source.Follows)
@@ -153,6 +156,7 @@ class PostRepositoryImpl (
                 )
             )
             if (response.success) {
+                _onLikeUpdated.emit(Unit)
                 Resource.Success(response.data)
             } else {
                 response.message?.let { msg ->
@@ -180,6 +184,7 @@ class PostRepositoryImpl (
                 parentType = parentType
             )
             if (response.success) {
+                _onLikeUpdated.emit(Unit)
                 Resource.Success(response.data)
             } else {
                 response.message?.let { msg ->

@@ -253,13 +253,27 @@ fun ProfileScreen(
                             }
                         }
                     }
-                    items(posts.itemCount) { index ->
+                    items(
+                        count = posts.itemCount,
+                        key = { index ->
+                            val post = posts.peek(index)
+                            post?.id ?: index
+                        }
+                    ) { index ->
                         val post = posts[index]
                         post?.let {
                             Column(modifier = Modifier.fillMaxSize().padding(SpaceMedium)) {
                                 PostItem(
                                     post = it,
-                                    onPostClick = { onNavigate(Screen.PostDetailsScreen.route + "/${it.id}") }
+                                    onPostClick = { onNavigate(Screen.PostDetailsScreen.route + "/${it.id}") },
+                                    onLikeClick = {
+                                        viewModel.onEvent(
+                                            ProfileEvent.LikePost(
+                                                it.id ?: "",
+                                                it.isLiked ?: false
+                                            )
+                                        )
+                                    }
                                 )
                             }
                         }

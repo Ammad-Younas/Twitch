@@ -107,7 +107,13 @@ fun MainFeedScreen (
                     .padding(SpaceSmall)
                     .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
             ) {
-                items(posts.itemCount) { index ->
+                items(
+                    count = posts.itemCount,
+                    key = { index ->
+                        val post = posts.peek(index)
+                        post?.id ?: index
+                    }
+                ) { index ->
                     val post = posts[index]
                     post?.let {
                         PostItem(
@@ -115,6 +121,14 @@ fun MainFeedScreen (
                             onPostClick = {
                                 onNavigate(Screen.PostDetailsScreen.route + "/${it.id}")
                             },
+                            onLikeClick = {
+                                viewModel.onEvent(
+                                    MainFeedEvent.LikePost(
+                                        post.id.orEmpty(),
+                                        post.isLiked ?: false
+                                    )
+                                )
+                            }
                         )
                     }
                 }

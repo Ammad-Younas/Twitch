@@ -92,6 +92,7 @@ fun PostItem(
            ActionRow(
                modifier = Modifier.fillMaxWidth(),
                username = post.username ?: "Unknown",
+               isLiked = post.isLiked ?: false,
                onLikeClick = onLikeClick,
                onCommentClick = onCommentClick,
                onShareClick = onShareClick,

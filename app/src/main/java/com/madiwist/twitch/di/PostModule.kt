@@ -7,6 +7,7 @@ import com.madiwist.twitch.feature_post.domain.repository.PostRepository
 import com.madiwist.twitch.feature_post.domain.use_case.CreateCommentUseCase
 import com.madiwist.twitch.feature_post.domain.use_case.CreatePostUseCase
 import com.madiwist.twitch.feature_post.domain.use_case.GetCommentsForPostUseCase
+import com.madiwist.twitch.feature_post.domain.use_case.GetLikeUpdatedEventUseCase
 import com.madiwist.twitch.feature_post.domain.use_case.GetLikesForParentUseCase
 import com.madiwist.twitch.feature_post.domain.use_case.GetPostCreatedEventUseCase
 import com.madiwist.twitch.feature_post.domain.use_case.GetPostDetailsUseCase
@@ -57,7 +58,8 @@ object PostModule {
             getCommentsForPostUseCase = GetCommentsForPostUseCase(repository),
             createCommentUseCase = CreateCommentUseCase(repository),
             toggleLikeStateForParentUseCase = ToggleLikeStateForParentUseCase(repository),
-            getLikesForParentUseCase = GetLikesForParentUseCase(repository)
+            getLikesForParentUseCase = GetLikesForParentUseCase(repository),
+            getLikeUpdatedEventUseCase = GetLikeUpdatedEventUseCase(repository)
         )
     }
 }

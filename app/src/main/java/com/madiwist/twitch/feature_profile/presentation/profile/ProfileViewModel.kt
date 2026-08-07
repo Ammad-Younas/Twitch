@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.madiwist.twitch.core.presentation.util.UiEvent
+import com.madiwist.twitch.core.util.ParentType
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText
 import com.madiwist.twitch.feature_post.domain.use_case.PostUseCases
@@ -27,7 +28,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val profileUseCase: ProfileUserCases,
-    postUseCases: PostUseCases,
+    private val postUseCases: PostUseCases,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -60,6 +61,12 @@ class ProfileViewModel @Inject constructor(
                 _eventFlow.emit(UiEvent.Refresh)
             }
             .launchIn(viewModelScope)
+
+        postUseCases.getLikeUpdatedEventUseCase()
+            .onEach {
+                _eventFlow.emit(UiEvent.Refresh)
+            }
+            .launchIn(viewModelScope)
     }
 
 
@@ -74,6 +81,34 @@ class ProfileViewModel @Inject constructor(
     fun onEvent(event: ProfileEvent) {
         when (event) {
             is ProfileEvent.GetProfile -> Unit
+            is ProfileEvent.LikePost -> {
+                toggleLikeForParent(event.postId, event.isLiked)
+            }
+        }
+    }
+
+    private fun toggleLikeForParent(
+        parentId: String,
+        isLiked: Boolean
+    ) {
+        viewModelScope.launch {
+            val result = postUseCases.toggleLikeStateForParentUseCase(
+                parentId = parentId,
+                parentType = ParentType.Post.type,
+                isLiked = isLiked
+            )
+            when (result) {
+                is Resource.Success -> {
+                    _eventFlow.emit(UiEvent.Refresh)
+                }
+                is Resource.Error -> {
+                    _eventFlow.emit(
+                        UiEvent.ShowSnackBar(
+                            uiText = result.uiText ?: UiText.unknownError()
+                        )
+                    )
+                }
+            }
         }
     }
 
