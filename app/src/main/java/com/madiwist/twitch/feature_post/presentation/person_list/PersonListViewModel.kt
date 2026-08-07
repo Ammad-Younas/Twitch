@@ -1,11 +1,13 @@
 package com.madiwist.twitch.feature_post.presentation.person_list
 
+import android.content.SharedPreferences
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.madiwist.twitch.core.presentation.util.UiEvent
+import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText
 import com.madiwist.twitch.feature_post.domain.use_case.PostUseCases
@@ -20,6 +22,7 @@ import javax.inject.Inject
 class PersonListViewModel @Inject constructor(
     private val postUseCases: PostUseCases,
     private val toggleFollowStateForUserUseCase: ToggleFollowStateForUserUseCase,
+    sharedPreferences: SharedPreferences,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -30,6 +33,10 @@ class PersonListViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
+        val ownUserId = sharedPreferences.getString(Constants.KEY_USER_ID, "") ?: ""
+        _usersState.value = usersState.value.copy(
+            ownUserId = ownUserId
+        )
         savedStateHandle.get<String>("parentId")?.let { parentId->
             getLikesForParent(parentId = parentId)
         }

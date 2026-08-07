@@ -93,23 +93,29 @@ fun PersonListScreen(
                         UserProfileItem(
                             user = user,
                             actionIcon = {
-                                IconButton(
-                                    onClick = {
-
+                                if (user.userId != usersState.ownUserId) {
+                                    IconButton(
+                                        onClick = {
+                                            viewModel.onEvent(PersonListEvent.ToggleFollowState(user.userId))
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = if (user.isFollowing) {
+                                                Icons.Default.PersonRemove
+                                            } else {
+                                                Icons.Default.PersonAdd
+                                            },
+                                            contentDescription = null,
+                                        )
                                     }
-                                ) {
-                                    Icon(
-                                        imageVector = if (user.isFollowing){
-                                            Icons.Default.PersonRemove
-                                        } else {
-                                            Icons.Default.PersonAdd
-                                        },
-                                        contentDescription = null,
-                                    )
                                 }
                             },
                             onItemClick = { onNavigate(Screen.ProfileScreen.route + "?userId=${user.userId}") },
-                            onActionItemClick = { viewModel.onEvent(PersonListEvent.ToggleFollowState(user.userId)) }
+                            onActionItemClick = {
+                                if (user.userId != usersState.ownUserId) {
+                                    viewModel.onEvent(PersonListEvent.ToggleFollowState(user.userId))
+                                }
+                            }
                         )
                         Spacer(Modifier.height(8.dp))
                     }
