@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.PersonRemove
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -83,21 +82,19 @@ fun SearchScreen(
                         items(searchState.userItems) { user ->
                             UserProfileItem(
                                 user = user,
+                                ownUserId = searchState.ownUserId,
                                 actionIcon = {
-                                    IconButton(
-                                        onClick = {
-                                            viewModel.onEvent(SearchEvent.ToggleFollowState(user.userId))
-                                        }
-                                    ) {
-                                        Icon(
-                                            imageVector = if (user.isFollowing){
-                                                Icons.Default.PersonRemove
-                                            } else {
-                                                Icons.Default.PersonAdd
-                                            },
-                                            contentDescription = null,
-                                        )
-                                    }
+                                    Icon(
+                                        imageVector = if (user.isFollowing) {
+                                            Icons.Default.PersonRemove
+                                        } else {
+                                            Icons.Default.PersonAdd
+                                        },
+                                        contentDescription = null,
+                                    )
+                                },
+                                onActionItemClick = {
+                                    viewModel.onEvent(SearchEvent.ToggleFollowState(user.userId))
                                 },
                                 onItemClick = { onNavigate(Screen.ProfileScreen.route + "?userId=${user.userId}") }
                             )

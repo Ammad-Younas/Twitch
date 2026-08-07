@@ -41,6 +41,7 @@ fun UserProfileItem(
     modifier: Modifier = Modifier,
     actionIcon: @Composable () -> Unit = {},
     user: UserItem,
+    ownUserId: String = "",
     onItemClick: () -> Unit = {},
     onActionItemClick: () -> Unit = {}
 ) {
@@ -105,11 +106,13 @@ fun UserProfileItem(
                     maxLines = 2
                 )
             }
-            IconButton(
-                onClick = onActionItemClick,
-                modifier = Modifier
-            ) {
-                actionIcon()
+            if (user.userId != ownUserId) {
+                IconButton(
+                    onClick = onActionItemClick,
+                    modifier = Modifier
+                ) {
+                    actionIcon()
+                }
             }
         }
     }

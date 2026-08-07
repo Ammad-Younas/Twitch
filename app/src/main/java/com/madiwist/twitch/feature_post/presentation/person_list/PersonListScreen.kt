@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.PersonRemove
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -92,29 +91,20 @@ fun PersonListScreen(
                     items(usersState.users) { user ->
                         UserProfileItem(
                             user = user,
+                            ownUserId = usersState.ownUserId,
                             actionIcon = {
-                                if (user.userId != usersState.ownUserId) {
-                                    IconButton(
-                                        onClick = {
-                                            viewModel.onEvent(PersonListEvent.ToggleFollowState(user.userId))
-                                        }
-                                    ) {
-                                        Icon(
-                                            imageVector = if (user.isFollowing) {
-                                                Icons.Default.PersonRemove
-                                            } else {
-                                                Icons.Default.PersonAdd
-                                            },
-                                            contentDescription = null,
-                                        )
-                                    }
-                                }
+                                Icon(
+                                    imageVector = if (user.isFollowing) {
+                                        Icons.Default.PersonRemove
+                                    } else {
+                                        Icons.Default.PersonAdd
+                                    },
+                                    contentDescription = null,
+                                )
                             },
                             onItemClick = { onNavigate(Screen.ProfileScreen.route + "?userId=${user.userId}") },
                             onActionItemClick = {
-                                if (user.userId != usersState.ownUserId) {
-                                    viewModel.onEvent(PersonListEvent.ToggleFollowState(user.userId))
-                                }
+                                viewModel.onEvent(PersonListEvent.ToggleFollowState(user.userId))
                             }
                         )
                         Spacer(Modifier.height(8.dp))

@@ -2,7 +2,7 @@ package com.madiwist.twitch.di
 
 import android.content.SharedPreferences
 import com.google.gson.Gson
-import com.madiwist.twitch.core.data.repository.ProfileRepositoryImpl
+import com.madiwist.twitch.feature_profile.data.repository.ProfileRepositoryImpl
 import com.madiwist.twitch.core.domain.use_case.ToggleFollowStateForUserUseCase
 import com.madiwist.twitch.feature_post.data.remote.PostApi
 import com.madiwist.twitch.feature_profile.data.remote.ProfileApi

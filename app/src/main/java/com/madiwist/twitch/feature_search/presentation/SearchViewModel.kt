@@ -1,11 +1,13 @@
 package com.madiwist.twitch.feature_search.presentation
 
+import android.content.SharedPreferences
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
 import com.madiwist.twitch.core.presentation.util.UiEvent
+import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText
 import com.madiwist.twitch.feature_profile.domain.user_case.ProfileUserCases
@@ -21,7 +23,8 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val profileUserCases: ProfileUserCases
+    private val profileUserCases: ProfileUserCases,
+    sharedPreferences: SharedPreferences
 ): ViewModel() {
     
     private val _searchFieldState = mutableStateOf(TwitchTextFieldState())
@@ -34,6 +37,12 @@ class SearchViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     private var searchJob: Job? = null
+
+    init {
+        _searchState.value = searchState.value.copy(
+            ownUserId = sharedPreferences.getString(Constants.KEY_USER_ID, "") ?: ""
+        )
+    }
 
 
     fun onEvent(event: SearchEvent){

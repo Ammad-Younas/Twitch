@@ -1,4 +1,4 @@
-package com.madiwist.twitch.core.data.repository
+package com.madiwist.twitch.feature_profile.data.repository
 
 import android.content.SharedPreferences
 import android.net.Uri
