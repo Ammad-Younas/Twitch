@@ -36,6 +36,8 @@ class PostDetailsViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
+    val postModifications = postUseCases.getPostModificationsUseCase()
+
     init {
         savedStateHandle.get<String>("postId")?.let { postId ->
             loadPostDetails(postId)
@@ -175,16 +177,18 @@ class PostDetailsViewModel @Inject constructor(
             when (parentType) {
                 ParentType.Post.type -> {
                     val post = postDetailsState.value.post ?: return@launch
-                    _postDetailsState.value = postDetailsState.value.copy(
-                        post = post.copy(
-                            isLiked = !isLiked,
-                            likeCount = if (isLiked) {
-                                (post.likeCount ?: 0) - 1
-                            } else {
-                                (post.likeCount ?: 0) + 1
-                            }
-                        )
+                    val updatedPost = post.copy(
+                        isLiked = !isLiked,
+                        likeCount = if (isLiked) {
+                            (post.likeCount ?: 0) - 1
+                        } else {
+                            (post.likeCount ?: 0) + 1
+                        }
                     )
+                    _postDetailsState.value = postDetailsState.value.copy(
+                        post = updatedPost
+                    )
+                    postUseCases.toggleLikeStateForParentUseCase.updatePostModification(parentId, updatedPost)
                 }
 
                 ParentType.Comment.type -> {
@@ -211,16 +215,18 @@ class PostDetailsViewModel @Inject constructor(
                     when (parentType) {
                         ParentType.Post.type -> {
                             val post = postDetailsState.value.post ?: return@launch
-                            _postDetailsState.value = postDetailsState.value.copy(
-                                post = post.copy(
-                                    isLiked = isLiked,
-                                    likeCount = if (isLiked) {
-                                        (post.likeCount ?: 0) + 1
-                                    } else {
-                                        (post.likeCount ?: 0) - 1
-                                    }
-                                )
+                            val revertedPost = post.copy(
+                                isLiked = isLiked,
+                                likeCount = if (isLiked) {
+                                    (post.likeCount ?: 0) + 1
+                                } else {
+                                    (post.likeCount ?: 0) - 1
+                                }
                             )
+                            _postDetailsState.value = postDetailsState.value.copy(
+                                post = revertedPost
+                            )
+                            postUseCases.toggleLikeStateForParentUseCase.abortPostModification(parentId)
                         }
 
                         ParentType.Comment.type -> {
@@ -236,6 +242,11 @@ class PostDetailsViewModel @Inject constructor(
                             )
                         }
                     }
+                    _eventFlow.emit(
+                        UiEvent.ShowSnackBar(
+                            result.uiText ?: UiText.unknownError()
+                        )
+                    )
                 }
             }
         }

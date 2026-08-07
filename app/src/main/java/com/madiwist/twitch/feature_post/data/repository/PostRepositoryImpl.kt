@@ -22,8 +22,11 @@ import com.madiwist.twitch.feature_post.data.remote.request.LikeUpdateRequest
 import com.madiwist.twitch.feature_post.domain.repository.PostRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
@@ -39,6 +42,9 @@ class PostRepositoryImpl (
 
     private val _onLikeUpdated = MutableSharedFlow<Unit>()
     override val onLikeUpdated: SharedFlow<Unit> = _onLikeUpdated.asSharedFlow()
+
+    private val _postModifications = MutableStateFlow<Map<String, Post>>(emptyMap())
+    override val postModifications: StateFlow<Map<String, Post>> = _postModifications.asStateFlow()
 
         override val posts: Flow<PagingData<Post>>
         get() = Pager(PagingConfig(pageSize = Constants.DEFAULT_PAGE_SIZE)) {
@@ -215,5 +221,13 @@ class PostRepositoryImpl (
                 uiText = UiText.StringResource(R.string.error_something_went_wrong)
             )
         }
+    }
+
+    override fun updatePostModification(parentId: String, post: Post) {
+        _postModifications.value += (parentId to post)
+    }
+
+    override fun abortPostModification(parentId: String) {
+        _postModifications.value -= parentId
     }
 }

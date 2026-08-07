@@ -36,6 +36,8 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -76,6 +78,7 @@ fun PostDetailsScreen(
 ) {
     val postDetailsState = viewModel.postDetailsState.value
     val commentFieldState = viewModel.commentFieldState.value
+    val postModifications by viewModel.postModifications.collectAsState()
 
     val context = LocalContext.current
 
@@ -119,9 +122,10 @@ fun PostDetailsScreen(
                     ) {
                         val post = postDetailsState.post
                         if (post != null) {
+                            val displayedPost = postModifications[post.id] ?: post
                             SubcomposeAsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
-                                    .data(post.imageUrl?.replace("127.0.0.1", "10.0.2.2"))
+                                    .data(displayedPost.imageUrl?.replace("127.0.0.1", "10.0.2.2"))
                                     .crossfade(true)
                                     .build(),
                                 contentDescription = stringResource(R.string.post_image),
@@ -151,16 +155,16 @@ fun PostDetailsScreen(
                             ) {
                                 ActionRow(
                                     modifier = Modifier.fillMaxWidth(),
-                                    username = postDetailsState.post.username ?: "",
+                                    username = displayedPost.username ?: "",
                                     onUsernameClick = { },
                                     onLikeClick = { viewModel.onEvent(PostDetailsEvent.LikePost) },
                                     onCommentClick = { },
                                     onShareClick = { },
-                                    isLiked = postDetailsState.post.isLiked == true
+                                    isLiked = displayedPost.isLiked == true
                                 )
                                 Spacer(modifier = Modifier.height(SpaceMedium))
                                 Text(
-                                    text = post.description ?: "",
+                                    text = displayedPost.description ?: "",
                                     color = MaterialTheme.colorScheme.onBackground,
                                     style = MaterialTheme.typography.bodyLarge,
                                 )
@@ -169,11 +173,11 @@ fun PostDetailsScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clickable{
-                                            onNavigate(Screen.PersonListScreen.route + "/${post.id}")
+                                            onNavigate(Screen.PersonListScreen.route + "/${displayedPost.id}")
                                         },
                                     text = stringResource(
                                         R.string.post_liked_by_x_people,
-                                        post.likeCount ?: 0
+                                        displayedPost.likeCount ?: 0
                                     ),
                                     color = MaterialTheme.colorScheme.onPrimary,
                                     style = MaterialTheme.typography.headlineSmall,

@@ -29,6 +29,8 @@ class MainFeedViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>(replay = 1)
     val eventFlow = _eventFlow.asSharedFlow()
 
+    val postModifications = postUseCases.getPostModificationsUseCase()
+
     val posts = postUseCases.getPostsForFollowsUseCase().cachedIn(viewModelScope)
 
     init {
@@ -38,11 +40,7 @@ class MainFeedViewModel @Inject constructor(
             }
             .launchIn(viewModelScope)
 
-        postUseCases.getLikeUpdatedEventUseCase()
-            .onEach {
-                _eventFlow.emit(UiEvent.Refresh)
-            }
-            .launchIn(viewModelScope)
+        postUseCases.getLikeUpdatedEventUseCase().onEach {}.launchIn(viewModelScope)
     }
 
     fun onEvent(event: MainFeedEvent) {
@@ -59,7 +57,19 @@ class MainFeedViewModel @Inject constructor(
                 )
             }
             is MainFeedEvent.LikePost -> {
-                toggleLikeForParent(event.postId, event.isLiked)
+                val post = event.post
+                val isLiked = post.isLiked == true
+                val newLikeCount = if (isLiked) {
+                    (post.likeCount ?: 0) - 1
+                } else {
+                    (post.likeCount ?: 0) + 1
+                }
+                val updatedPost = post.copy(
+                    isLiked = !isLiked,
+                    likeCount = newLikeCount
+                )
+                postUseCases.toggleLikeStateForParentUseCase.updatePostModification(post.id ?: "", updatedPost)
+                toggleLikeForParent(post.id.orEmpty(), isLiked)
             }
         }
     }
@@ -76,10 +86,9 @@ class MainFeedViewModel @Inject constructor(
                 isLiked = isLiked
             )
             when (result) {
-                is Resource.Success -> {
-                    _eventFlow.emit(UiEvent.Refresh)
-                }
+                is Resource.Success -> Unit
                 is Resource.Error -> {
+                    postUseCases.toggleLikeStateForParentUseCase.abortPostModification(parentId)
                     _eventFlow.emit(
                         UiEvent.ShowSnackBar(
                             result.uiText ?: UiText.unknownError()

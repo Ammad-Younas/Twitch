@@ -9,12 +9,15 @@ import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.SimpleResource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 
 interface PostRepository {
 
     val posts : Flow<PagingData<Post>>
     val onPostCreated: SharedFlow<Unit>
     val onLikeUpdated: SharedFlow<Unit>
+
+    val postModifications: StateFlow<Map<String, Post>>
 
     suspend fun createPost(description: String, imageUri: Uri) : SimpleResource
     suspend fun getPostDetails(postId: String) : Resource<Post>
@@ -23,4 +26,7 @@ interface PostRepository {
     suspend fun likeParent(parentId: String, parentType: Int) : SimpleResource
     suspend fun unlikeParent(parentId: String, parentType: Int) : SimpleResource
     suspend fun getLikesForParent(parentId: String) : Resource<List<UserItem>>
+
+    fun updatePostModification(parentId: String, post: Post)
+    fun abortPostModification(parentId: String)
 }

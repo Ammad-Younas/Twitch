@@ -21,6 +21,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +33,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.navigation.Screen
-import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
 import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.feature_post.domain.util.PostItem
@@ -46,6 +47,7 @@ fun MainFeedScreen (
 ) {
     val posts = viewModel.posts.collectAsLazyPagingItems()
     val mainFeedState = viewModel.mainfeedState.value
+    val postModifications by viewModel.postModifications.collectAsState()
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = true) {
@@ -116,18 +118,14 @@ fun MainFeedScreen (
                 ) { index ->
                     val post = posts[index]
                     post?.let {
+                        val displayedPost = postModifications[it.id] ?: it
                         PostItem(
-                            post = it,
+                            post = displayedPost,
                             onPostClick = {
                                 onNavigate(Screen.PostDetailsScreen.route + "/${it.id}")
                             },
                             onLikeClick = {
-                                viewModel.onEvent(
-                                    MainFeedEvent.LikePost(
-                                        post.id.orEmpty(),
-                                        post.isLiked ?: false
-                                    )
-                                )
+                                viewModel.onEvent(MainFeedEvent.LikePost(it))
                             }
                         )
                     }

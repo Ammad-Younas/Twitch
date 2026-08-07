@@ -1,8 +1,8 @@
 package com.madiwist.twitch.feature_post.domain.use_case
 
+import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.core.util.SimpleResource
 import com.madiwist.twitch.feature_post.domain.repository.PostRepository
-import com.madiwist.twitch.feature_profile.domain.repository.ProfileRepository
 
 class ToggleLikeStateForParentUseCase (
     private val repository: PostRepository
@@ -13,5 +13,13 @@ class ToggleLikeStateForParentUseCase (
         } else {
             repository.likeParent(parentId = parentId, parentType = parentType)
         }
+    }
+
+    fun updatePostModification(parentId: String, post: Post) {
+        repository.updatePostModification(parentId, post)
+    }
+
+    fun abortPostModification(parentId: String) {
+        repository.abortPostModification(parentId)
     }
 }

@@ -30,6 +30,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -82,6 +83,7 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val posts = viewModel.posts.collectAsLazyPagingItems()
+    val postModifications by viewModel.postModifications.collectAsState()
 
     val toolBarHeightCollapsed = 100.dp
     val lazyListState = rememberLazyListState()
@@ -262,17 +264,13 @@ fun ProfileScreen(
                     ) { index ->
                         val post = posts[index]
                         post?.let {
+                            val displayedPost = postModifications[it.id] ?: it
                             Column(modifier = Modifier.fillMaxSize().padding(SpaceMedium)) {
                                 PostItem(
-                                    post = it,
+                                    post = displayedPost,
                                     onPostClick = { onNavigate(Screen.PostDetailsScreen.route + "/${it.id}") },
                                     onLikeClick = {
-                                        viewModel.onEvent(
-                                            ProfileEvent.LikePost(
-                                                it.id ?: "",
-                                                it.isLiked ?: false
-                                            )
-                                        )
+                                        viewModel.onEvent(ProfileEvent.LikePost(it))
                                     }
                                 )
                             }

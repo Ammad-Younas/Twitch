@@ -46,12 +46,15 @@ class ProfileViewModel @Inject constructor(
 
     private val _userId = MutableStateFlow(savedStateHandle.get<String>("userId") ?: "")
 
+    val postModifications = postUseCases.getPostModificationsUseCase()
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val posts = _userId
         .filter { it.isNotEmpty() }
         .flatMapLatest { userId ->
             profileUseCase.getPosts(userId)
-        }.cachedIn(viewModelScope)
+        }
+        .cachedIn(viewModelScope)
 
     init {
         postUseCases.getPostCreatedEventUseCase()
@@ -62,11 +65,7 @@ class ProfileViewModel @Inject constructor(
             }
             .launchIn(viewModelScope)
 
-        postUseCases.getLikeUpdatedEventUseCase()
-            .onEach {
-                _eventFlow.emit(UiEvent.Refresh)
-            }
-            .launchIn(viewModelScope)
+        postUseCases.getLikeUpdatedEventUseCase().onEach {}.launchIn(viewModelScope)
     }
 
 
@@ -82,7 +81,19 @@ class ProfileViewModel @Inject constructor(
         when (event) {
             is ProfileEvent.GetProfile -> Unit
             is ProfileEvent.LikePost -> {
-                toggleLikeForParent(event.postId, event.isLiked)
+                val post = event.post
+                val isLiked = post.isLiked == true
+                val newLikeCount = if (isLiked) {
+                    (post.likeCount ?: 0) - 1
+                } else {
+                    (post.likeCount ?: 0) + 1
+                }
+                val updatedPost = post.copy(
+                    isLiked = !isLiked,
+                    likeCount = newLikeCount
+                )
+                postUseCases.toggleLikeStateForParentUseCase.updatePostModification(post.id ?: "", updatedPost)
+                toggleLikeForParent(post.id ?: "", isLiked)
             }
         }
     }
@@ -98,10 +109,9 @@ class ProfileViewModel @Inject constructor(
                 isLiked = isLiked
             )
             when (result) {
-                is Resource.Success -> {
-                    _eventFlow.emit(UiEvent.Refresh)
-                }
+                is Resource.Success -> Unit
                 is Resource.Error -> {
+                    postUseCases.toggleLikeStateForParentUseCase.abortPostModification(parentId)
                     _eventFlow.emit(
                         UiEvent.ShowSnackBar(
                             uiText = result.uiText ?: UiText.unknownError()
