@@ -1,6 +1,7 @@
 package com.madiwist.twitch.feature_post.presentation.post_detail.components
 
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,7 +47,8 @@ import com.madiwist.twitch.core.util.Constants
 fun CommentItem(
     modifier: Modifier = Modifier,
     comment: Comment,
-    onLikeClick: (Boolean) -> Unit = {}
+    onLikeClick: (Boolean) -> Unit = {},
+    onLikedByClick: () -> Unit = {}
 ) {
     Card(
         modifier = modifier
@@ -161,6 +163,9 @@ fun CommentItem(
                     }
                     Spacer(Modifier.height(SpaceSmall))
                     Text(
+                        modifier = Modifier.clickable{
+                            onLikedByClick()
+                        },
                         text = stringResource(R.string.liked_comments, comment.likeCount),
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold,

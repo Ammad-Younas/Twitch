@@ -7,14 +7,15 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.google.gson.Gson
 import com.madiwist.twitch.R
-import com.madiwist.twitch.core.data.remote.PostApi
 import com.madiwist.twitch.core.domain.models.Comment
 import com.madiwist.twitch.core.domain.models.Post
+import com.madiwist.twitch.core.domain.models.UserItem
 import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.SimpleResource
 import com.madiwist.twitch.core.util.UiText
 import com.madiwist.twitch.feature_post.data.paging.PostSource
+import com.madiwist.twitch.feature_post.data.remote.PostApi
 import com.madiwist.twitch.feature_post.data.remote.request.CreateCommentRequest
 import com.madiwist.twitch.feature_post.data.remote.request.CreatePostRequest
 import com.madiwist.twitch.feature_post.data.remote.request.LikeUpdateRequest
@@ -185,6 +186,21 @@ class PostRepositoryImpl (
                     Resource.Error(UiText.DynamicString(msg))
                 } ?: Resource.Error(UiText.StringResource(R.string.unknown_error))
             }
+        } catch (e: IOException) {
+            Resource.Error(
+                uiText = UiText.StringResource(R.string.error_couldnt_reach_server),
+            )
+        } catch (e: HttpException) {
+            Resource.Error(
+                uiText = UiText.StringResource(R.string.error_something_went_wrong)
+            )
+        }
+    }
+
+    override suspend fun getLikesForParent(parentId: String): Resource<List<UserItem>> {
+        return try {
+            val response = api.getLikesForParent(parentId)
+            Resource.Success(response.map { it.toUserItem() })
         } catch (e: IOException) {
             Resource.Error(
                 uiText = UiText.StringResource(R.string.error_couldnt_reach_server),

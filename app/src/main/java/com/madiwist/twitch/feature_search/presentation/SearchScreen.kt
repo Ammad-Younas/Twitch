@@ -29,7 +29,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.madiwist.twitch.R
-import com.madiwist.twitch.core.domain.models.User
 import com.madiwist.twitch.core.presentation.components.TwitchTextField
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.components.UserProfileItem
@@ -83,15 +82,7 @@ fun SearchScreen(
                     ) {
                         items(searchState.userItems) { user ->
                             UserProfileItem(
-                                user = User(
-                                    userId = user.userId,
-                                    username = user.username,
-                                    description = user.bio,
-                                    profilePictureUrl = user.profilePictureUrl,
-                                    postCount = 0,
-                                    followerCount = 0,
-                                    followingCount = 0
-                                ),
+                                user = user,
                                 actionIcon = {
                                     IconButton(
                                         onClick = {

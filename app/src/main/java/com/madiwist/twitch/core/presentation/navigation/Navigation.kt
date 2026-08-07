@@ -7,7 +7,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.feature_activity.presentation.ActivityScreen
 import com.madiwist.twitch.feature_auth.presentation.login.LoginScreen
 import com.madiwist.twitch.feature_auth.presentation.register.RegisterScreen
@@ -110,6 +109,7 @@ fun Navigation(
             )
         ) {
             PostDetailsScreen(
+                onNavigate = navController::navigate,
                 onNavigateUp = navController::navigateUp,
                 snackbarHostState = snackbarHostState,
             )
@@ -120,10 +120,18 @@ fun Navigation(
                 onNavigateUp = navController::navigateUp,
             )
         }
-        composable(Screen.PersonListScreen.route) {
+        composable(
+            route = Screen.PersonListScreen.route + "/{parentId}",
+            arguments = listOf(
+                navArgument(name = "parentId"){
+                    type = NavType.StringType
+                }
+            )
+        ) {
             PersonListScreen(
                 onNavigate = navController::navigate,
                 onNavigateUp = navController::navigateUp,
+                snackbarHostState = snackbarHostState,
             )
         }
     }

@@ -1,5 +1,6 @@
 package com.madiwist.twitch.feature_post.presentation.post_detail
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,6 +55,7 @@ import coil3.request.crossfade
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.components.BrokenImage
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
+import com.madiwist.twitch.core.presentation.navigation.Screen
 import com.madiwist.twitch.core.presentation.ui.theme.ExtraSpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
@@ -67,6 +69,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun PostDetailsScreen(
+    onNavigate: (String) -> Unit = {},
     onNavigateUp: () -> Unit = {},
     snackbarHostState: SnackbarHostState,
     viewModel: PostDetailsViewModel = hiltViewModel()
@@ -163,7 +166,11 @@ fun PostDetailsScreen(
                                 )
                                 Spacer(modifier = Modifier.height(ExtraSpaceLarge))
                                 Text(
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable{
+                                            onNavigate(Screen.PersonListScreen.route + "/${post.id}")
+                                        },
                                     text = stringResource(
                                         R.string.post_liked_by_x_people,
                                         post.likeCount ?: 0
@@ -204,7 +211,8 @@ fun PostDetailsScreen(
                 ) { comment ->
                     CommentItem(
                         comment = comment,
-                        onLikeClick = { viewModel.onEvent(PostDetailsEvent.LikeComment(comment.commentId)) }
+                        onLikeClick = { viewModel.onEvent(PostDetailsEvent.LikeComment(comment.commentId)) },
+                        onLikedByClick = { onNavigate(Screen.PersonListScreen.route + "/${comment.commentId}") }
                     )
                 }
             }

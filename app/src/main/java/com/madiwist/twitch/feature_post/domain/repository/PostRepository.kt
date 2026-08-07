@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.paging.PagingData
 import com.madiwist.twitch.core.domain.models.Comment
 import com.madiwist.twitch.core.domain.models.Post
+import com.madiwist.twitch.core.domain.models.UserItem
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.SimpleResource
 import kotlinx.coroutines.flow.Flow
@@ -20,4 +21,5 @@ interface PostRepository {
     suspend fun createComment(postId: String, comment: String) : SimpleResource
     suspend fun likeParent(parentId: String, parentType: Int) : SimpleResource
     suspend fun unlikeParent(parentId: String, parentType: Int) : SimpleResource
+    suspend fun getLikesForParent(parentId: String) : Resource<List<UserItem>>
 }

@@ -2,9 +2,10 @@ package com.madiwist.twitch.di
 
 import android.content.SharedPreferences
 import com.google.gson.Gson
-import com.madiwist.twitch.core.data.remote.PostApi
+import com.madiwist.twitch.core.data.repository.ProfileRepositoryImpl
+import com.madiwist.twitch.core.domain.use_case.ToggleFollowStateForUserUseCase
+import com.madiwist.twitch.feature_post.data.remote.PostApi
 import com.madiwist.twitch.feature_profile.data.remote.ProfileApi
-import com.madiwist.twitch.feature_profile.data.repository.ProfileRepositoryImpl
 import com.madiwist.twitch.feature_profile.domain.repository.ProfileRepository
 import com.madiwist.twitch.feature_profile.domain.user_case.GetPostsForProfileUserCase
 import com.madiwist.twitch.feature_profile.domain.user_case.GetProfileUseCase
@@ -12,7 +13,6 @@ import com.madiwist.twitch.feature_profile.domain.user_case.GetSkillUseCase
 import com.madiwist.twitch.feature_profile.domain.user_case.ProfileUserCases
 import com.madiwist.twitch.feature_profile.domain.user_case.SearchUserUseCase
 import com.madiwist.twitch.feature_profile.domain.user_case.SetSkillSelectedUseCase
-import com.madiwist.twitch.feature_profile.domain.user_case.ToggleFollowStateForUserUseCase
 import com.madiwist.twitch.feature_profile.domain.user_case.UpdateProfileUseCase
 import dagger.Module
 import dagger.Provides
@@ -62,6 +62,12 @@ object ProfileModule {
             searchUser = SearchUserUseCase(repository),
             toggleFollowStateForUser = ToggleFollowStateForUserUseCase(repository)
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideToggleFollowForUseCase(repository: ProfileRepository) : ToggleFollowStateForUserUseCase {
+        return ToggleFollowStateForUserUseCase(repository)
     }
 
 }

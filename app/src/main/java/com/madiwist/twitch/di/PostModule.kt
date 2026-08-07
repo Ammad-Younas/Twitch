@@ -1,12 +1,13 @@
 package com.madiwist.twitch.di
 
 import com.google.gson.Gson
-import com.madiwist.twitch.core.data.remote.PostApi
+import com.madiwist.twitch.feature_post.data.remote.PostApi
 import com.madiwist.twitch.feature_post.data.repository.PostRepositoryImpl
 import com.madiwist.twitch.feature_post.domain.repository.PostRepository
 import com.madiwist.twitch.feature_post.domain.use_case.CreateCommentUseCase
 import com.madiwist.twitch.feature_post.domain.use_case.CreatePostUseCase
 import com.madiwist.twitch.feature_post.domain.use_case.GetCommentsForPostUseCase
+import com.madiwist.twitch.feature_post.domain.use_case.GetLikesForParentUseCase
 import com.madiwist.twitch.feature_post.domain.use_case.GetPostCreatedEventUseCase
 import com.madiwist.twitch.feature_post.domain.use_case.GetPostDetailsUseCase
 import com.madiwist.twitch.feature_post.domain.use_case.GetPostsForFollowsUseCase
@@ -55,7 +56,8 @@ object PostModule {
             getPostDetailsUseCase = GetPostDetailsUseCase(repository),
             getCommentsForPostUseCase = GetCommentsForPostUseCase(repository),
             createCommentUseCase = CreateCommentUseCase(repository),
-            toggleLikeStateForParentUseCase = ToggleLikeStateForParentUseCase(repository)
+            toggleLikeStateForParentUseCase = ToggleLikeStateForParentUseCase(repository),
+            getLikesForParentUseCase = GetLikesForParentUseCase(repository)
         )
     }
 }

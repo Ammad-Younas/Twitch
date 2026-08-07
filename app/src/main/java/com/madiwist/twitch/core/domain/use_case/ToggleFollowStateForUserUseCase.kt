@@ -1,4 +1,4 @@
-package com.madiwist.twitch.feature_profile.domain.user_case
+package com.madiwist.twitch.core.domain.use_case
 
 import com.madiwist.twitch.core.util.SimpleResource
 import com.madiwist.twitch.feature_profile.domain.repository.ProfileRepository

@@ -1,4 +1,4 @@
-package com.madiwist.twitch.feature_profile.data.repository
+package com.madiwist.twitch.core.data.repository
 
 import android.content.SharedPreferences
 import android.net.Uri
@@ -9,7 +9,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.google.gson.Gson
 import com.madiwist.twitch.R
-import com.madiwist.twitch.core.data.remote.PostApi
+import com.madiwist.twitch.feature_post.data.remote.PostApi
 import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.core.domain.models.UserItem
 import com.madiwist.twitch.core.util.Constants

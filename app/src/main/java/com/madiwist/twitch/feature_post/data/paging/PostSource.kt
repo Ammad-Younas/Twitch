@@ -2,7 +2,7 @@ package com.madiwist.twitch.feature_post.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.madiwist.twitch.core.data.remote.PostApi
+import com.madiwist.twitch.feature_post.data.remote.PostApi
 import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.core.util.Constants
 import retrofit2.HttpException

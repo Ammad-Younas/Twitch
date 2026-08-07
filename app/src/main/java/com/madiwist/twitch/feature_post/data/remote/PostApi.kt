@@ -1,6 +1,7 @@
-package com.madiwist.twitch.core.data.remote
+package com.madiwist.twitch.feature_post.data.remote
 
 import com.madiwist.twitch.core.data.dto.response.BasicApiResponse
+import com.madiwist.twitch.core.data.dto.response.UserItemDto
 import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.feature_post.data.remote.dto.CommentDto
 import com.madiwist.twitch.feature_post.data.remote.dto.PostDto
@@ -66,6 +67,12 @@ interface PostApi {
         @Query("parentId") parentId : String,
         @Query("parentType") parentType : Int
     ) : BasicApiResponse<Unit>
+
+
+    @GET("/api/like/parent")
+    suspend fun getLikesForParent(
+        @Query("parentId") parentId: String
+    ) : List<UserItemDto>
 
     companion object {
         const val BASE_URL = Constants.BASE_URL

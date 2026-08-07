@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import com.madiwist.twitch.core.domain.models.User
+import com.madiwist.twitch.core.domain.models.UserItem
 import com.madiwist.twitch.core.presentation.ui.theme.Shapes
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
@@ -40,7 +40,7 @@ import com.madiwist.twitch.core.util.Constants
 fun UserProfileItem(
     modifier: Modifier = Modifier,
     actionIcon: @Composable () -> Unit = {},
-    user: User,
+    user: UserItem,
     onItemClick: () -> Unit = {},
     onActionItemClick: () -> Unit = {}
 ) {
@@ -92,14 +92,14 @@ fun UserProfileItem(
                     .fillMaxHeight().weight(8f)
             ) {
                 Text(
-                    text = user.username.orEmpty(),
+                    text = user.username,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(Modifier.height(SpaceSmall))
                 Text(
-                    text = user.description.orEmpty(),
+                    text = user.bio,
                     style = MaterialTheme.typography.bodyMedium,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 2

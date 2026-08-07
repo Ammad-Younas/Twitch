@@ -88,4 +88,5 @@
     <string name="liked_comment">liked</string>
     <string name="enter_a_comment">Enter a comment</string>
     <string name="comment_posted">Successfully comment posted!</string>
+    <string name="liked_by_toolbar">Liked by</string>
 </resources>
