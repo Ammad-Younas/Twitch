@@ -5,7 +5,7 @@ import com.madiwist.twitch.core.domain.models.Comment
 import com.madiwist.twitch.core.util.DateFormatUtil
 
 data class CommentDto(
-    @SerializedName("id", alternate = ["_id"])
+    @SerializedName("id", alternate = ["_id", "commentId"])
     val commentId: Any?,
     val username: String,
     val profilePictureUrl: String,

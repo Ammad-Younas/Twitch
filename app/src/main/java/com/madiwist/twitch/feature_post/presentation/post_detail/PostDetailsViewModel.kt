@@ -174,17 +174,27 @@ class PostDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             when (parentType) {
                 ParentType.Post.type -> {
+                    val post = postDetailsState.value.post ?: return@launch
                     _postDetailsState.value = postDetailsState.value.copy(
-                        post = postDetailsState.value.post?.copy(
-                            isLiked = !isLiked
+                        post = post.copy(
+                            isLiked = !isLiked,
+                            likeCount = if (isLiked) {
+                                (post.likeCount ?: 0) - 1
+                            } else {
+                                (post.likeCount ?: 0) + 1
+                            }
                         )
                     )
                 }
+
                 ParentType.Comment.type -> {
                     _postDetailsState.value = postDetailsState.value.copy(
                         comments = postDetailsState.value.comments.map {
                             if (it.commentId == parentId) {
-                                it.copy(isLiked = !isLiked)
+                                it.copy(
+                                    isLiked = !isLiked,
+                                    likeCount = if (isLiked) it.likeCount - 1 else it.likeCount + 1
+                                )
                             } else it
                         }
                     )
@@ -200,17 +210,27 @@ class PostDetailsViewModel @Inject constructor(
                 is Resource.Error -> {
                     when (parentType) {
                         ParentType.Post.type -> {
+                            val post = postDetailsState.value.post ?: return@launch
                             _postDetailsState.value = postDetailsState.value.copy(
-                                post = postDetailsState.value.post?.copy(
-                                    isLiked = isLiked
+                                post = post.copy(
+                                    isLiked = isLiked,
+                                    likeCount = if (isLiked) {
+                                        (post.likeCount ?: 0) + 1
+                                    } else {
+                                        (post.likeCount ?: 0) - 1
+                                    }
                                 )
                             )
                         }
+
                         ParentType.Comment.type -> {
                             _postDetailsState.value = postDetailsState.value.copy(
                                 comments = postDetailsState.value.comments.map {
                                     if (it.commentId == parentId) {
-                                        it.copy(isLiked = isLiked)
+                                        it.copy(
+                                            isLiked = isLiked,
+                                            likeCount = if (isLiked) it.likeCount + 1 else it.likeCount - 1
+                                        )
                                     } else it
                                 }
                             )

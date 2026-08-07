@@ -186,8 +186,8 @@ fun PostDetailsScreen(
                         }
                     }
                 }
-                items(postDetailsState.comments) { comment ->
-                    if (postDetailsState.isLoadingComments) {
+                if (postDetailsState.isLoadingComments) {
+                    item {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -197,6 +197,11 @@ fun PostDetailsScreen(
                             CircularProgressIndicator()
                         }
                     }
+                }
+                items(
+                    items = postDetailsState.comments,
+                    key = { it.commentId }
+                ) { comment ->
                     CommentItem(
                         comment = comment,
                         onLikeClick = { viewModel.onEvent(PostDetailsEvent.LikeComment(comment.commentId)) }
