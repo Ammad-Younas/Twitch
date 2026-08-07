@@ -110,7 +110,7 @@ class PostDetailsViewModel @Inject constructor(
 
     private fun loadCommentsForPost(postId: String){
         viewModelScope.launch {
-            _postDetailsState.value = postDetailsState.value.copy(isLoadingPost = true)
+            _postDetailsState.value = postDetailsState.value.copy(isLoadingComments = true)
             when(val result = postUseCases.getCommentsForPostUseCase(postId)){
                 is Resource.Success -> {
                     _postDetailsState.value = postDetailsState.value.copy(
