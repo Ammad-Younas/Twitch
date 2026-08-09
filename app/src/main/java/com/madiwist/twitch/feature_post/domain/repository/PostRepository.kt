@@ -16,6 +16,7 @@ interface PostRepository {
     val onLikeUpdated: SharedFlow<Unit>
 
     val postModifications: StateFlow<Map<String, Post>>
+    val commentModifications: StateFlow<Map<String, Comment>>
 
     suspend fun createPost(description: String, imageUri: Uri) : SimpleResource
     suspend fun getPostDetails(postId: String) : Resource<Post>
@@ -27,4 +28,7 @@ interface PostRepository {
 
     fun updatePostModification(parentId: String, post: Post)
     fun abortPostModification(parentId: String)
+
+    fun updateCommentModification(parentId: String, comment: Comment)
+    fun abortCommentModification(parentId: String)
 }

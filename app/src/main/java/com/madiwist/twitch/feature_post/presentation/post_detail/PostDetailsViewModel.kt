@@ -37,6 +37,7 @@ class PostDetailsViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     val postModifications = postUseCases.getPostModificationsUseCase()
+    val commentModifications = postUseCases.getCommentModificationsUseCase()
 
     init {
         savedStateHandle.get<String>("postId")?.let { postId ->
@@ -49,9 +50,10 @@ class PostDetailsViewModel @Inject constructor(
     fun onEvent(event: PostDetailsEvent) {
         when (event) {
             is PostDetailsEvent.LikePost -> {
-                val isLiked = postDetailsState.value.post?.isLiked == true
+                val post = event.post
+                val isLiked = post.isLiked == true
                 toggleLikeForParent(
-                    parentId = postDetailsState.value.post?.id ?: return,
+                    parentId = post.id ?: return,
                     parentType = ParentType.Post.type,
                     isLiked = isLiked
                 )
@@ -72,7 +74,9 @@ class PostDetailsViewModel @Inject constructor(
             }
 
             is PostDetailsEvent.LikeComment -> {
-                val isLiked = postDetailsState.value.comments.find { it.commentId == event.commentId }?.isLiked == true
+                val comment = postDetailsState.value.comments.find { it.commentId == event.commentId }
+                val currentComment = commentModifications.value[event.commentId] ?: comment ?: return
+                val isLiked = currentComment.isLiked
                 toggleLikeForParent(
                     parentId = event.commentId,
                     parentType = ParentType.Comment.type,
@@ -192,16 +196,20 @@ class PostDetailsViewModel @Inject constructor(
                 }
 
                 ParentType.Comment.type -> {
+                    val comment = postDetailsState.value.comments.find { it.commentId == parentId }
+                    val currentComment = commentModifications.value[parentId] ?: comment ?: return@launch
+                    val updatedComment = currentComment.copy(
+                        isLiked = !isLiked,
+                        likeCount = if (isLiked) currentComment.likeCount - 1 else currentComment.likeCount + 1
+                    )
                     _postDetailsState.value = postDetailsState.value.copy(
                         comments = postDetailsState.value.comments.map {
                             if (it.commentId == parentId) {
-                                it.copy(
-                                    isLiked = !isLiked,
-                                    likeCount = if (isLiked) it.likeCount - 1 else it.likeCount + 1
-                                )
+                                updatedComment
                             } else it
                         }
                     )
+                    postUseCases.toggleLikeStateForParentUseCase.updateCommentModification(parentId, updatedComment)
                 }
             }
             val result = postUseCases.toggleLikeStateForParentUseCase(
@@ -230,16 +238,20 @@ class PostDetailsViewModel @Inject constructor(
                         }
 
                         ParentType.Comment.type -> {
+                            val comment = postDetailsState.value.comments.find { it.commentId == parentId }
+                            val currentComment = commentModifications.value[parentId] ?: comment ?: return@launch
+                            val revertedComment = currentComment.copy(
+                                isLiked = isLiked,
+                                likeCount = if (isLiked) currentComment.likeCount + 1 else currentComment.likeCount - 1
+                            )
                             _postDetailsState.value = postDetailsState.value.copy(
                                 comments = postDetailsState.value.comments.map {
                                     if (it.commentId == parentId) {
-                                        it.copy(
-                                            isLiked = isLiked,
-                                            likeCount = if (isLiked) it.likeCount + 1 else it.likeCount - 1
-                                        )
+                                        revertedComment
                                     } else it
                                 }
                             )
+                            postUseCases.toggleLikeStateForParentUseCase.abortCommentModification(parentId)
                         }
                     }
                     _eventFlow.emit(

@@ -40,6 +40,9 @@ class PostRepositoryImpl (
     private val _postModifications = MutableStateFlow<Map<String, Post>>(emptyMap())
     override val postModifications: StateFlow<Map<String, Post>> = _postModifications.asStateFlow()
 
+    private val _commentModifications = MutableStateFlow<Map<String, Comment>>(emptyMap())
+    override val commentModifications: StateFlow<Map<String, Comment>> = _commentModifications.asStateFlow()
+
     override suspend fun getPostsForFollows(page: Int, pageSize: Int): Resource<List<Post>> {
         return try {
             val response = api.getPostsForFollows(page, pageSize)
@@ -233,5 +236,13 @@ class PostRepositoryImpl (
 
     override fun abortPostModification(parentId: String) {
         _postModifications.value -= parentId
+    }
+
+    override fun updateCommentModification(parentId: String, comment: Comment) {
+        _commentModifications.value += (parentId to comment)
+    }
+
+    override fun abortCommentModification(parentId: String) {
+        _commentModifications.value -= parentId
     }
 }

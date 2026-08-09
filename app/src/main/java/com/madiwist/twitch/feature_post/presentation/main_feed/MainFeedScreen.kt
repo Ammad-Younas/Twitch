@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
@@ -27,6 +28,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.navigation.Screen
+import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
 import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.core.presentation.util.asString
 import com.madiwist.twitch.feature_post.domain.util.PostItem
@@ -49,25 +51,22 @@ fun MainFeedScreen(
                 is UiEvent.ShowSnackBar -> {
                     snackbarHostState.showSnackbar(event.uiText.asString(context))
                 }
-                is UiEvent.Refresh -> {
-                   // viewModel.onEvent(MainFeedEvent.LoadMorePosts) 
-                }
                 else -> Unit
             }
         }
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
     ) {
         TwitchToolBar(
             onNavigateUp = onNavigateUp,
             modifier = Modifier.fillMaxWidth(),
             title = {
                 Text(
-                    text = stringResource(id = R.string.app_name),
+                    text = stringResource(id = R.string.your_feed),
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
                 )
             },
             showBackArrow = false,
@@ -83,25 +82,27 @@ fun MainFeedScreen(
                 }
             }
         )
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize()
+            .padding(SpaceSmall)
+        ) {
             LazyColumn {
                 itemsIndexed(state.posts) { index, post ->
                     if (index >= state.posts.size - 1 && !state.endReached && !state.isLoadingNewPosts) {
                         viewModel.loadNextPosts()
                     }
+                    val displayedPost = postModifications[post.id] ?: post
                     PostItem(
-                        post = postModifications[post.id] ?: post,
+                        post = displayedPost,
                         onPostClick = {
                             onNavigate(Screen.PostDetailsScreen.route + "/${post.id}")
                         },
                         onLikeClick = {
-                            viewModel.onEvent(MainFeedEvent.LikePost(post))
+                            viewModel.onEvent(MainFeedEvent.LikePost(displayedPost))
                         },
                         onCommentClick = {
-                            onNavigate(Screen.PostDetailsScreen.route + "/${post.id}?shouldShowKeyboard=true")
+                            onNavigate(Screen.PostDetailsScreen.route + "/${post.id}")
                         },
                         onShareClick = {
-                           // viewModel.onEvent(MainFeedEvent.SharePost(post))
                         },
                         onUsernameClick = {
                             onNavigate(Screen.ProfileScreen.route + "?userId=${post.userId}")

@@ -1,5 +1,6 @@
 package com.madiwist.twitch.feature_post.domain.use_case
 
+import com.madiwist.twitch.core.domain.models.Comment
 import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.core.util.SimpleResource
 import com.madiwist.twitch.feature_post.domain.repository.PostRepository
@@ -21,5 +22,13 @@ class ToggleLikeStateForParentUseCase (
 
     fun abortPostModification(parentId: String) {
         repository.abortPostModification(parentId)
+    }
+
+    fun updateCommentModification(parentId: String, comment: Comment) {
+        repository.updateCommentModification(parentId, comment)
+    }
+
+    fun abortCommentModification(parentId: String) {
+        repository.abortCommentModification(parentId)
     }
 }

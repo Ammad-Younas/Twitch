@@ -79,6 +79,7 @@ fun PostDetailsScreen(
     val postDetailsState = viewModel.postDetailsState.value
     val commentFieldState = viewModel.commentFieldState.value
     val postModifications by viewModel.postModifications.collectAsState()
+    val commentModifications by viewModel.commentModifications.collectAsState()
 
     val context = LocalContext.current
 
@@ -157,7 +158,7 @@ fun PostDetailsScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     username = displayedPost.username ?: "",
                                     onUsernameClick = { },
-                                    onLikeClick = { viewModel.onEvent(PostDetailsEvent.LikePost) },
+                                    onLikeClick = { viewModel.onEvent(PostDetailsEvent.LikePost(displayedPost)) },
                                     onCommentClick = { },
                                     onShareClick = { },
                                     isLiked = displayedPost.isLiked == true
@@ -213,8 +214,9 @@ fun PostDetailsScreen(
                     items = postDetailsState.comments,
                     key = { it.commentId }
                 ) { comment ->
+                    val displayedComment = commentModifications[comment.commentId] ?: comment
                     CommentItem(
-                        comment = comment,
+                        comment = displayedComment,
                         onLikeClick = { viewModel.onEvent(PostDetailsEvent.LikeComment(comment.commentId)) },
                         onLikedByClick = { onNavigate(Screen.PersonListScreen.route + "/${comment.commentId}") }
                     )

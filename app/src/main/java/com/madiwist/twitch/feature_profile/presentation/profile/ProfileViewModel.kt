@@ -49,13 +49,13 @@ class ProfileViewModel @Inject constructor(
         initialKey = _profileState.value.page,
         onLoadUpdated = { isLoading ->
             _profileState.value = _profileState.value.copy(
-                isLoadingPosts = isLoading
+                isLoading = isLoading
             )
         },
         onRequest = { nextPage ->
             profileUseCase.getPosts(_userId.value, nextPage)
         },
-        getNextKey = { items ->
+        getNextKey = {
             _profileState.value.page + 1
         },
         onError = { uiText ->
@@ -71,12 +71,6 @@ class ProfileViewModel @Inject constructor(
     )
 
     init {
-        val userId = savedStateHandle.get<String>("userId") ?: ""
-        if(userId.isNotEmpty()) {
-            getProfile(userId)
-            loadNextPosts()
-        }
-
         postUseCases.getPostCreatedEventUseCase()
             .onEach {
                 val currentUserId = _userId.value
@@ -90,6 +84,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun loadNextPosts() {
+        if (_userId.value.isEmpty()) return
         viewModelScope.launch {
             paginator.loadNextItems()
         }
@@ -172,6 +167,9 @@ class ProfileViewModel @Inject constructor(
                     profile?.userId?.let { id ->
                         if (_userId.value != id) {
                             _userId.value = id
+                            refresh()
+                        } else if (_profileState.value.posts.isEmpty()) {
+                            loadNextPosts()
                         }
                     }
                 }
