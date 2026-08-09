@@ -41,7 +41,7 @@ class MainFeedViewModel @Inject constructor(
         onRequest = { nextPage ->
             postUseCases.getPostsForFollowsUseCase(page = nextPage)
         },
-        getNextKey = { items ->
+        getNextKey = {
             _mainfeedState.value.page + 1
         },
         onError = { uiText ->
