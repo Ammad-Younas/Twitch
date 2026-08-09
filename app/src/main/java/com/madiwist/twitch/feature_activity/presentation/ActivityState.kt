@@ -5,4 +5,6 @@ import com.madiwist.twitch.core.domain.models.Activity
 data class ActivityState(
     val activities: List<Activity> = emptyList(),
     val isLoading: Boolean = false,
+    val endReached: Boolean = false,
+    val page: Int = 0
 )

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,7 +25,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
@@ -40,7 +40,6 @@ fun ActivityScreen(
 ) {
 
     val activityState = viewModel.activityState.value
-    val activities = viewModel.activities.collectAsLazyPagingItems()
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -77,19 +76,19 @@ fun ActivityScreen(
                 LazyColumn(
                     modifier = Modifier.weight(1f),
                 ) {
-                    items(activities.itemCount) { index ->
-                        val activity = activities[index]
-                        activity?.let {
-                            ActivityItem(
-                                activity = it,
-                                onUserClick = { userId ->
-                                    viewModel.onEvent(ActivityEvent.ClickedOnUser(userId)) 
-                                },
-                                onParentClick = { parentId -> 
-                                    viewModel.onEvent(ActivityEvent.ClickedOnParent(parentId)) 
-                                }
-                            )
+                    itemsIndexed(activityState.activities) { index, activity ->
+                        if (index >= activityState.activities.size - 1 && !activityState.endReached && !activityState.isLoading) {
+                            viewModel.loadNextActivities()
                         }
+                        ActivityItem(
+                            activity = activity,
+                            onUserClick = { userId ->
+                                viewModel.onEvent(ActivityEvent.ClickedOnUser(userId))
+                            },
+                            onParentClick = { parentId ->
+                                viewModel.onEvent(ActivityEvent.ClickedOnParent(parentId))
+                            }
+                        )
                         Spacer(Modifier.height(8.dp))
                     }
                 }

@@ -6,20 +6,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.cachedIn
 import com.madiwist.twitch.core.presentation.util.UiEvent
+import com.madiwist.twitch.core.util.DefaultPaginator
 import com.madiwist.twitch.core.util.ParentType
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText
 import com.madiwist.twitch.feature_post.domain.use_case.PostUseCases
 import com.madiwist.twitch.feature_profile.domain.user_case.ProfileUserCases
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -48,24 +45,64 @@ class ProfileViewModel @Inject constructor(
 
     val postModifications = postUseCases.getPostModificationsUseCase()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val posts = _userId
-        .filter { it.isNotEmpty() }
-        .flatMapLatest { userId ->
-            profileUseCase.getPosts(userId)
+    private val paginator = DefaultPaginator(
+        initialKey = _profileState.value.page,
+        onLoadUpdated = { isLoading ->
+            _profileState.value = _profileState.value.copy(
+                isLoadingPosts = isLoading
+            )
+        },
+        onRequest = { nextPage ->
+            profileUseCase.getPosts(_userId.value, nextPage)
+        },
+        getNextKey = { items ->
+            _profileState.value.page + 1
+        },
+        onError = { uiText ->
+            _eventFlow.emit(UiEvent.ShowSnackBar(uiText ?: UiText.unknownError()))
+        },
+        onSuccess = { items, newKey ->
+            _profileState.value = _profileState.value.copy(
+                posts = _profileState.value.posts + items,
+                endReached = items.isEmpty(),
+                page = newKey
+            )
         }
-        .cachedIn(viewModelScope)
+    )
 
     init {
+        val userId = savedStateHandle.get<String>("userId") ?: ""
+        if(userId.isNotEmpty()) {
+            getProfile(userId)
+            loadNextPosts()
+        }
+
         postUseCases.getPostCreatedEventUseCase()
             .onEach {
-                val userId = _userId.value
-                getProfile(userId)
+                val currentUserId = _userId.value
+                getProfile(currentUserId)
+                refresh()
                 _eventFlow.emit(UiEvent.Refresh)
             }
             .launchIn(viewModelScope)
 
         postUseCases.getLikeUpdatedEventUseCase().onEach {}.launchIn(viewModelScope)
+    }
+
+    fun loadNextPosts() {
+        viewModelScope.launch {
+            paginator.loadNextItems()
+        }
+    }
+
+    private fun refresh() {
+        paginator.reset()
+        _profileState.value = _profileState.value.copy(
+            posts = emptyList(),
+            page = 0,
+            endReached = false
+        )
+        loadNextPosts()
     }
 
 

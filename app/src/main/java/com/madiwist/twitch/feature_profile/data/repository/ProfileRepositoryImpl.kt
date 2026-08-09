@@ -4,9 +4,6 @@ import android.content.SharedPreferences
 import android.net.Uri
 import androidx.core.content.edit
 import androidx.core.net.toFile
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import com.google.gson.Gson
 import com.madiwist.twitch.R
 import com.madiwist.twitch.feature_post.data.remote.PostApi
@@ -16,14 +13,12 @@ import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.SimpleResource
 import com.madiwist.twitch.core.util.UiText
-import com.madiwist.twitch.feature_post.data.paging.PostSource
 import com.madiwist.twitch.feature_profile.data.remote.ProfileApi
 import com.madiwist.twitch.feature_profile.data.remote.request.FollowUpdateRequest
 import com.madiwist.twitch.feature_profile.domain.model.Profile
 import com.madiwist.twitch.feature_profile.domain.model.Skill
 import com.madiwist.twitch.feature_profile.domain.model.UpdateProfileData
 import com.madiwist.twitch.feature_profile.domain.repository.ProfileRepository
-import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
@@ -134,10 +129,19 @@ class ProfileRepositoryImpl(
         }
     }
 
-    override fun getPostsPaged(userId: String): Flow<PagingData<Post>> {
-        return Pager(PagingConfig(pageSize = Constants.DEFAULT_PAGE_SIZE)) {
-            PostSource(postApi, PostSource.Source.Profile(userId))
-        }.flow
+    override suspend fun getPosts(userId: String, page: Int, pageSize: Int): Resource<List<Post>> {
+        return try {
+            val response = postApi.getPostsForProfile(userId, page, pageSize)
+            Resource.Success(response.map { it.toPost() })
+        } catch (e: IOException) {
+            Resource.Error(
+                uiText = UiText.StringResource(R.string.error_couldnt_reach_server),
+            )
+        } catch (e: HttpException) {
+            Resource.Error(
+                uiText = UiText.StringResource(R.string.error_something_went_wrong)
+            )
+        }
     }
 
     override suspend fun searchUser(query: String): Resource<List<UserItem>> {

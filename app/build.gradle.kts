@@ -106,7 +106,5 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.material.icons.extended)
 
-    // Pagging
-    implementation(libs.androidx.paging.compose)
 
 }

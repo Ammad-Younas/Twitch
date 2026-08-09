@@ -4,8 +4,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.cachedIn
 import com.madiwist.twitch.core.presentation.util.UiEvent
+import com.madiwist.twitch.core.util.DefaultPaginator
 import com.madiwist.twitch.core.util.ParentType
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText
@@ -31,24 +31,59 @@ class MainFeedViewModel @Inject constructor(
 
     val postModifications = postUseCases.getPostModificationsUseCase()
 
-    val posts = postUseCases.getPostsForFollowsUseCase().cachedIn(viewModelScope)
+    private val paginator = DefaultPaginator(
+        initialKey = _mainfeedState.value.page,
+        onLoadUpdated = { isLoading ->
+            _mainfeedState.value = _mainfeedState.value.copy(
+                isLoadingNewPosts = isLoading
+            )
+        },
+        onRequest = { nextPage ->
+            postUseCases.getPostsForFollowsUseCase(page = nextPage)
+        },
+        getNextKey = { items ->
+            _mainfeedState.value.page + 1
+        },
+        onError = { uiText ->
+            _eventFlow.emit(UiEvent.ShowSnackBar(uiText ?: UiText.unknownError()))
+        },
+        onSuccess = { items, newKey ->
+            _mainfeedState.value = _mainfeedState.value.copy(
+                posts = _mainfeedState.value.posts + items,
+                endReached = items.isEmpty(),
+                page = newKey,
+                isLoadingFirstTime = false
+            )
+        }
+    )
 
     init {
+        loadNextPosts()
         postUseCases.getPostCreatedEventUseCase()
             .onEach {
-                _eventFlow.emit(UiEvent.Refresh)
+                refresh()
             }
             .launchIn(viewModelScope)
 
         postUseCases.getLikeUpdatedEventUseCase().onEach {}.launchIn(viewModelScope)
     }
 
+    fun loadNextPosts() {
+        viewModelScope.launch {
+            paginator.loadNextItems()
+        }
+    }
+
+    private fun refresh() {
+        paginator.reset()
+        _mainfeedState.value = MainFeedState()
+        loadNextPosts()
+    }
+
     fun onEvent(event: MainFeedEvent) {
         when(event){
             is MainFeedEvent.LoadMorePosts -> {
-                _mainfeedState.value = mainfeedState.value.copy(
-                    isLoadingNewPosts = true
-                )
+                loadNextPosts()
             }
             is MainFeedEvent.LoadedPage -> {
                 _mainfeedState.value = mainfeedState.value.copy(

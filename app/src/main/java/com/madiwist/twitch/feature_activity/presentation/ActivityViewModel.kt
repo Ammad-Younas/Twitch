@@ -4,9 +4,10 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.cachedIn
 import com.madiwist.twitch.core.presentation.navigation.Screen
 import com.madiwist.twitch.core.presentation.util.UiEvent
+import com.madiwist.twitch.core.util.Constants
+import com.madiwist.twitch.core.util.DefaultPaginator
 import com.madiwist.twitch.feature_activity.domain.use_case.GetActivityUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ActivityViewModel @Inject constructor(
-    getActivities: GetActivityUseCase
+    private val getActivityUseCase: GetActivityUseCase
 ) : ViewModel() {
 
     private val _activityState = mutableStateOf(ActivityState())
@@ -25,7 +26,38 @@ class ActivityViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    val activities = getActivities().cachedIn(viewModelScope)
+    private val paginator = DefaultPaginator(
+        initialKey = _activityState.value.page,
+        onLoadUpdated = { isLoading ->
+            _activityState.value = _activityState.value.copy(isLoading = isLoading)
+        },
+        onRequest = { nextPage ->
+            getActivityUseCase(page = nextPage)
+        },
+        getNextKey = { items ->
+            _activityState.value.page + 1
+        },
+        onError = { uiText ->
+            _eventFlow.emit(UiEvent.ShowSnackBar(uiText ?: com.madiwist.twitch.core.util.UiText.unknownError()))
+        },
+        onSuccess = { items, newKey ->
+            _activityState.value = _activityState.value.copy(
+                activities = _activityState.value.activities + items,
+                endReached = items.isEmpty(),
+                page = newKey
+            )
+        }
+    )
+
+    init {
+        loadNextActivities()
+    }
+
+    fun loadNextActivities() {
+        viewModelScope.launch {
+            paginator.loadNextItems()
+        }
+    }
 
     fun onEvent(event: ActivityEvent) {
         when (event) {
@@ -39,8 +71,6 @@ class ActivityViewModel @Inject constructor(
 
             is ActivityEvent.ClickedOnParent -> {
                 viewModelScope.launch {
-                    // For now navigating to PostDetails. 
-                    // In a real app, you might check if it's a post or comment ID.
                     _eventFlow.emit(UiEvent.Navigate(Screen.PostDetailsScreen.route))
                 }
             }

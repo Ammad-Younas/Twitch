@@ -1,19 +1,17 @@
 package com.madiwist.twitch.feature_post.domain.repository
 
 import android.net.Uri
-import androidx.paging.PagingData
 import com.madiwist.twitch.core.domain.models.Comment
 import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.core.domain.models.UserItem
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.SimpleResource
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
 interface PostRepository {
 
-    val posts : Flow<PagingData<Post>>
+    suspend fun getPostsForFollows(page: Int, pageSize: Int): Resource<List<Post>>
     val onPostCreated: SharedFlow<Unit>
     val onLikeUpdated: SharedFlow<Unit>
 

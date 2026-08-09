@@ -1,8 +1,13 @@
 package com.madiwist.twitch.feature_profile.presentation.profile
 
+import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.feature_profile.domain.model.Profile
 
 data class ProfileState(
     val profile: Profile? = null,
-    val isLoading: Boolean = false
+    val posts: List<Post> = emptyList(),
+    val isLoading: Boolean = false,
+    val isLoadingPosts: Boolean = false,
+    val endReached: Boolean = false,
+    val page: Int = 0
 )

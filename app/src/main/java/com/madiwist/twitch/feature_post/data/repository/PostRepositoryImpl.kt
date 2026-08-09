@@ -2,25 +2,19 @@ package com.madiwist.twitch.feature_post.data.repository
 
 import android.net.Uri
 import androidx.core.net.toFile
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import com.google.gson.Gson
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.models.Comment
 import com.madiwist.twitch.core.domain.models.Post
 import com.madiwist.twitch.core.domain.models.UserItem
-import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.SimpleResource
 import com.madiwist.twitch.core.util.UiText
-import com.madiwist.twitch.feature_post.data.paging.PostSource
 import com.madiwist.twitch.feature_post.data.remote.PostApi
 import com.madiwist.twitch.feature_post.data.remote.request.CreateCommentRequest
 import com.madiwist.twitch.feature_post.data.remote.request.CreatePostRequest
 import com.madiwist.twitch.feature_post.data.remote.request.LikeUpdateRequest
 import com.madiwist.twitch.feature_post.domain.repository.PostRepository
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -46,10 +40,20 @@ class PostRepositoryImpl (
     private val _postModifications = MutableStateFlow<Map<String, Post>>(emptyMap())
     override val postModifications: StateFlow<Map<String, Post>> = _postModifications.asStateFlow()
 
-        override val posts: Flow<PagingData<Post>>
-        get() = Pager(PagingConfig(pageSize = Constants.DEFAULT_PAGE_SIZE)) {
-            PostSource(api, PostSource.Source.Follows)
-        }.flow
+    override suspend fun getPostsForFollows(page: Int, pageSize: Int): Resource<List<Post>> {
+        return try {
+            val response = api.getPostsForFollows(page, pageSize)
+            Resource.Success(response.map { it.toPost() })
+        } catch (e: IOException) {
+            Resource.Error(
+                uiText = UiText.StringResource(R.string.error_couldnt_reach_server),
+            )
+        } catch (e: HttpException) {
+            Resource.Error(
+                uiText = UiText.StringResource(R.string.error_something_went_wrong)
+            )
+        }
+    }
 
     override suspend fun createPost(
         description: String,

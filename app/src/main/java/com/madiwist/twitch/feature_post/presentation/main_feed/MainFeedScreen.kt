@@ -2,17 +2,12 @@ package com.madiwist.twitch.feature_post.presentation.main_feed
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,38 +18,39 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.paging.LoadState
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.navigation.Screen
-import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
 import com.madiwist.twitch.core.presentation.util.UiEvent
+import com.madiwist.twitch.core.presentation.util.asString
 import com.madiwist.twitch.feature_post.domain.util.PostItem
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun MainFeedScreen (
-    snackbarHostState: SnackbarHostState,
+fun MainFeedScreen(
     onNavigate: (String) -> Unit = {},
     onNavigateUp: () -> Unit = {},
+    snackbarHostState: SnackbarHostState,
     viewModel: MainFeedViewModel = hiltViewModel()
 ) {
-    val posts = viewModel.posts.collectAsLazyPagingItems()
-    val mainFeedState = viewModel.mainfeedState.value
+    val state = viewModel.mainfeedState.value
     val postModifications by viewModel.postModifications.collectAsState()
-    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     LaunchedEffect(key1 = true) {
-        viewModel.eventFlow.collect { event ->
+        viewModel.eventFlow.collectLatest { event ->
             when (event) {
+                is UiEvent.ShowSnackBar -> {
+                    snackbarHostState.showSnackbar(event.uiText.asString(context))
+                }
                 is UiEvent.Refresh -> {
-                    posts.refresh()
+                   // viewModel.onEvent(MainFeedEvent.LoadMorePosts) 
                 }
                 else -> Unit
             }
@@ -68,112 +64,54 @@ fun MainFeedScreen (
             onNavigateUp = onNavigateUp,
             modifier = Modifier.fillMaxWidth(),
             title = {
-                Text(stringResource(R.string.your_feed))
+                Text(
+                    text = stringResource(id = R.string.app_name),
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
             },
             showBackArrow = false,
             navActions = {
-                IconButton(
-                    onClick = {
-                        onNavigate(Screen.SearchScreen.route)
-                    }
-                ) {
+                IconButton(onClick = {
+                    onNavigate(Screen.SearchScreen.route)
+                }) {
                     Icon(
-                        imageVector = Icons.Outlined.Search,
-                        contentDescription = stringResource(R.string.Search)
+                        imageVector = Icons.Default.Search,
+                        contentDescription = stringResource(id = R.string.search),
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
             }
         )
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = SpaceSmall)
-        ){
-            if (mainFeedState.isLoadingFirstTime) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn {
+                itemsIndexed(state.posts) { index, post ->
+                    if (index >= state.posts.size - 1 && !state.endReached && !state.isLoadingNewPosts) {
+                        viewModel.loadNextPosts()
+                    }
+                    PostItem(
+                        post = postModifications[post.id] ?: post,
+                        onPostClick = {
+                            onNavigate(Screen.PostDetailsScreen.route + "/${post.id}")
+                        },
+                        onLikeClick = {
+                            viewModel.onEvent(MainFeedEvent.LikePost(post))
+                        },
+                        onCommentClick = {
+                            onNavigate(Screen.PostDetailsScreen.route + "/${post.id}?shouldShowKeyboard=true")
+                        },
+                        onShareClick = {
+                           // viewModel.onEvent(MainFeedEvent.SharePost(post))
+                        },
+                        onUsernameClick = {
+                            onNavigate(Screen.ProfileScreen.route + "?userId=${post.userId}")
+                        }
+                    )
+                }
             }
-            val isLoading = posts.loadState.refresh is LoadState.Loading
-            val isRefreshError = posts.loadState.refresh is LoadState.Error
-            if (posts.itemCount == 0 && !isLoading && !isRefreshError) {
-                Text(
-                    text = "No posts found",
-                    modifier = Modifier.align(Alignment.Center),
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(SpaceSmall)
-                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-            ) {
-                items(
-                    count = posts.itemCount,
-                    key = { index ->
-                        val post = posts.peek(index)
-                        post?.id ?: index
-                    }
-                ) { index ->
-                    val post = posts[index]
-                    post?.let {
-                        val displayedPost = postModifications[it.id] ?: it
-                        PostItem(
-                            post = displayedPost,
-                            onPostClick = {
-                                onNavigate(Screen.PostDetailsScreen.route + "/${it.id}")
-                            },
-                            onLikeClick = {
-                                viewModel.onEvent(MainFeedEvent.LikePost(it))
-                            }
-                        )
-                    }
-                }
-                item {
-                    if (mainFeedState.isLoadingNewPosts) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.BottomCenter)
-                        )
-                    }
-                }
-                posts.apply {
-                    when {
-                        loadState.refresh !is LoadState.Loading -> {
-                            viewModel.onEvent(MainFeedEvent.LoadedPage)
-                        }
-                        loadState.append is LoadState.Loading -> {
-                            viewModel.onEvent(MainFeedEvent.LoadMorePosts)
-                        }
-                        loadState.append is LoadState.NotLoading -> {
-                            viewModel.onEvent(MainFeedEvent.LoadedPage)
-                        }
-                        loadState.append is LoadState.Error -> {
-                            scope.launch {
-                                snackbarHostState.showSnackbar(
-                                    message = "Error"
-                                )
-                            }
-                        }
-                    }
-                }
+            if (state.isLoadingFirstTime) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
