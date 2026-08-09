@@ -2,9 +2,14 @@ package com.madiwist.twitch.feature_post.presentation.main_feed
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
@@ -28,6 +33,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.navigation.Screen
+import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
 import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.core.presentation.util.asString
@@ -82,36 +88,44 @@ fun MainFeedScreen(
                 }
             }
         )
-        Box(modifier = Modifier.fillMaxSize()
-            .padding(SpaceSmall)
+        Column(
+            modifier = Modifier
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
         ) {
-            LazyColumn {
-                itemsIndexed(state.posts) { index, post ->
-                    if (index >= state.posts.size - 1 && !state.endReached && !state.isLoadingNewPosts) {
-                        viewModel.loadNextPosts()
-                    }
-                    val displayedPost = postModifications[post.id] ?: post
-                    PostItem(
-                        post = displayedPost,
-                        onPostClick = {
-                            onNavigate(Screen.PostDetailsScreen.route + "/${post.id}")
-                        },
-                        onLikeClick = {
-                            viewModel.onEvent(MainFeedEvent.LikePost(displayedPost))
-                        },
-                        onCommentClick = {
-                            onNavigate(Screen.PostDetailsScreen.route + "/${post.id}")
-                        },
-                        onShareClick = {
-                        },
-                        onUsernameClick = {
-                            onNavigate(Screen.ProfileScreen.route + "?userId=${post.userId}")
+            Box(modifier = Modifier
+                .fillMaxSize()
+            ) {
+                LazyColumn (
+                    modifier = Modifier
+                        .padding(horizontal = SpaceMedium, vertical = SpaceSmall)
+                ) {
+                    itemsIndexed(state.posts) { index, post ->
+                        if (index >= state.posts.size - 1 && !state.endReached && !state.isLoadingNewPosts) {
+                            viewModel.loadNextPosts()
                         }
-                    )
+                        val displayedPost = postModifications[post.id] ?: post
+                        PostItem(
+                            post = displayedPost,
+                            onPostClick = {
+                                onNavigate(Screen.PostDetailsScreen.route + "/${post.id}")
+                            },
+                            onLikeClick = {
+                                viewModel.onEvent(MainFeedEvent.LikePost(displayedPost))
+                            },
+                            onCommentClick = {
+                                onNavigate(Screen.PostDetailsScreen.route + "/${post.id}")
+                            },
+                            onShareClick = {
+                            },
+                            onUsernameClick = {
+                                onNavigate(Screen.ProfileScreen.route + "?userId=${post.userId}")
+                            }
+                        )
+                    }
                 }
-            }
-            if (state.isLoadingFirstTime) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                if (state.isLoadingFirstTime) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
             }
         }
     }

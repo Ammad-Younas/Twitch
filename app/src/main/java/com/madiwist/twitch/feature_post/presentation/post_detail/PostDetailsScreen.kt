@@ -112,7 +112,6 @@ fun PostDetailsScreen(
             modifier = Modifier
                 .padding(SpaceSmall)
                 .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-                .clip(MaterialTheme.shapes.medium)
         ) {
             LazyColumn(
                 modifier = Modifier.weight(1f)

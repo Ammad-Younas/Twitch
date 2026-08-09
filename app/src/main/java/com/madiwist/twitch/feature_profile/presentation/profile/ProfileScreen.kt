@@ -230,6 +230,20 @@ fun ProfileScreen(
                             )
                         }
                     }
+                    if (profileState.profile != null) {
+                        item {
+                            Spacer(Modifier.height(SpaceLarge))
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = stringResource(R.string.all_posts),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                style = MaterialTheme.typography.headlineLarge,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(Modifier.height(SpaceSmall))
+                        }
+                    }
                     if (profileState.isLoading && profileState.posts.isEmpty()) {
                         item {
                             Box(
@@ -241,18 +255,6 @@ fun ProfileScreen(
                                 CircularProgressIndicator()
                             }
                         }
-                    }
-                    item {
-                        Spacer(Modifier.height(SpaceLarge))
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = stringResource(R.string.all_posts),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            style = MaterialTheme.typography.headlineLarge,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(Modifier.height(SpaceSmall))
                     }
                     itemsIndexed(profileState.posts) { index, post ->
                         if (index >= profileState.posts.size - 1 && !profileState.endReached && !profileState.isLoading) {

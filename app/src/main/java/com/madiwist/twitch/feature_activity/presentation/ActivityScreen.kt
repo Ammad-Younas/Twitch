@@ -91,11 +91,29 @@ fun ActivityScreen(
                         )
                         Spacer(Modifier.height(8.dp))
                     }
+                    if (activityState.isLoading && activityState.activities.isNotEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
+                    }
                 }
             }
-            if (activityState.isLoading){
+            if (activityState.isLoading && activityState.activities.isEmpty()){
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center)
+                )
+            }
+            if (!activityState.isLoading && activityState.activities.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.no_activity_yet),
+                    modifier = Modifier.align(Alignment.Center),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
         }
