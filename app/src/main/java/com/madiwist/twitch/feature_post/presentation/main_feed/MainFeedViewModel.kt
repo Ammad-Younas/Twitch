@@ -1,15 +1,18 @@
 package com.madiwist.twitch.feature_post.presentation.main_feed
 
+import android.content.SharedPreferences
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.madiwist.twitch.core.presentation.util.UiEvent
+import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.core.util.DefaultPaginator
 import com.madiwist.twitch.core.util.ParentType
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText
 import com.madiwist.twitch.feature_post.domain.use_case.PostUseCases
+import com.madiwist.twitch.feature_profile.domain.user_case.ProfileUserCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -20,7 +23,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainFeedViewModel @Inject constructor(
-    private val postUseCases: PostUseCases
+    private val postUseCases: PostUseCases,
+    private val profileUserCases: ProfileUserCases,
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
     private val _mainfeedState = mutableStateOf(MainFeedState())
@@ -48,17 +53,28 @@ class MainFeedViewModel @Inject constructor(
             _eventFlow.emit(UiEvent.ShowSnackBar(uiText ?: UiText.unknownError()))
         },
         onSuccess = { items, newKey ->
+            val ownUserId = sharedPreferences.getString(Constants.KEY_USER_ID, "") ?: ""
+            val filteredItems = items.filter { it.userId != ownUserId }
             _mainfeedState.value = _mainfeedState.value.copy(
-                posts = _mainfeedState.value.posts + items,
+                posts = _mainfeedState.value.posts + filteredItems,
                 endReached = items.isEmpty(),
                 page = newKey,
                 isLoadingFirstTime = false
             )
+            if (filteredItems.isEmpty() && items.isNotEmpty()) {
+                loadNextPosts()
+            }
         }
     )
 
     init {
-        loadNextPosts()
+        viewModelScope.launch {
+            val ownUserId = sharedPreferences.getString(Constants.KEY_USER_ID, "") ?: ""
+            if (ownUserId.isEmpty()) {
+                profileUserCases.getProfile("")
+            }
+            loadNextPosts()
+        }
         postUseCases.getPostCreatedEventUseCase()
             .onEach {
                 refresh()
