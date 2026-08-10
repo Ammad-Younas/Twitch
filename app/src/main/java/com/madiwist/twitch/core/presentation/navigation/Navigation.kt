@@ -101,17 +101,23 @@ fun Navigation(
             )
         }
         composable(
-            route = Screen.PostDetailsScreen.route + "/{postId}",
+            route = Screen.PostDetailsScreen.route + "/{postId}?focusComment={focusComment}",
             arguments = listOf(
                 navArgument(name = "postId"){
                     type = NavType.StringType
+                },
+                navArgument(name = "focusComment") {
+                    type = NavType.BoolType
+                    defaultValue = false
                 }
             )
         ) {
+            val focusComment = it.arguments?.getBoolean("focusComment") ?: false
             PostDetailsScreen(
                 onNavigate = navController::navigate,
                 onNavigateUp = navController::navigateUp,
                 snackbarHostState = snackbarHostState,
+                focusComment = focusComment
             )
         }
         composable(Screen.SearchScreen.route) {

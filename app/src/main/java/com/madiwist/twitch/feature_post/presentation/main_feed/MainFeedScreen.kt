@@ -113,7 +113,7 @@ fun MainFeedScreen(
                                 viewModel.onEvent(MainFeedEvent.LikePost(displayedPost))
                             },
                             onCommentClick = {
-                                onNavigate(Screen.PostDetailsScreen.route + "/${post.id}")
+                                onNavigate(Screen.PostDetailsScreen.route + "/${post.id}?focusComment=true")
                             },
                             onShareClick = {
                             },

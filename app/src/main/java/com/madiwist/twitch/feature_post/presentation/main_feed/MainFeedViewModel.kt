@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.core.util.Constants
-import com.madiwist.twitch.core.util.DefaultPaginator
+import com.madiwist.twitch.core.util.paging.DefaultPaginator
 import com.madiwist.twitch.core.util.ParentType
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText

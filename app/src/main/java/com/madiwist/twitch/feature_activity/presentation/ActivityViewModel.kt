@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.madiwist.twitch.core.presentation.navigation.Screen
 import com.madiwist.twitch.core.presentation.util.UiEvent
-import com.madiwist.twitch.core.util.Constants
-import com.madiwist.twitch.core.util.DefaultPaginator
+import com.madiwist.twitch.core.util.UiText
+import com.madiwist.twitch.core.util.paging.DefaultPaginator
 import com.madiwist.twitch.feature_activity.domain.use_case.GetActivityUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -38,7 +38,7 @@ class ActivityViewModel @Inject constructor(
             _activityState.value.page + 1
         },
         onError = { uiText ->
-            _eventFlow.emit(UiEvent.ShowSnackBar(uiText ?: com.madiwist.twitch.core.util.UiText.unknownError()))
+            _eventFlow.emit(UiEvent.ShowSnackBar(uiText ?: UiText.unknownError()))
         },
         onSuccess = { items, newKey ->
             _activityState.value = _activityState.value.copy(

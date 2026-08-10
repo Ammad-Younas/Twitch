@@ -1,9 +1,8 @@
-package com.madiwist.twitch.core.util
+package com.madiwist.twitch.core.util.paging
 
-interface Paginator<Key, Item> {
-    suspend fun loadNextItems()
-    fun reset()
-}
+import com.madiwist.twitch.core.util.Resource
+import com.madiwist.twitch.core.util.UiText
+
 
 class DefaultPaginator<Key, Item>(
     private val initialKey: Key,
@@ -18,7 +17,7 @@ class DefaultPaginator<Key, Item>(
     private var isMakingRequest = false
 
     override suspend fun loadNextItems() {
-        if(isMakingRequest) {
+        if (isMakingRequest) {
             return
         }
         isMakingRequest = true
@@ -28,7 +27,7 @@ class DefaultPaginator<Key, Item>(
         val items = result.data ?: emptyList()
         onLoadUpdated(false)
 
-        if(result is Resource.Error) {
+        if (result is Resource.Error) {
             onError(result.uiText)
             return
         }

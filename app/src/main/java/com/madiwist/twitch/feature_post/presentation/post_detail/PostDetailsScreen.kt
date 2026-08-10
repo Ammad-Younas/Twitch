@@ -38,12 +38,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -74,6 +77,7 @@ fun PostDetailsScreen(
     onNavigate: (String) -> Unit = {},
     onNavigateUp: () -> Unit = {},
     snackbarHostState: SnackbarHostState,
+    focusComment: Boolean = false,
     viewModel: PostDetailsViewModel = hiltViewModel()
 ) {
     val postDetailsState = viewModel.postDetailsState.value
@@ -81,21 +85,33 @@ fun PostDetailsScreen(
     val postModifications by viewModel.postModifications.collectAsState()
     val commentModifications by viewModel.commentModifications.collectAsState()
 
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val context = LocalContext.current
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
-            when(event) {
+            when (event) {
                 is UiEvent.ShowSnackBar -> {
                     snackbarHostState.showSnackbar(
                         message = event.uiText.asString(context),
                         duration = SnackbarDuration.Short
                     )
                 }
+
                 else -> Unit
             }
         }
     }
+
+
+    LaunchedEffect(focusComment) {
+        if (focusComment) {
+            focusRequester.requestFocus()
+        }
+    }
+
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -157,8 +173,17 @@ fun PostDetailsScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     username = displayedPost.username ?: "",
                                     onUsernameClick = { },
-                                    onLikeClick = { viewModel.onEvent(PostDetailsEvent.LikePost(displayedPost)) },
-                                    onCommentClick = { },
+                                    onLikeClick = {
+                                        viewModel.onEvent(
+                                            PostDetailsEvent.LikePost(
+                                                displayedPost
+                                            )
+                                        )
+                                    },
+                                    onCommentClick = {
+                                        focusRequester.requestFocus()
+                                        keyboardController?.show()
+                                    },
                                     onShareClick = { },
                                     isLiked = displayedPost.isLiked == true
                                 )
@@ -172,7 +197,7 @@ fun PostDetailsScreen(
                                 Text(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .clickable{
+                                        .clickable {
                                             onNavigate(Screen.PersonListScreen.route + "/${displayedPost.id}")
                                         },
                                     text = stringResource(
@@ -236,7 +261,8 @@ fun PostDetailsScreen(
             ) {
                 TextField(
                     modifier = Modifier
-                        .weight(1f),
+                        .weight(1f)
+                        .focusRequester(focusRequester),
                     value = commentFieldState.text,
                     onValueChange = {
                         viewModel.onEvent(PostDetailsEvent.EnteredComment(it))
@@ -262,7 +288,7 @@ fun PostDetailsScreen(
                     )
                 )
                 Spacer(Modifier.width(SpaceMedium))
-                if (viewModel.commentState.value.isLoading){
+                if (viewModel.commentState.value.isLoading) {
                     CircularProgressIndicator()
                 } else {
                     FilledIconButton(

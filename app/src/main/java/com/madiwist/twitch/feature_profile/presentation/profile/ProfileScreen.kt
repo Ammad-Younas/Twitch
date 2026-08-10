@@ -271,7 +271,7 @@ fun ProfileScreen(
                                     viewModel.onEvent(ProfileEvent.LikePost(displayedPost))
                                 },
                                 onCommentClick = {
-                                    onNavigate(Screen.PostDetailsScreen.route + "/${post.id}")
+                                    onNavigate(Screen.PostDetailsScreen.route + "/${post.id}?focusComment=true")
                                 },
                                 onUsernameClick = {
                                 }
