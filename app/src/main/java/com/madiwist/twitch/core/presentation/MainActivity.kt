@@ -1,5 +1,6 @@
 package com.madiwist.twitch.core.presentation
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
@@ -58,6 +59,7 @@ class MainActivity : ComponentActivity() {
             if (startDestination != null) {
                 TwitchTheme {
                     val navController = rememberNavController()
+
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
                     val currentRoute = navBackStackEntry?.destination?.route
                     val snackbarHostState = remember { SnackbarHostState() }

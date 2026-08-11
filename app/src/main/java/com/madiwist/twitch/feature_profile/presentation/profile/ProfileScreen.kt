@@ -67,6 +67,7 @@ import com.madiwist.twitch.core.presentation.util.ErrorImageLoading
 import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.core.presentation.util.asString
 import com.madiwist.twitch.core.util.Constants
+import com.madiwist.twitch.core.util.sendSharePostIntent
 import com.madiwist.twitch.core.util.toPx
 import com.madiwist.twitch.feature_post.domain.util.PostItem
 import com.madiwist.twitch.feature_profile.presentation.profile.components.AlertLogout
@@ -277,6 +278,9 @@ fun ProfileScreen(
                                     onNavigate(Screen.PostDetailsScreen.route + "/${post.id}?focusComment=true")
                                 },
                                 onUsernameClick = {
+                                },
+                                onShareClick = {
+                                    context.sendSharePostIntent(post.id ?: "")
                                 }
                             )
                         }

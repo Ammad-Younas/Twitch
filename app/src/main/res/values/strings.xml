@@ -93,4 +93,6 @@
     <string name="confirm_logout">Do you want to logout?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="share_intent_text">Hey, I found a great post, check it out.\n%s</string>
+    <string name="share_post">Share Post</string>
 </resources>

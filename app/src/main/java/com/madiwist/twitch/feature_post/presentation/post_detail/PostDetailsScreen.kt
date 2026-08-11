@@ -68,6 +68,7 @@ import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
 import com.madiwist.twitch.core.presentation.util.ErrorImageLoading
 import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.core.presentation.util.asString
+import com.madiwist.twitch.core.util.sendSharePostIntent
 import com.madiwist.twitch.feature_post.domain.util.ActionRow
 import com.madiwist.twitch.feature_post.presentation.post_detail.components.CommentItem
 import kotlinx.coroutines.flow.collectLatest
@@ -184,7 +185,9 @@ fun PostDetailsScreen(
                                         focusRequester.requestFocus()
                                         keyboardController?.show()
                                     },
-                                    onShareClick = { },
+                                    onShareClick = {
+                                        context.sendSharePostIntent(post.id ?: "")
+                                    },
                                     isLiked = displayedPost.isLiked == true
                                 )
                                 Spacer(modifier = Modifier.height(SpaceMedium))

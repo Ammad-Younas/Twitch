@@ -1,5 +1,6 @@
 package com.madiwist.twitch.core.presentation.navigation
 
+import android.content.Intent
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -7,6 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.madiwist.twitch.feature_activity.presentation.ActivityScreen
 import com.madiwist.twitch.feature_auth.presentation.login.LoginScreen
 import com.madiwist.twitch.feature_auth.presentation.register.RegisterScreen
@@ -111,12 +113,22 @@ fun Navigation(
         composable(
             route = Screen.PostDetailsScreen.route + "/{postId}?focusComment={focusComment}",
             arguments = listOf(
-                navArgument(name = "postId"){
+                navArgument("postId") {
                     type = NavType.StringType
                 },
-                navArgument(name = "focusComment") {
+                navArgument("focusComment") {
                     type = NavType.BoolType
                     defaultValue = false
+                }
+            ),
+            deepLinks = listOf(
+                navDeepLink {
+                    action = Intent.ACTION_VIEW
+                    uriPattern = "http://madiwist.com/{postId}"
+                },
+                navDeepLink {
+                    action = Intent.ACTION_VIEW
+                    uriPattern = "http://www.madiwist.com/{postId}"
                 }
             )
         ) {

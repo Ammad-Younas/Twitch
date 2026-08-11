@@ -37,6 +37,7 @@ import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
 import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.core.presentation.util.asString
+import com.madiwist.twitch.core.util.sendSharePostIntent
 import com.madiwist.twitch.feature_post.domain.util.PostItem
 import kotlinx.coroutines.flow.collectLatest
 
@@ -116,6 +117,7 @@ fun MainFeedScreen(
                                 onNavigate(Screen.PostDetailsScreen.route + "/${post.id}?focusComment=true")
                             },
                             onShareClick = {
+                                context.sendSharePostIntent(post.id ?: "")
                             },
                             onUsernameClick = {
                                 onNavigate(Screen.ProfileScreen.route + "?userId=${post.userId}")
