@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.util.ErrorImageLoading
 
-@Preview(showBackground = true)
 @Composable
 fun BrokenImage(
     modifier: Modifier = Modifier,
@@ -62,7 +61,7 @@ fun BrokenImage(
                     imageVector = Icons.Default.Person,
                     contentDescription = stringResource(R.string.broken_image),
                     tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(50.dp)
                 )
             }
         }

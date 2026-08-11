@@ -8,7 +8,6 @@ import com.madiwist.twitch.core.util.SimpleResource
 import com.madiwist.twitch.feature_profile.domain.model.Profile
 import com.madiwist.twitch.feature_profile.domain.model.Skill
 import com.madiwist.twitch.feature_profile.domain.model.UpdateProfileData
-import kotlinx.coroutines.flow.Flow
 
 interface ProfileRepository {
 
@@ -24,4 +23,5 @@ interface ProfileRepository {
     ) : SimpleResource
     suspend fun followUser(userId: String) : SimpleResource
     suspend fun unfollowUser(userId: String) : SimpleResource
+    fun logout()
 }

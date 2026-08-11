@@ -69,6 +69,7 @@ import com.madiwist.twitch.core.presentation.util.asString
 import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.core.util.toPx
 import com.madiwist.twitch.feature_post.domain.util.PostItem
+import com.madiwist.twitch.feature_profile.presentation.profile.components.AlertLogout
 import com.madiwist.twitch.feature_profile.presentation.profile.components.BannerSection
 import com.madiwist.twitch.feature_profile.presentation.profile.components.ProfileHeaderSection
 import kotlinx.coroutines.flow.collectLatest
@@ -144,7 +145,9 @@ fun ProfileScreen(
                         duration = SnackbarDuration.Short
                     )
                 }
-
+                is UiEvent.Navigate -> {
+                    onNavigate(event.route)
+                }
                 else -> Unit
             }
         }
@@ -173,7 +176,7 @@ fun ProfileScreen(
                     if (profile.isOwnProfile) {
                         IconButton(
                             onClick = {
-
+                                viewModel.onEvent(ProfileEvent.ShowLogoutDialogue)
                             }
                         ) {
                             Icon(
@@ -365,5 +368,17 @@ fun ProfileScreen(
                 }
             }
         }
+    }
+
+    if (profileState.isLogoutDialogueVisible) {
+        AlertLogout(
+            onConfirm = {
+                viewModel.onEvent(ProfileEvent.DismissLogoutDialogue)
+                viewModel.onEvent(ProfileEvent.Logout)
+            },
+            onDismiss = {
+                viewModel.onEvent(ProfileEvent.DismissLogoutDialogue)
+            }
+        )
     }
 }

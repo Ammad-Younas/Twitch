@@ -90,4 +90,7 @@
     <string name="enter_a_comment">Enter a comment</string>
     <string name="comment_posted">Successfully comment posted!</string>
     <string name="liked_by_toolbar">Liked by</string>
+    <string name="confirm_logout">Do you want to logout?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

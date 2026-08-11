@@ -73,7 +73,15 @@ fun Navigation(
         ) {
             ProfileScreen(
                 userId = it.arguments?.getString("userId") ?: "",
-                onNavigate = navController::navigate,
+                onNavigate = { route ->
+                    if (route == Screen.LoginScreen.route) {
+                        navController.navigate(route) {
+                            popUpTo(0)
+                        }
+                    } else {
+                        navController.navigate(route)
+                    }
+                },
                 onNavigateUp = navController::navigateUp,
                 snackbarHostState = snackbarHostState,
             )

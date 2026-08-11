@@ -15,7 +15,7 @@ import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText
 import com.madiwist.twitch.core.util.saveBitmapToCache
 import com.madiwist.twitch.feature_profile.domain.model.UpdateProfileData
-import com.madiwist.twitch.feature_profile.domain.user_case.ProfileUserCases
+import com.madiwist.twitch.feature_profile.domain.user_case.ProfileUseCases
 import com.madiwist.twitch.feature_profile.presentation.profile.ProfileState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +27,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
-    private val profileUseCase: ProfileUserCases,
+    private val profileUseCase: ProfileUseCases,
     savedStateHandle: SavedStateHandle,
     application: Application,
 ) : AndroidViewModel(application) {

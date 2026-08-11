@@ -6,13 +6,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.madiwist.twitch.core.presentation.navigation.Screen
 import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.core.util.paging.DefaultPaginator
 import com.madiwist.twitch.core.util.ParentType
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText
 import com.madiwist.twitch.feature_post.domain.use_case.PostUseCases
-import com.madiwist.twitch.feature_profile.domain.user_case.ProfileUserCases
+import com.madiwist.twitch.feature_profile.domain.user_case.ProfileUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val profileUseCase: ProfileUserCases,
+    private val profileUseCase: ProfileUseCases,
     private val postUseCases: PostUseCases,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -111,7 +112,6 @@ class ProfileViewModel @Inject constructor(
 
     fun onEvent(event: ProfileEvent) {
         when (event) {
-            is ProfileEvent.GetProfile -> Unit
             is ProfileEvent.LikePost -> {
                 val post = event.post
                 val isLiked = post.isLiked == true
@@ -126,6 +126,22 @@ class ProfileViewModel @Inject constructor(
                 )
                 postUseCases.toggleLikeStateForParentUseCase.updatePostModification(post.id ?: "", updatedPost)
                 toggleLikeForParent(post.id ?: "", isLiked)
+            }
+            is ProfileEvent.ShowLogoutDialogue -> {
+                _profileState.value = profileState.value.copy(
+                    isLogoutDialogueVisible = true
+                )
+            }
+            is ProfileEvent.DismissLogoutDialogue -> {
+                _profileState.value = profileState.value.copy(
+                    isLogoutDialogueVisible = false
+                )
+            }
+            is ProfileEvent.Logout -> {
+                profileUseCase.logoutUseCase()
+                viewModelScope.launch {
+                    _eventFlow.emit(UiEvent.Navigate(Screen.LoginScreen.route))
+                }
             }
         }
     }

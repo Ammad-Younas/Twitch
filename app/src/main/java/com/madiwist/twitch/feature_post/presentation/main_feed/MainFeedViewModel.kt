@@ -12,7 +12,7 @@ import com.madiwist.twitch.core.util.ParentType
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText
 import com.madiwist.twitch.feature_post.domain.use_case.PostUseCases
-import com.madiwist.twitch.feature_profile.domain.user_case.ProfileUserCases
+import com.madiwist.twitch.feature_profile.domain.user_case.ProfileUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -24,7 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainFeedViewModel @Inject constructor(
     private val postUseCases: PostUseCases,
-    private val profileUserCases: ProfileUserCases,
+    private val profileUserCases: ProfileUseCases,
     private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 

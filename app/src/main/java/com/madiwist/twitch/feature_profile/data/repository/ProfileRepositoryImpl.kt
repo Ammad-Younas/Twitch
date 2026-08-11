@@ -1,5 +1,6 @@
 package com.madiwist.twitch.feature_profile.data.repository
 
+import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.net.Uri
 import androidx.core.content.edit
@@ -203,5 +204,9 @@ class ProfileRepositoryImpl(
                 uiText = UiText.StringResource(R.string.error_something_went_wrong)
             )
         }
+    }
+
+    override fun logout() {
+        sharedPreferences.edit { remove(Constants.KEY_JWT_TOKEN) }
     }
 }

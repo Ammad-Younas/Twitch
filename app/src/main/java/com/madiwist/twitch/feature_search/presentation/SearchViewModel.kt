@@ -10,7 +10,7 @@ import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText
-import com.madiwist.twitch.feature_profile.domain.user_case.ProfileUserCases
+import com.madiwist.twitch.feature_profile.domain.user_case.ProfileUseCases
 import com.madiwist.twitch.feature_profile.domain.util.ProfileConstant.SEARCH_DELAY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -23,7 +23,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val profileUserCases: ProfileUserCases,
+    private val profileUserCases: ProfileUseCases,
     sharedPreferences: SharedPreferences
 ): ViewModel() {
     
