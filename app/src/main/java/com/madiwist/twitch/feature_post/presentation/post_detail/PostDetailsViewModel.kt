@@ -11,6 +11,7 @@ import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.core.util.ParentType
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText
+import com.madiwist.twitch.feature_auth.domain.use_case.AuthenticateUseCase
 import com.madiwist.twitch.feature_post.domain.use_case.PostUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class PostDetailsViewModel @Inject constructor(
     private val postUseCases: PostUseCases,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val authenticateUseCase: AuthenticateUseCase
 ) : ViewModel() {
 
     private val _postDetailsState = mutableStateOf(PostDetailsState())
@@ -38,6 +40,8 @@ class PostDetailsViewModel @Inject constructor(
 
     val postModifications = postUseCases.getPostModificationsUseCase()
     val commentModifications = postUseCases.getCommentModificationsUseCase()
+
+    private var isUserLoggedIn: Boolean = false
 
     init {
         savedStateHandle.get<String>("postId")?.let { postId ->
@@ -74,8 +78,10 @@ class PostDetailsViewModel @Inject constructor(
             }
 
             is PostDetailsEvent.LikeComment -> {
-                val comment = postDetailsState.value.comments.find { it.commentId == event.commentId }
-                val currentComment = commentModifications.value[event.commentId] ?: comment ?: return
+                val comment =
+                    postDetailsState.value.comments.find { it.commentId == event.commentId }
+                val currentComment =
+                    commentModifications.value[event.commentId] ?: comment ?: return
                 val isLiked = currentComment.isLiked
                 toggleLikeForParent(
                     parentId = event.commentId,
@@ -83,23 +89,20 @@ class PostDetailsViewModel @Inject constructor(
                     isLiked = isLiked
                 )
             }
-
-            is PostDetailsEvent.SharePost -> {
-
-            }
         }
     }
 
-    private fun loadPostDetails(postId: String){
+    private fun loadPostDetails(postId: String) {
         viewModelScope.launch {
             _postDetailsState.value = postDetailsState.value.copy(isLoadingPost = true)
-            when(val result = postUseCases.getPostDetailsUseCase(postId)){
+            when (val result = postUseCases.getPostDetailsUseCase(postId)) {
                 is Resource.Success -> {
                     _postDetailsState.value = postDetailsState.value.copy(
                         post = result.data,
                         isLoadingPost = false
                     )
                 }
+
                 is Resource.Error -> {
                     _postDetailsState.value = postDetailsState.value.copy(
                         isLoadingPost = false
@@ -114,16 +117,17 @@ class PostDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun loadCommentsForPost(postId: String){
+    private fun loadCommentsForPost(postId: String) {
         viewModelScope.launch {
             _postDetailsState.value = postDetailsState.value.copy(isLoadingComments = true)
-            when(val result = postUseCases.getCommentsForPostUseCase(postId)){
+            when (val result = postUseCases.getCommentsForPostUseCase(postId)) {
                 is Resource.Success -> {
                     _postDetailsState.value = postDetailsState.value.copy(
                         comments = result.data ?: emptyList(),
                         isLoadingComments = false
                     )
                 }
+
                 is Resource.Error -> {
                     _postDetailsState.value = postDetailsState.value.copy(
                         isLoadingComments = false
@@ -138,8 +142,13 @@ class PostDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun createComment(postId: String, comment: String){
+    private fun createComment(postId: String, comment: String) {
         viewModelScope.launch {
+            isUserLoggedIn = authenticateUseCase() is Resource.Success
+            if (!isUserLoggedIn){
+                _eventFlow.emit(UiEvent.ShowSnackBar(UiText.StringResource(R.string.error_user_not_logged_in)))
+                return@launch
+            }
             _commentState.value = commentState.value.copy(
                 isLoading = true
             )
@@ -147,7 +156,7 @@ class PostDetailsViewModel @Inject constructor(
                 postId = postId,
                 comment = comment
             )
-            when(result) {
+            when (result) {
                 is Resource.Success -> {
                     _commentFieldState.value = commentFieldState.value.copy(
                         text = ""
@@ -162,6 +171,7 @@ class PostDetailsViewModel @Inject constructor(
                     )
                     loadCommentsForPost(postId)
                 }
+
                 is Resource.Error -> {
                     _commentState.value = commentState.value.copy(
                         isLoading = false
@@ -178,6 +188,11 @@ class PostDetailsViewModel @Inject constructor(
 
     private fun toggleLikeForParent(parentId: String, parentType: Int, isLiked: Boolean) {
         viewModelScope.launch {
+            isUserLoggedIn = authenticateUseCase() is Resource.Success
+            if (!isUserLoggedIn){
+                _eventFlow.emit(UiEvent.ShowSnackBar(UiText.StringResource(R.string.error_user_not_logged_in)))
+                return@launch
+            }
             when (parentType) {
                 ParentType.Post.type -> {
                     val post = postDetailsState.value.post ?: return@launch
@@ -192,12 +207,16 @@ class PostDetailsViewModel @Inject constructor(
                     _postDetailsState.value = postDetailsState.value.copy(
                         post = updatedPost
                     )
-                    postUseCases.toggleLikeStateForParentUseCase.updatePostModification(parentId, updatedPost)
+                    postUseCases.toggleLikeStateForParentUseCase.updatePostModification(
+                        parentId,
+                        updatedPost
+                    )
                 }
 
                 ParentType.Comment.type -> {
                     val comment = postDetailsState.value.comments.find { it.commentId == parentId }
-                    val currentComment = commentModifications.value[parentId] ?: comment ?: return@launch
+                    val currentComment =
+                        commentModifications.value[parentId] ?: comment ?: return@launch
                     val updatedComment = currentComment.copy(
                         isLiked = !isLiked,
                         likeCount = if (isLiked) currentComment.likeCount - 1 else currentComment.likeCount + 1
@@ -209,7 +228,10 @@ class PostDetailsViewModel @Inject constructor(
                             } else it
                         }
                     )
-                    postUseCases.toggleLikeStateForParentUseCase.updateCommentModification(parentId, updatedComment)
+                    postUseCases.toggleLikeStateForParentUseCase.updateCommentModification(
+                        parentId,
+                        updatedComment
+                    )
                 }
             }
             val result = postUseCases.toggleLikeStateForParentUseCase(
@@ -234,12 +256,16 @@ class PostDetailsViewModel @Inject constructor(
                             _postDetailsState.value = postDetailsState.value.copy(
                                 post = revertedPost
                             )
-                            postUseCases.toggleLikeStateForParentUseCase.abortPostModification(parentId)
+                            postUseCases.toggleLikeStateForParentUseCase.abortPostModification(
+                                parentId
+                            )
                         }
 
                         ParentType.Comment.type -> {
-                            val comment = postDetailsState.value.comments.find { it.commentId == parentId }
-                            val currentComment = commentModifications.value[parentId] ?: comment ?: return@launch
+                            val comment =
+                                postDetailsState.value.comments.find { it.commentId == parentId }
+                            val currentComment =
+                                commentModifications.value[parentId] ?: comment ?: return@launch
                             val revertedComment = currentComment.copy(
                                 isLiked = isLiked,
                                 likeCount = if (isLiked) currentComment.likeCount + 1 else currentComment.likeCount - 1
@@ -251,7 +277,9 @@ class PostDetailsViewModel @Inject constructor(
                                     } else it
                                 }
                             )
-                            postUseCases.toggleLikeStateForParentUseCase.abortCommentModification(parentId)
+                            postUseCases.toggleLikeStateForParentUseCase.abortCommentModification(
+                                parentId
+                            )
                         }
                     }
                     _eventFlow.emit(
