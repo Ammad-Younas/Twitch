@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DIALOG" />
-        <DropdownSelection timestamp="2026-08-09T19:10:26.999478Z">
+        <DropdownSelection timestamp="2026-08-13T07:51:47.796396100Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="Default" identifier="serial=192.168.100.147:42709;connection=5869f6ab" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=10FG1T00GF000B3" />
             </handle>
           </Target>
         </DropdownSelection>
@@ -15,12 +15,12 @@
           <targets>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\ammad\.android\avd\MADI_2.avd" />
+                <DeviceId pluginId="PhysicalDevice" identifier="serial=10FG1T00GF000B3" />
               </handle>
             </Target>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="PhysicalDevice" identifier="serial=10FG1T00GF000B3" />
+                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\ammad\.android\avd\MADI_2.avd" />
               </handle>
             </Target>
           </targets>

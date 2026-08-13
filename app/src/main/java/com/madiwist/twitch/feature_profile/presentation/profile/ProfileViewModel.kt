@@ -61,12 +61,17 @@ class ProfileViewModel @Inject constructor(
         },
         onError = { uiText ->
             _eventFlow.emit(UiEvent.ShowSnackBar(uiText ?: UiText.unknownError()))
+            _profileState.value = _profileState.value.copy(isRefreshing = false)
         },
         onSuccess = { items, newKey ->
+            items.forEach { post ->
+                postUseCases.toggleLikeStateForParentUseCase.abortPostModification(post.id ?: "")
+            }
             _profileState.value = _profileState.value.copy(
-                posts = _profileState.value.posts + items,
+                posts = if (_profileState.value.isRefreshing) items else _profileState.value.posts + items,
                 endReached = items.isEmpty(),
-                page = newKey
+                page = newKey,
+                isRefreshing = false
             )
         }
     )
@@ -94,6 +99,7 @@ class ProfileViewModel @Inject constructor(
     private fun refresh() {
         paginator.reset()
         _profileState.value = _profileState.value.copy(
+            isRefreshing = true,
             posts = emptyList(),
             page = 0,
             endReached = false
@@ -142,6 +148,10 @@ class ProfileViewModel @Inject constructor(
                 viewModelScope.launch {
                     _eventFlow.emit(UiEvent.Navigate(Screen.LoginScreen.route))
                 }
+            }
+            is ProfileEvent.Refresh -> {
+                getProfile(_userId.value)
+                refresh()
             }
         }
     }

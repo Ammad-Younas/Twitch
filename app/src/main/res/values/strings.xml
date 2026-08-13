@@ -98,4 +98,5 @@
     <string name="error_user_not_logged_in">Oops, please login to perform this action!</string>
     <string name="default_description">Description</string>
     <string name="no_posts_yet">No posts yet!</string>
+    <string name="delete">Delete</string>
 </resources>

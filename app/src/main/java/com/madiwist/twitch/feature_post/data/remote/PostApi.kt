@@ -50,6 +50,13 @@ interface PostApi {
         @Body request: CreateCommentRequest
     ) : BasicApiResponse<Unit>
 
+
+    @DELETE("/api/comment/delete")
+    suspend fun deleteComment(
+        @Query("commentId") commentId: String
+    ) : BasicApiResponse<Unit>
+
+
     @GET("/api/comment/get")
     suspend fun getCommentsForPost(
         @Query("postId") postId: String

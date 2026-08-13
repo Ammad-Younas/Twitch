@@ -157,6 +157,29 @@ class PostRepositoryImpl (
         }
     }
 
+    override suspend fun deleteComment(commentId: String): SimpleResource {
+        return try {
+            val response = api.deleteComment(
+                commentId = commentId
+            )
+            if (response.success) {
+                Resource.Success(Unit)
+            } else {
+                response.message?.let { msg ->
+                    Resource.Error(UiText.DynamicString(msg))
+                } ?: Resource.Error(UiText.StringResource(R.string.unknown_error))
+            }
+        } catch (e: IOException) {
+            Resource.Error(
+                uiText = UiText.StringResource(R.string.error_couldnt_reach_server),
+            )
+        } catch (e: HttpException) {
+            Resource.Error(
+                uiText = UiText.StringResource(R.string.error_something_went_wrong)
+            )
+        }
+    }
+
     override suspend fun likeParent(
         parentId: String,
         parentType: Int

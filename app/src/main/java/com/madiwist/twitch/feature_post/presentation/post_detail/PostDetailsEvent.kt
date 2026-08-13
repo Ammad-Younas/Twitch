@@ -7,4 +7,6 @@ sealed class PostDetailsEvent {
     data class EnteredComment(val comment: String) : PostDetailsEvent()
     object Comment : PostDetailsEvent()
     data class LikeComment(val commentId: String) : PostDetailsEvent()
+    data class DeleteComment(val commentId: String) : PostDetailsEvent()
+    object Refresh: PostDetailsEvent()
 }

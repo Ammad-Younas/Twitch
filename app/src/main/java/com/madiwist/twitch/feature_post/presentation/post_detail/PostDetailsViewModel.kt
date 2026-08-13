@@ -1,5 +1,6 @@
 package com.madiwist.twitch.feature_post.presentation.post_detail
 
+import android.content.SharedPreferences
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
@@ -8,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
 import com.madiwist.twitch.core.presentation.util.UiEvent
+import com.madiwist.twitch.core.util.Constants
 import com.madiwist.twitch.core.util.ParentType
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText
@@ -23,7 +25,8 @@ import javax.inject.Inject
 class PostDetailsViewModel @Inject constructor(
     private val postUseCases: PostUseCases,
     private val savedStateHandle: SavedStateHandle,
-    private val authenticateUseCase: AuthenticateUseCase
+    private val authenticateUseCase: AuthenticateUseCase,
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
     private val _postDetailsState = mutableStateOf(PostDetailsState())
@@ -40,6 +43,8 @@ class PostDetailsViewModel @Inject constructor(
 
     val postModifications = postUseCases.getPostModificationsUseCase()
     val commentModifications = postUseCases.getCommentModificationsUseCase()
+
+    val ownUserId: String = sharedPreferences.getString(Constants.KEY_USER_ID, "") ?: ""
 
     private var isUserLoggedIn: Boolean = false
 
@@ -89,6 +94,17 @@ class PostDetailsViewModel @Inject constructor(
                     isLiked = isLiked
                 )
             }
+
+            is PostDetailsEvent.DeleteComment -> {
+                deleteComment(event.commentId)
+            }
+
+            is PostDetailsEvent.Refresh -> {
+                val postId = savedStateHandle.get<String>("postId") ?: return
+                _postDetailsState.value = _postDetailsState.value.copy(isRefreshing = true)
+                loadPostDetails(postId)
+                loadCommentsForPost(postId)
+            }
         }
     }
 
@@ -97,15 +113,20 @@ class PostDetailsViewModel @Inject constructor(
             _postDetailsState.value = postDetailsState.value.copy(isLoadingPost = true)
             when (val result = postUseCases.getPostDetailsUseCase(postId)) {
                 is Resource.Success -> {
+                    result.data?.id?.let { id ->
+                        postUseCases.toggleLikeStateForParentUseCase.abortPostModification(id)
+                    }
                     _postDetailsState.value = postDetailsState.value.copy(
                         post = result.data,
-                        isLoadingPost = false
+                        isLoadingPost = false,
+                        isRefreshing = false
                     )
                 }
 
                 is Resource.Error -> {
                     _postDetailsState.value = postDetailsState.value.copy(
-                        isLoadingPost = false
+                        isLoadingPost = false,
+                        isRefreshing = false
                     )
                     _eventFlow.emit(
                         UiEvent.ShowSnackBar(
@@ -122,15 +143,20 @@ class PostDetailsViewModel @Inject constructor(
             _postDetailsState.value = postDetailsState.value.copy(isLoadingComments = true)
             when (val result = postUseCases.getCommentsForPostUseCase(postId)) {
                 is Resource.Success -> {
+                    result.data?.forEach { comment ->
+                        postUseCases.toggleLikeStateForParentUseCase.abortCommentModification(comment.commentId)
+                    }
                     _postDetailsState.value = postDetailsState.value.copy(
                         comments = result.data ?: emptyList(),
-                        isLoadingComments = false
+                        isLoadingComments = false,
+                        isRefreshing = false
                     )
                 }
 
                 is Resource.Error -> {
                     _postDetailsState.value = postDetailsState.value.copy(
-                        isLoadingComments = false
+                        isLoadingComments = false,
+                        isRefreshing = false
                     )
                     _eventFlow.emit(
                         UiEvent.ShowSnackBar(
@@ -169,6 +195,15 @@ class PostDetailsViewModel @Inject constructor(
                             uiText = UiText.StringResource(R.string.comment_posted)
                         )
                     )
+                    _postDetailsState.value.post?.let { post ->
+                        val updatedPost = post.copy(
+                            commentCount = (post.commentCount ?: 0) + 1
+                        )
+                        _postDetailsState.value = postDetailsState.value.copy(
+                            post = updatedPost
+                        )
+                        postUseCases.toggleLikeStateForParentUseCase.updatePostModification(post.id ?: "", updatedPost)
+                    }
                     loadCommentsForPost(postId)
                 }
 
@@ -176,6 +211,39 @@ class PostDetailsViewModel @Inject constructor(
                     _commentState.value = commentState.value.copy(
                         isLoading = false
                     )
+                    _eventFlow.emit(
+                        UiEvent.ShowSnackBar(
+                            result.uiText ?: UiText.unknownError()
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    private fun deleteComment(commentId: String) {
+        viewModelScope.launch {
+            when(val result = postUseCases.deleteCommentUseCase(commentId)) {
+                is Resource.Success -> {
+                    _postDetailsState.value = postDetailsState.value.copy(
+                        comments = postDetailsState.value.comments.filter { it.commentId != commentId }
+                    )
+                    _postDetailsState.value.post?.let { post ->
+                        val updatedPost = post.copy(
+                            commentCount = (post.commentCount ?: 0) - 1
+                        )
+                        _postDetailsState.value = postDetailsState.value.copy(
+                            post = updatedPost
+                        )
+                        postUseCases.toggleLikeStateForParentUseCase.updatePostModification(post.id ?: "", updatedPost)
+                    }
+                    _eventFlow.emit(
+                        UiEvent.ShowSnackBar(
+                            uiText = UiText.DynamicString("Comment deleted")
+                        )
+                    )
+                }
+                is Resource.Error -> {
                     _eventFlow.emit(
                         UiEvent.ShowSnackBar(
                             result.uiText ?: UiText.unknownError()

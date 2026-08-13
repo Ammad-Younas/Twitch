@@ -20,6 +20,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -97,49 +99,58 @@ fun MainFeedScreen(
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(
-                            horizontal = SpaceMedium,
-                            vertical = SpaceSmall
-                        )
+                PullToRefreshBox(
+                    isRefreshing = state.isRefreshing,
+                    onRefresh = {
+                        viewModel.onEvent(MainFeedEvent.Refresh)
+                    },
+                    state = rememberPullToRefreshState()
                 ) {
-                    itemsIndexed(state.posts) { index, post ->
-                        if (
-                            index >= state.posts.size - 1 && !state.endReached && !state.isLoadingNewPosts
-                        ) {
-                            viewModel.loadNextPosts()
-                        }
-
-                        val displayedPost =
-                            postModifications[post.id] ?: post
-
-                        PostItem(
-                            post = displayedPost,
-                            onPostClick = {
-                                onNavigate(
-                                    Screen.PostDetailsScreen.route + "/${post.id}"
-                                )
-                            },
-                            onLikeClick = {
-                                viewModel.onEvent(
-                                    MainFeedEvent.LikePost(displayedPost)
-                                )
-                            },
-                            onCommentClick = {
-                                onNavigate(
-                                    Screen.PostDetailsScreen.route + "/${post.id}?focusComment=true"
-                                )
-                            },
-                            onShareClick = {
-                                context.sendSharePostIntent(post.id ?: "")
-                            },
-                            onUsernameClick = {
-                                onNavigate(
-                                    Screen.ProfileScreen.route + "?userId=${post.userId}"
-                                )
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(
+                                horizontal = SpaceMedium,
+                                vertical = SpaceSmall
+                            )
+                    ) {
+                        itemsIndexed(state.posts) { index, post ->
+                            if (
+                                index >= state.posts.size - 1 && !state.endReached && !state.isLoadingNewPosts
+                            ) {
+                                viewModel.loadNextPosts()
                             }
-                        )
+
+                            val displayedPost =
+                                postModifications[post.id] ?: post
+
+                            PostItem(
+                                post = displayedPost,
+                                onPostClick = {
+                                    onNavigate(
+                                        Screen.PostDetailsScreen.route + "/${post.id}"
+                                    )
+                                },
+                                onLikeClick = {
+                                    viewModel.onEvent(
+                                        MainFeedEvent.LikePost(displayedPost)
+                                    )
+                                },
+                                onCommentClick = {
+                                    onNavigate(
+                                        Screen.PostDetailsScreen.route + "/${post.id}?focusComment=true"
+                                    )
+                                },
+                                onShareClick = {
+                                    context.sendSharePostIntent(post.id ?: "")
+                                },
+                                onUsernameClick = {
+                                    onNavigate(
+                                        Screen.ProfileScreen.route + "?userId=${post.userId}"
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
                 if (state.isLoadingFirstTime) {

@@ -6,6 +6,7 @@ data class MainFeedState(
     val posts: List<Post> = emptyList(),
     val isLoadingFirstTime: Boolean = true,
     val isLoadingNewPosts: Boolean = false,
+    val isRefreshing: Boolean = false,
     val endReached: Boolean = false,
     val page: Int = 0
 )

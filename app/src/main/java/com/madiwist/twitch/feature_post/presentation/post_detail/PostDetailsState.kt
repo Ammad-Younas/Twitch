@@ -8,4 +8,5 @@ data class PostDetailsState(
     val comments: List<Comment> = emptyList(),
     val isLoadingPost: Boolean = false,
     val isLoadingComments: Boolean = false,
+    val isRefreshing: Boolean = false
 )

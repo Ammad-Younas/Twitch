@@ -6,4 +6,5 @@ sealed class MainFeedEvent {
     object LoadMorePosts: MainFeedEvent()
     object LoadedPage: MainFeedEvent()
     data class LikePost(val post: Post) : MainFeedEvent()
+    object Refresh: MainFeedEvent()
 }

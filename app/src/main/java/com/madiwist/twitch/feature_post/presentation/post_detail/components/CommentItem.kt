@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
@@ -47,8 +48,10 @@ import com.madiwist.twitch.core.util.Constants
 fun CommentItem(
     modifier: Modifier = Modifier,
     comment: Comment,
+    ownUserId: String = "",
     onLikeClick: (Boolean) -> Unit = {},
-    onLikedByClick: () -> Unit = {}
+    onLikedByClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {}
 ) {
     Card(
         modifier = modifier
@@ -112,13 +115,30 @@ fun CommentItem(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                Row {
+                Row (
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     Text(
                         text = comment.timeStamp,
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
                         softWrap = false
                     )
+                    if (comment.userId == ownUserId) {
+                        Spacer(Modifier.width(SpaceMedium))
+                        IconButton(
+                            onClick = {
+                                onDeleteClick()
+                            },
+                            modifier = Modifier.size(Constants.ENGAGEMENT_ICON_SIZE)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Delete,
+                                contentDescription = stringResource(R.string.delete),
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+                    }
                 }
             }
 

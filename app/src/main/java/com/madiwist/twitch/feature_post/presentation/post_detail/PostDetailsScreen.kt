@@ -32,6 +32,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -51,7 +53,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil3.compose.SubcomposeAsyncImage
@@ -130,94 +131,134 @@ fun PostDetailsScreen(
                 .padding(SpaceSmall)
                 .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
         ) {
-            LazyColumn(
+            PullToRefreshBox(
+                isRefreshing = postDetailsState.isRefreshing,
+                onRefresh = {
+                    viewModel.onEvent(PostDetailsEvent.Refresh)
+                },
+                state = rememberPullToRefreshState(),
                 modifier = Modifier.weight(1f)
             ) {
-                item {
-                    Column(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        val post = postDetailsState.post
-                        if (post != null) {
-                            val displayedPost = postModifications[post.id] ?: post
-                            SubcomposeAsyncImage(
-                                model = ImageRequest.Builder(LocalContext.current)
-                                    .data(displayedPost.imageUrl?.replace("127.0.0.1", "10.0.2.2"))
-                                    .crossfade(true)
-                                    .build(),
-                                contentDescription = stringResource(R.string.post_image),
-                                modifier = Modifier.fillMaxWidth(),
-                                contentScale = ContentScale.FillWidth,
-                                loading = {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(200.dp),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        CircularProgressIndicator()
-                                    }
-                                },
-                                error = {
-                                    BrokenImage(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(200.dp),
-                                        errorImageLoading = ErrorImageLoading.POST_TYPE
-                                    )
-                                }
-                            )
-                            Column(
-                                modifier = Modifier.padding(SpaceMedium)
-                            ) {
-                                ActionRow(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    username = displayedPost.username ?: "",
-                                    onUsernameClick = {
-                                        onNavigate(
-                                            Screen.ProfileScreen.route + "?userId=${post.userId}"
-                                        )
-                                    },
-                                    onLikeClick = {
-                                        viewModel.onEvent(
-                                            PostDetailsEvent.LikePost(
-                                                displayedPost
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    item {
+                        Column(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            val post = postDetailsState.post
+                            if (post != null) {
+                                val displayedPost = postModifications[post.id] ?: post
+                                SubcomposeAsyncImage(
+                                    model = ImageRequest.Builder(LocalContext.current)
+                                        .data(
+                                            displayedPost.imageUrl?.replace(
+                                                "127.0.0.1",
+                                                "10.0.2.2"
                                             )
                                         )
+                                        .crossfade(true)
+                                        .build(),
+                                    contentDescription = stringResource(R.string.post_image),
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentScale = ContentScale.FillWidth,
+                                    loading = {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(200.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            CircularProgressIndicator()
+                                        }
                                     },
-                                    onCommentClick = {
-                                        focusRequester.requestFocus()
-                                        keyboardController?.show()
-                                    },
-                                    onShareClick = {
-                                        context.sendSharePostIntent(post.id ?: "")
-                                    },
-                                    isLiked = displayedPost.isLiked == true
+                                    error = {
+                                        BrokenImage(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(200.dp),
+                                            errorImageLoading = ErrorImageLoading.POST_TYPE
+                                        )
+                                    }
                                 )
-                                Spacer(modifier = Modifier.height(SpaceMedium))
-                                Text(
-                                    text = displayedPost.description ?: "",
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                )
-                                Spacer(modifier = Modifier.height(ExtraSpaceLarge))
-                                Text(
+                                Column(
+                                    modifier = Modifier.padding(SpaceMedium)
+                                ) {
+                                    ActionRow(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        username = displayedPost.username ?: "",
+                                        onUsernameClick = {
+                                            onNavigate(
+                                                Screen.ProfileScreen.route + "?userId=${post.userId}"
+                                            )
+                                        },
+                                        onLikeClick = {
+                                            viewModel.onEvent(
+                                                PostDetailsEvent.LikePost(
+                                                    displayedPost
+                                                )
+                                            )
+                                        },
+                                        onCommentClick = {
+                                            focusRequester.requestFocus()
+                                            keyboardController?.show()
+                                        },
+                                        onShareClick = {
+                                            context.sendSharePostIntent(post.id ?: "")
+                                        },
+                                        isLiked = displayedPost.isLiked == true
+                                    )
+                                    Spacer(modifier = Modifier.height(SpaceMedium))
+                                    Text(
+                                        text = displayedPost.description ?: "",
+                                        color = MaterialTheme.colorScheme.onBackground,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                    )
+                                    Spacer(modifier = Modifier.height(ExtraSpaceLarge))
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            modifier = Modifier
+                                                .clickable {
+                                                onNavigate(Screen.PersonListScreen.route + "/${displayedPost.id}")
+                                            },
+                                            text = stringResource(
+                                                R.string.post_liked_by_x_people,
+                                                displayedPost.likeCount ?: 0
+                                            ),
+                                            color = MaterialTheme.colorScheme.onPrimary,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Bold,
+                                        )
+                                        Text(
+                                            text = stringResource(
+                                                R.string.x_comments,
+                                                displayedPost.commentCount ?: 0
+                                            ),
+                                            color = MaterialTheme.colorScheme.onPrimary,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Bold,
+                                        )
+                                    }
+                                }
+                            } else if (postDetailsState.isLoadingPost) {
+                                Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .clickable {
-                                            onNavigate(Screen.PersonListScreen.route + "/${displayedPost.id}")
-                                        },
-                                    text = stringResource(
-                                        R.string.post_liked_by_x_people,
-                                        displayedPost.likeCount ?: 0
-                                    ),
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    style = MaterialTheme.typography.headlineSmall,
-                                    fontWeight = FontWeight.Bold,
-                                    textAlign = TextAlign.Center
-                                )
+                                        .height(300.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
                             }
-                        } else if (postDetailsState.isLoadingPost) {
+                        }
+                    }
+                    if (postDetailsState.isLoadingComments) {
+                        item {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -228,29 +269,27 @@ fun PostDetailsScreen(
                             }
                         }
                     }
-                }
-                if (postDetailsState.isLoadingComments) {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(300.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
+                    items(
+                        items = postDetailsState.comments,
+                        key = { it.commentId }
+                    ) { comment ->
+                        val displayedComment = commentModifications[comment.commentId] ?: comment
+                        CommentItem(
+                            comment = displayedComment,
+                            ownUserId = viewModel.ownUserId,
+                            onLikeClick = {
+                                viewModel.onEvent(
+                                    PostDetailsEvent.LikeComment(
+                                        comment.commentId
+                                    )
+                                )
+                            },
+                            onLikedByClick = { onNavigate(Screen.PersonListScreen.route + "/${comment.commentId}") },
+                            onDeleteClick = {
+                                viewModel.onEvent(PostDetailsEvent.DeleteComment(comment.commentId))
+                            }
+                        )
                     }
-                }
-                items(
-                    items = postDetailsState.comments,
-                    key = { it.commentId }
-                ) { comment ->
-                    val displayedComment = commentModifications[comment.commentId] ?: comment
-                    CommentItem(
-                        comment = displayedComment,
-                        onLikeClick = { viewModel.onEvent(PostDetailsEvent.LikeComment(comment.commentId)) },
-                        onLikedByClick = { onNavigate(Screen.PersonListScreen.route + "/${comment.commentId}") }
-                    )
                 }
             }
             Spacer(Modifier.height(SpaceMedium))

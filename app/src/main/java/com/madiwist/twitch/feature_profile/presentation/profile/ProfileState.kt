@@ -7,6 +7,7 @@ data class ProfileState(
     val profile: Profile? = null,
     val posts: List<Post> = emptyList(),
     val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
     val endReached: Boolean = false,
     val isLogoutDialogueVisible: Boolean = false,
     val page: Int = 0

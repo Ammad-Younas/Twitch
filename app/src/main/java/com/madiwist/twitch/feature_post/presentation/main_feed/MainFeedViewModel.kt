@@ -51,15 +51,22 @@ class MainFeedViewModel @Inject constructor(
         },
         onError = { uiText ->
             _eventFlow.emit(UiEvent.ShowSnackBar(uiText ?: UiText.unknownError()))
+            _mainfeedState.value = _mainfeedState.value.copy(isRefreshing = false)
         },
         onSuccess = { items, newKey ->
             val ownUserId = sharedPreferences.getString(Constants.KEY_USER_ID, "") ?: ""
             val filteredItems = items.filter { it.userId != ownUserId }
+
+            items.forEach { post ->
+                postUseCases.toggleLikeStateForParentUseCase.abortPostModification(post.id ?: "")
+            }
+
             _mainfeedState.value = _mainfeedState.value.copy(
-                posts = _mainfeedState.value.posts + filteredItems,
+                posts = if (_mainfeedState.value.isRefreshing) filteredItems else _mainfeedState.value.posts + filteredItems,
                 endReached = items.isEmpty(),
                 page = newKey,
-                isLoadingFirstTime = false
+                isLoadingFirstTime = false,
+                isRefreshing = false
             )
             if (filteredItems.isEmpty() && items.isNotEmpty()) {
                 loadNextPosts()
@@ -92,7 +99,7 @@ class MainFeedViewModel @Inject constructor(
 
     private fun refresh() {
         paginator.reset()
-        _mainfeedState.value = MainFeedState()
+        _mainfeedState.value = MainFeedState(isRefreshing = true)
         loadNextPosts()
     }
 
@@ -121,6 +128,9 @@ class MainFeedViewModel @Inject constructor(
                 )
                 postUseCases.toggleLikeStateForParentUseCase.updatePostModification(post.id ?: "", updatedPost)
                 toggleLikeForParent(post.id.orEmpty(), isLiked)
+            }
+            is MainFeedEvent.Refresh -> {
+                refresh()
             }
         }
     }

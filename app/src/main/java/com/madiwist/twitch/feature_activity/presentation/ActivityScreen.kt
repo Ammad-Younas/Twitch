@@ -17,6 +17,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -73,31 +75,39 @@ fun ActivityScreen(
                     .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
                     .clip(MaterialTheme.shapes.medium)
             ) {
-                LazyColumn(
-                    modifier = Modifier.weight(1f),
+                PullToRefreshBox(
+                    isRefreshing = activityState.isRefreshing,
+                    onRefresh = {
+                        viewModel.onEvent(ActivityEvent.Refresh)
+                    },
+                    state = rememberPullToRefreshState()
                 ) {
-                    itemsIndexed(activityState.activities) { index, activity ->
-                        if (index >= activityState.activities.size - 1 && !activityState.endReached && !activityState.isLoading) {
-                            viewModel.loadNextActivities()
-                        }
-                        ActivityItem(
-                            activity = activity,
-                            onUserClick = { userId ->
-                                viewModel.onEvent(ActivityEvent.ClickedOnUser(userId))
-                            },
-                            onParentClick = { parentId ->
-                                viewModel.onEvent(ActivityEvent.ClickedOnParent(parentId))
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        itemsIndexed(activityState.activities) { index, activity ->
+                            if (index >= activityState.activities.size - 1 && !activityState.endReached && !activityState.isLoading) {
+                                viewModel.loadNextActivities()
                             }
-                        )
-                        Spacer(Modifier.height(8.dp))
-                    }
-                    if (activityState.isLoading && activityState.activities.isNotEmpty()) {
-                        item {
-                            Box(
-                                modifier = Modifier.fillMaxWidth(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator()
+                            ActivityItem(
+                                activity = activity,
+                                onUserClick = { userId ->
+                                    viewModel.onEvent(ActivityEvent.ClickedOnUser(userId))
+                                },
+                                onParentClick = { parentId ->
+                                    viewModel.onEvent(ActivityEvent.ClickedOnParent(parentId))
+                                }
+                            )
+                            Spacer(Modifier.height(8.dp))
+                        }
+                        if (activityState.isLoading && activityState.activities.isNotEmpty()) {
+                            item {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
                             }
                         }
                     }

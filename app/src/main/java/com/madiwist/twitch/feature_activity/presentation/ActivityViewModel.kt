@@ -39,12 +39,14 @@ class ActivityViewModel @Inject constructor(
         },
         onError = { uiText ->
             _eventFlow.emit(UiEvent.ShowSnackBar(uiText ?: UiText.unknownError()))
+            _activityState.value = _activityState.value.copy(isRefreshing = false)
         },
         onSuccess = { items, newKey ->
             _activityState.value = _activityState.value.copy(
-                activities = _activityState.value.activities + items,
+                activities = if (_activityState.value.isRefreshing) items else _activityState.value.activities + items,
                 endReached = items.isEmpty(),
-                page = newKey
+                page = newKey,
+                isRefreshing = false
             )
         }
     )
@@ -57,6 +59,12 @@ class ActivityViewModel @Inject constructor(
         viewModelScope.launch {
             paginator.loadNextItems()
         }
+    }
+
+    private fun refresh() {
+        paginator.reset()
+        _activityState.value = ActivityState(isRefreshing = true)
+        loadNextActivities()
     }
 
     fun onEvent(event: ActivityEvent) {
@@ -73,6 +81,10 @@ class ActivityViewModel @Inject constructor(
                 viewModelScope.launch {
                     _eventFlow.emit(UiEvent.Navigate(Screen.PostDetailsScreen.route))
                 }
+            }
+
+            is ActivityEvent.Refresh -> {
+                refresh()
             }
         }
     }

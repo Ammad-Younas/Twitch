@@ -7,5 +7,6 @@ data class Comment(
     val timeStamp: String,
     val comment: String,
     val isLiked: Boolean,
-    val likeCount: Int
+    val likeCount: Int,
+    val userId: String
 )

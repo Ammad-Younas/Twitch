@@ -29,11 +29,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +55,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -74,6 +79,7 @@ import com.madiwist.twitch.feature_profile.presentation.profile.components.Alert
 import com.madiwist.twitch.feature_profile.presentation.profile.components.BannerSection
 import com.madiwist.twitch.feature_profile.presentation.profile.components.ProfileHeaderSection
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileScreen(
@@ -135,6 +141,17 @@ fun ProfileScreen(
     val profileState = viewModel.profileState.value
     val hasPosts = profileState.posts.isNotEmpty()
     val context = LocalContext.current
+
+    val scope = rememberCoroutineScope()
+
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
+        viewModel.setToolbarOffsetY(0f)
+        viewModel.setExpandedRatio(1f)
+
+        scope.launch {
+            lazyListState.scrollToItem(0)
+        }
+    }
 
 
     LaunchedEffect(key1 = userId, key2 = hasPosts) {
@@ -208,194 +225,218 @@ fun ProfileScreen(
             modifier = Modifier
                 .weight(1f)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .then(
-                        if (hasPosts) {
-                            Modifier.nestedScroll(nestedScrollConnection)
-                        } else {
-                            Modifier
-                        }
-                    )
+            PullToRefreshBox(
+                isRefreshing = profileState.isRefreshing,
+                onRefresh = {
+                    viewModel.onEvent(ProfileEvent.Refresh)
+                },
+                state = rememberPullToRefreshState(),
+                modifier = Modifier.fillMaxSize()
             ) {
-                LazyColumn(
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-                    state = lazyListState
-                ) {
-                    item {
-                        Spacer(Modifier.height((toolBarHeightExpanded) - Constants.PROFILE_PICTURE_SIZE_LARGE / 2f))
-                    }
-                    item {
-                        profileState.profile?.let { profile ->
-                            ProfileHeaderSection(
-                                user = User(
-                                    userId = profile.userId,
-                                    username = profile.username,
-                                    description = profile.bio,
-                                    profilePictureUrl = profile.profilePictureUrl,
-                                    postCount = profile.postCount,
-                                    followerCount = profile.followerCount,
-                                    followingCount = profile.followingCount
-                                ),
-                                isFollowing = profile.isFollowing,
-                                isOwnProfile = profile.isOwnProfile
-                            )
-                        }
-                    }
-                    if (profileState.profile != null) {
-                        item {
-                            Spacer(Modifier.height(SpaceLarge))
-                            Text(
-                                modifier = Modifier.fillMaxWidth(),
-                                text = stringResource(R.string.all_posts),
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                style = MaterialTheme.typography.headlineLarge,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center
-                            )
-                            Spacer(Modifier.height(SpaceSmall))
-                        }
-                    }
-                    if (profileState.isLoading && profileState.posts.isEmpty()) {
-                        item {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(SpaceMedium),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator()
+                        .then(
+                            if (hasPosts) {
+                                Modifier.nestedScroll(nestedScrollConnection)
+                            } else {
+                                Modifier
                             }
-                        }
-                    }
-                    if (
-                        !profileState.isLoading &&
-                        profileState.posts.isEmpty() &&
-                        profileState.profile != null
+                        )
+                ) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .windowInsetsPadding(
+                                WindowInsets.safeDrawing.only(
+                                    WindowInsetsSides.Horizontal
+                                )
+                            ),
+                        state = lazyListState
                     ) {
                         item {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(SpaceLarge),
-                                text = stringResource(R.string.no_posts_yet),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                style = MaterialTheme.typography.bodyLarge,
-                                textAlign = TextAlign.Center
-                            )
+                            Spacer(Modifier.height((toolBarHeightExpanded) - Constants.PROFILE_PICTURE_SIZE_LARGE / 2f))
                         }
-                    }
-                    itemsIndexed(profileState.posts) { index, post ->
-                        if (index >= profileState.posts.size - 1 && !profileState.endReached && !profileState.isLoading) {
-                            viewModel.loadNextPosts()
-                        }
-                        val displayedPost = postModifications[post.id] ?: post
-                        Column(modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(SpaceMedium)) {
-                            PostItem(
-                                post = displayedPost,
-                                onPostClick = { onNavigate(Screen.PostDetailsScreen.route + "/${post.id}") },
-                                onLikeClick = {
-                                    viewModel.onEvent(ProfileEvent.LikePost(displayedPost))
-                                },
-                                onCommentClick = {
-                                    onNavigate(Screen.PostDetailsScreen.route + "/${post.id}?focusComment=true")
-                                },
-                                onUsernameClick = {
-                                },
-                                onShareClick = {
-                                    context.sendSharePostIntent(post.id ?: "")
-                                }
-                            )
-                        }
-                    }
-                    if (profileState.isLoading && profileState.posts.isNotEmpty()) {
                         item {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(SpaceMedium),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator()
+                            profileState.profile?.let { profile ->
+                                ProfileHeaderSection(
+                                    user = User(
+                                        userId = profile.userId,
+                                        username = profile.username,
+                                        description = profile.bio,
+                                        profilePictureUrl = profile.profilePictureUrl,
+                                        postCount = profile.postCount,
+                                        followerCount = profile.followerCount,
+                                        followingCount = profile.followingCount
+                                    ),
+                                    isFollowing = profile.isFollowing,
+                                    isOwnProfile = profile.isOwnProfile
+                                )
                             }
                         }
-                    }
-                }
-                Column(
-                    modifier = Modifier.align(Alignment.TopCenter),
-                ) {
-                    profileState.profile?.let { profile ->
-                        BannerSection(
-                            modifier = Modifier
-                                .height(
-                                    (bannerHeight * expandedRatio).coerceIn(
-                                        minimumValue = toolBarHeightCollapsed,
-                                        maximumValue = bannerHeight
-                                    )
-                                ),
-                            leftIconModifier = Modifier.graphicsLayer {
-                                translationY = (1f - expandedRatio) * (-iconCollapsedOffsetY.toPx())
-                                translationX = (1 - expandedRatio) * iconHorizontalCenterLength
-
-                            },
-                            rightIconModifier = Modifier.graphicsLayer {
-                                translationY = (1f - expandedRatio) * (-iconCollapsedOffsetY.toPx())
-                                translationX = (1 - expandedRatio) * (-iconHorizontalCenterLength)
-
-                            },
-                            topSkillUrls = profile.topSkillUrls,
-                            shouldShowGithub = !profile.gitHubUrl.isNullOrBlank(),
-                            shouldShowInstagram = !profile.instagramUrl.isNullOrBlank(),
-                            shouldShowLinkedIn = !profile.linkedInUrl.isNullOrBlank(),
-                            bannerUrl = profile.bannerUrl
-                        )
-                        SubcomposeAsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(profile.profilePictureUrl)
-                                .crossfade(true)
-                                .build(),
-                            contentDescription = stringResource(R.string.profile_image),
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .graphicsLayer {
-                                    translationY =
-                                        -(Constants.PROFILE_PICTURE_SIZE_LARGE.toPx() / 2f) - (1f - expandedRatio) * imageCollapsedOffsetY.toPx()
-                                    transformOrigin = TransformOrigin(
-                                        pivotFractionX = 0.5f,
-                                        pivotFractionY = 0f
-                                    )
-                                    val scale = 0.5f + expandedRatio * 0.5f
-                                    scaleX = scale
-                                    scaleY = scale
-                                }
-                                .size(Constants.PROFILE_PICTURE_SIZE_LARGE)
-                                .aspectRatio(1f)
-                                .clip(CircleShape)
-                                .border(
-                                    width = 2.dp,
-                                    color = Color.White,
-                                    shape = CircleShape
-                                ),
-                            loading = {
+                        if (profileState.profile != null) {
+                            item {
+                                Spacer(Modifier.height(SpaceLarge))
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = stringResource(R.string.all_posts),
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    style = MaterialTheme.typography.headlineLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center
+                                )
+                                Spacer(Modifier.height(SpaceSmall))
+                            }
+                        }
+                        if (profileState.isLoading && profileState.posts.isEmpty()) {
+                            item {
                                 Box(
-                                    modifier = Modifier.fillMaxSize(),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(SpaceMedium),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     CircularProgressIndicator()
                                 }
-                            },
-                            error = {
-                                BrokenImage(
-                                    modifier = Modifier.size(100.dp),
-                                    errorImageLoading = ErrorImageLoading.PROFILE_TYPE
+                            }
+                        }
+                        if (
+                            !profileState.isLoading &&
+                            profileState.posts.isEmpty() &&
+                            profileState.profile != null
+                        ) {
+                            item {
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(SpaceLarge),
+                                    text = stringResource(R.string.no_posts_yet),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    textAlign = TextAlign.Center
                                 )
                             }
-                        )
+                        }
+                        itemsIndexed(profileState.posts) { index, post ->
+                            if (index >= profileState.posts.size - 1 && !profileState.endReached && !profileState.isLoading) {
+                                viewModel.loadNextPosts()
+                            }
+                            val displayedPost = postModifications[post.id] ?: post
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(SpaceMedium)
+                            ) {
+                                PostItem(
+                                    post = displayedPost,
+                                    onPostClick = {
+                                        onNavigate(
+                                            Screen.PostDetailsScreen.route + "/${post.id}"
+                                        )
+                                    },
+                                    onLikeClick = {
+                                        viewModel.onEvent(ProfileEvent.LikePost(displayedPost))
+                                    },
+                                    onCommentClick = {
+                                        onNavigate(
+                                            Screen.PostDetailsScreen.route + "/${post.id}?focusComment=true"
+                                        )
+                                    },
+                                    onUsernameClick = {
+                                    },
+                                    onShareClick = {
+                                        context.sendSharePostIntent(post.id ?: "")
+                                    }
+                                )
+                            }
+                        }
+                        if (profileState.isLoading && profileState.posts.isNotEmpty()) {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(SpaceMedium),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            }
+                        }
+                    }
+                    Column(
+                        modifier = Modifier.align(Alignment.TopCenter),
+                    ) {
+                        profileState.profile?.let { profile ->
+                            BannerSection(
+                                modifier = Modifier
+                                    .height(
+                                        (bannerHeight * expandedRatio).coerceIn(
+                                            minimumValue = toolBarHeightCollapsed,
+                                            maximumValue = bannerHeight
+                                        )
+                                    ),
+                                leftIconModifier = Modifier.graphicsLayer {
+                                    translationY =
+                                        (1f - expandedRatio) * (-iconCollapsedOffsetY.toPx())
+                                    translationX = (1 - expandedRatio) * iconHorizontalCenterLength
+
+                                },
+                                rightIconModifier = Modifier.graphicsLayer {
+                                    translationY =
+                                        (1f - expandedRatio) * (-iconCollapsedOffsetY.toPx())
+                                    translationX =
+                                        (1 - expandedRatio) * (-iconHorizontalCenterLength)
+
+                                },
+                                topSkillUrls = profile.topSkillUrls,
+                                shouldShowGithub = !profile.gitHubUrl.isNullOrBlank(),
+                                shouldShowInstagram = !profile.instagramUrl.isNullOrBlank(),
+                                shouldShowLinkedIn = !profile.linkedInUrl.isNullOrBlank(),
+                                bannerUrl = profile.bannerUrl
+                            )
+                            SubcomposeAsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(profile.profilePictureUrl)
+                                    .crossfade(true)
+                                    .build(),
+                                contentDescription = stringResource(R.string.profile_image),
+                                modifier = Modifier
+                                    .align(Alignment.CenterHorizontally)
+                                    .graphicsLayer {
+                                        translationY =
+                                            -(Constants.PROFILE_PICTURE_SIZE_LARGE.toPx() / 2f) - (1f - expandedRatio) * imageCollapsedOffsetY.toPx()
+                                        transformOrigin = TransformOrigin(
+                                            pivotFractionX = 0.5f,
+                                            pivotFractionY = 0f
+                                        )
+                                        val scale = 0.5f + expandedRatio * 0.5f
+                                        scaleX = scale
+                                        scaleY = scale
+                                    }
+                                    .size(Constants.PROFILE_PICTURE_SIZE_LARGE)
+                                    .aspectRatio(1f)
+                                    .clip(CircleShape)
+                                    .border(
+                                        width = 2.dp,
+                                        color = Color.White,
+                                        shape = CircleShape
+                                    ),
+                                loading = {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator()
+                                    }
+                                },
+                                error = {
+                                    BrokenImage(
+                                        modifier = Modifier.size(100.dp),
+                                        errorImageLoading = ErrorImageLoading.PROFILE_TYPE
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
             }
