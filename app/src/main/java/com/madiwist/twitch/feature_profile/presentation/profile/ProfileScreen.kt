@@ -133,10 +133,15 @@ fun ProfileScreen(
     }
 
     val profileState = viewModel.profileState.value
+    val hasPosts = profileState.posts.isNotEmpty()
     val context = LocalContext.current
 
 
-    LaunchedEffect(key1 = userId) {
+    LaunchedEffect(key1 = userId, key2 = hasPosts) {
+        if (!hasPosts) {
+            viewModel.setToolbarOffsetY(0f)
+            viewModel.setExpandedRatio(1f)
+        }
         viewModel.getProfile(userId)
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
@@ -206,7 +211,13 @@ fun ProfileScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .nestedScroll(nestedScrollConnection)
+                    .then(
+                        if (hasPosts) {
+                            Modifier.nestedScroll(nestedScrollConnection)
+                        } else {
+                            Modifier
+                        }
+                    )
             ) {
                 LazyColumn(
                     modifier = Modifier
@@ -258,6 +269,23 @@ fun ProfileScreen(
                             ) {
                                 CircularProgressIndicator()
                             }
+                        }
+                    }
+                    if (
+                        !profileState.isLoading &&
+                        profileState.posts.isEmpty() &&
+                        profileState.profile != null
+                    ) {
+                        item {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(SpaceLarge),
+                                text = stringResource(R.string.no_posts_yet),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.bodyLarge,
+                                textAlign = TextAlign.Center
+                            )
                         }
                     }
                     itemsIndexed(profileState.posts) { index, post ->

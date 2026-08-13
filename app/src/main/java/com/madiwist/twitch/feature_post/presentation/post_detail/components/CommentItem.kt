@@ -69,11 +69,13 @@ fun CommentItem(
                 .padding(SpaceLarge),
         ) {
             Row(
-                verticalAlignment = Alignment.Top,
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Row {
+                Row (
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     SubcomposeAsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
                             .data(comment.profilePictureUrl)

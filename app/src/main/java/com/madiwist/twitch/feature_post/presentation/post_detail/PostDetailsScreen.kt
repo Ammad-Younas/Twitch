@@ -173,7 +173,11 @@ fun PostDetailsScreen(
                                 ActionRow(
                                     modifier = Modifier.fillMaxWidth(),
                                     username = displayedPost.username ?: "",
-                                    onUsernameClick = { },
+                                    onUsernameClick = {
+                                        onNavigate(
+                                            Screen.ProfileScreen.route + "?userId=${post.userId}"
+                                        )
+                                    },
                                     onLikeClick = {
                                         viewModel.onEvent(
                                             PostDetailsEvent.LikePost(

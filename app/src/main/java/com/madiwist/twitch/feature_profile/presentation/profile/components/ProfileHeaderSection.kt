@@ -11,7 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.models.User
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
@@ -37,18 +39,19 @@ fun ProfileHeaderSection(
                 text = user.username ?: "",
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.onPrimary,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
         }
-        Spacer(Modifier.height(SpaceSmall))
         Text(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(SpaceMedium),
-            text = user.description ?: "",
+            text = user.description
+                ?.takeUnless { it.isBlank() }
+                ?: stringResource(R.string.default_description),
             color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(SpaceLarge))
         ProfileStats(

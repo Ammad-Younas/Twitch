@@ -58,6 +58,7 @@ fun MainFeedScreen(
                 is UiEvent.ShowSnackBar -> {
                     snackbarHostState.showSnackbar(event.uiText.asString(context))
                 }
+
                 else -> Unit
             }
         }
@@ -93,40 +94,68 @@ fun MainFeedScreen(
             modifier = Modifier
                 .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
         ) {
-            Box(modifier = Modifier
-                .fillMaxSize()
+            Box(
+                modifier = Modifier.fillMaxSize()
             ) {
-                LazyColumn (
+                LazyColumn(
                     modifier = Modifier
-                        .padding(horizontal = SpaceMedium, vertical = SpaceSmall)
+                        .padding(
+                            horizontal = SpaceMedium,
+                            vertical = SpaceSmall
+                        )
                 ) {
                     itemsIndexed(state.posts) { index, post ->
-                        if (index >= state.posts.size - 1 && !state.endReached && !state.isLoadingNewPosts) {
+                        if (
+                            index >= state.posts.size - 1 && !state.endReached && !state.isLoadingNewPosts
+                        ) {
                             viewModel.loadNextPosts()
                         }
-                        val displayedPost = postModifications[post.id] ?: post
+
+                        val displayedPost =
+                            postModifications[post.id] ?: post
+
                         PostItem(
                             post = displayedPost,
                             onPostClick = {
-                                onNavigate(Screen.PostDetailsScreen.route + "/${post.id}")
+                                onNavigate(
+                                    Screen.PostDetailsScreen.route + "/${post.id}"
+                                )
                             },
                             onLikeClick = {
-                                viewModel.onEvent(MainFeedEvent.LikePost(displayedPost))
+                                viewModel.onEvent(
+                                    MainFeedEvent.LikePost(displayedPost)
+                                )
                             },
                             onCommentClick = {
-                                onNavigate(Screen.PostDetailsScreen.route + "/${post.id}?focusComment=true")
+                                onNavigate(
+                                    Screen.PostDetailsScreen.route + "/${post.id}?focusComment=true"
+                                )
                             },
                             onShareClick = {
                                 context.sendSharePostIntent(post.id ?: "")
                             },
                             onUsernameClick = {
-                                onNavigate(Screen.ProfileScreen.route + "?userId=${post.userId}")
+                                onNavigate(
+                                    Screen.ProfileScreen.route + "?userId=${post.userId}"
+                                )
                             }
                         )
                     }
                 }
                 if (state.isLoadingFirstTime) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+                if (!state.isLoadingFirstTime && state.posts.isEmpty()) {
+                    Text(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(SpaceMedium),
+                        text = stringResource(R.string.no_posts_yet),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
             }
         }
