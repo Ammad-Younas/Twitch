@@ -14,28 +14,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -44,15 +32,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil3.compose.SubcomposeAsyncImage
@@ -60,10 +44,10 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.components.BrokenImage
+import com.madiwist.twitch.core.presentation.components.SendTextField
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.navigation.Screen
 import com.madiwist.twitch.core.presentation.ui.theme.ExtraSpaceLarge
-import com.madiwist.twitch.core.presentation.ui.theme.SpaceLarge
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceMedium
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
 import com.madiwist.twitch.core.presentation.util.ErrorImageLoading
@@ -293,72 +277,18 @@ fun PostDetailsScreen(
                 }
             }
             Spacer(Modifier.height(SpaceMedium))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = SpaceMedium,
-                        end = SpaceMedium,
-                        top = SpaceSmall,
-                        bottom = SpaceLarge
-                    ),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextField(
-                    modifier = Modifier
-                        .weight(1f)
-                        .focusRequester(focusRequester),
-                    value = commentFieldState.text,
-                    onValueChange = {
-                        viewModel.onEvent(PostDetailsEvent.EnteredComment(it))
-                    },
-                    placeholder = {
-                        Text(
-                            text = stringResource(R.string.enter_a_comment),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    },
-                    maxLines = 3,
-                    shape = RoundedCornerShape(28.dp),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Send
-                    ),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        cursorColor = MaterialTheme.colorScheme.primary
-                    )
-                )
-                Spacer(Modifier.width(SpaceMedium))
-                if (viewModel.commentState.value.isLoading) {
-                    CircularProgressIndicator()
-                } else {
-                    FilledIconButton(
-                        onClick = {
-                            viewModel.onEvent(PostDetailsEvent.Comment)
-                        },
-                        enabled = commentFieldState.text.isNotBlank(),
-                        modifier = Modifier.size(48.dp),
-                        shape = CircleShape,
-                        colors = IconButtonDefaults.filledIconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary,
-                            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.Send,
-                            contentDescription = stringResource(R.string.send),
-                            modifier = Modifier.size(22.dp)
-                        )
-                    }
-                }
-            }
+            SendTextField(
+                state = commentFieldState,
+                onValueChange = {
+                    viewModel.onEvent(PostDetailsEvent.EnteredComment(it))
+                },
+                hint = stringResource(R.string.enter_a_comment),
+                onSend = {
+                    viewModel.onEvent(PostDetailsEvent.Comment)
+                },
+                isLoading = viewModel.commentState.value.isLoading,
+                focusRequester = focusRequester
+            )
         }
     }
 }

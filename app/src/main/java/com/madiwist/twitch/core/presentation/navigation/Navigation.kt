@@ -13,6 +13,7 @@ import com.madiwist.twitch.feature_activity.presentation.ActivityScreen
 import com.madiwist.twitch.feature_auth.presentation.login.LoginScreen
 import com.madiwist.twitch.feature_auth.presentation.register.RegisterScreen
 import com.madiwist.twitch.feature_chat.presentation.chat.ChatScreen
+import com.madiwist.twitch.feature_chat.presentation.message.MessageScreen
 import com.madiwist.twitch.feature_post.presentation.create_post.CreatePostScreen
 import com.madiwist.twitch.feature_post.presentation.main_feed.MainFeedScreen
 import com.madiwist.twitch.feature_post.presentation.person_list.PersonListScreen
@@ -57,6 +58,13 @@ fun Navigation(
                 onNavigateUp = navController::navigateUp,
             )
         }
+        composable(Screen.MessageScreen.route) {
+            MessageScreen(
+                onNavigate = navController::navigate,
+                onNavigateUp = navController::navigateUp,
+                chatId = ""
+            )
+        }
         composable(Screen.ActivityScreen.route) {
             ActivityScreen(
                 onNavigate = navController::navigate,
@@ -66,7 +74,7 @@ fun Navigation(
         composable(
             route = Screen.ProfileScreen.route + "?userId={userId}",
             arguments = listOf(
-                navArgument(name = "userId"){
+                navArgument(name = "userId") {
                     type = NavType.StringType
                     nullable = true
                     defaultValue = null
@@ -91,7 +99,7 @@ fun Navigation(
         composable(
             route = Screen.EditProfileScreen.route + "/{userId}",
             arguments = listOf(
-                navArgument(name = "userId"){
+                navArgument(name = "userId") {
                     type = NavType.StringType
                 }
             )
@@ -149,7 +157,7 @@ fun Navigation(
         composable(
             route = Screen.PersonListScreen.route + "/{parentId}",
             arguments = listOf(
-                navArgument(name = "parentId"){
+                navArgument(name = "parentId") {
                     type = NavType.StringType
                 }
             )

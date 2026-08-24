@@ -10,7 +10,8 @@ private val DarkColorScheme = darkColorScheme(
     primary = green,
     onPrimary = white,
     surface = darkGray,
-    onSurface = mediumGray
+    onSurface = mediumGray,
+    secondary = messageGreen
 )
 @Composable
 fun TwitchTheme(content: @Composable () -> Unit) {
