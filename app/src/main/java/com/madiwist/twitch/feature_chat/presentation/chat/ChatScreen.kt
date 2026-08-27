@@ -14,45 +14,25 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.navigation.Screen
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
-import com.madiwist.twitch.feature_chat.domain.model.Chat
 import com.madiwist.twitch.feature_chat.presentation.chat.component.ChatItem
 
 @Composable
 fun ChatScreen(
     onNavigate: (String) -> Unit = {},
     onNavigateUp: () -> Unit = {},
+    viewModel: ChatViewModel = hiltViewModel()
 ) {
 
-    val chats = remember {
-        listOf(
-            Chat(
-                remoteUsername = "Ammad",
-                remoteUserProfileUrl = "http://192.168.100.135:8001/profile_picture/e8817ff3-74d9-43d3-a7b5-aa7b382cf16e.jpg",
-                lastMessage = "This is last message",
-                lastMessageTimestamp = "10:23"
-            ),
-            Chat(
-                remoteUsername = "Ali",
-                remoteUserProfileUrl = "http://192.168.100.135:8001/profile_picture/e8817ff3-74d9-43d3-a7b5-aa7b382cf16e.jpg",
-                lastMessage = "This is last message",
-                lastMessageTimestamp = "10:23"
-            ),
-            Chat(
-                remoteUsername = "Zaryab",
-                remoteUserProfileUrl = "http://192.168.100.135:8001/profile_picture/e8817ff3-74d9-43d3-a7b5-aa7b382cf16e.jpg",
-                lastMessage = "This is last message",
-                lastMessageTimestamp = "10:23"
-            ),
-        )
-    }
+    val chats = viewModel.chatState.value.chats
+    val isLoading = viewModel.chatState.value.isLoading
 
     Column(
         modifier = Modifier
@@ -81,11 +61,11 @@ fun ChatScreen(
                         .fillMaxSize()
                         .padding(SpaceSmall)
                 ) {
-                    items(chats){chat ->
+                    items(chats) { chat ->
                         ChatItem(
                             item = chat,
                             onItemClick = {
-                                onNavigate(Screen.MessageScreen.route)
+                                onNavigate(Screen.MessageScreen.route + "/${chat.chatId}/${chat.remoteUserId}")
                             }
                         )
                     }

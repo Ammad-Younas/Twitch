@@ -1,10 +1,12 @@
-package com.madiwist.twitch.feature_chat.data.remote.ws.data
+package com.madiwist.twitch.feature_chat.data.remote.data
 
 import com.madiwist.twitch.feature_chat.domain.model.Message
+import kotlinx.serialization.Serializable
 import java.text.DateFormat
 import java.util.Date
 
-data class WebSocketMessage(
+@Serializable
+data class WebSocketServerMessage(
     val fromId: String,
     val toId: String,
     val text: String,

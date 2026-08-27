@@ -5,11 +5,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
 import com.madiwist.twitch.core.presentation.util.UiEvent
+import com.madiwist.twitch.feature_chat.domain.use_case.ChatUseCases
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import javax.inject.Inject
 
-class MessageViewModel @Inject constructor() : ViewModel() {
+@HiltViewModel
+class MessageViewModel @Inject constructor(
+    private val chatUseCases: ChatUseCases
+) : ViewModel() {
 
     private val _messageTextFieldState = mutableStateOf(TwitchTextFieldState())
     val messageTextFieldState: State<TwitchTextFieldState> = _messageTextFieldState
@@ -29,7 +34,6 @@ class MessageViewModel @Inject constructor() : ViewModel() {
                 )
             }
             is MessageEvent.SendMessage -> {
-
             }
         }
     }

@@ -56,115 +56,6 @@ fun MessageScreen(
     viewModel: MessageViewModel = hiltViewModel()
 ) {
 
-    val messages = remember {
-        listOf(
-            Message(
-                fromId = "",
-                toId = "",
-                text = "HI This message is good",
-                timestamp = "19:45 PM",
-                chatId = "",
-                id = ""
-            ),
-            Message(
-                fromId = "",
-                toId = "",
-                text = "HI This message is good",
-                timestamp = "19:45 PM",
-                chatId = "",
-                id = ""
-            ),
-            Message(
-                fromId = "",
-                toId = "",
-                text = "HI This message is good",
-                timestamp = "19:45 PM",
-                chatId = "",
-                id = ""
-            ),
-            Message(
-                fromId = "",
-                toId = "",
-                text = "HI This message is good",
-                timestamp = "19:45 PM",
-                chatId = "",
-                id = ""
-            ),
-            Message(
-                fromId = "",
-                toId = "",
-                text = "HI This message is good",
-                timestamp = "19:45 PM",
-                chatId = "",
-                id = ""
-            ),
-            Message(
-                fromId = "",
-                toId = "",
-                text = "HI This message is good",
-                timestamp = "19:45 PM",
-                chatId = "",
-                id = ""
-            ),
-            Message(
-                fromId = "",
-                toId = "",
-                text = "HI This message is good",
-                timestamp = "19:45 PM",
-                chatId = "",
-                id = ""
-            ),
-            Message(
-                fromId = "",
-                toId = "",
-                text = "HI This message is good",
-                timestamp = "19:45 PM",
-                chatId = "",
-                id = ""
-            ),
-            Message(
-                fromId = "",
-                toId = "",
-                text = "HI This message is good",
-                timestamp = "19:45 PM",
-                chatId = "",
-                id = ""
-            ),
-            Message(
-                fromId = "",
-                toId = "",
-                text = "HI This message is good",
-                timestamp = "19:45 PM",
-                chatId = "",
-                id = ""
-            ),
-            Message(
-                fromId = "",
-                toId = "",
-                text = "HI This message is good",
-                timestamp = "19:45 PM",
-                chatId = "",
-                id = ""
-            ),
-            Message(
-                fromId = "",
-                toId = "",
-                text = "HI This message is good",
-                timestamp = "19:45 PM",
-                chatId = "",
-                id = ""
-            ),
-            Message(
-                fromId = "",
-                toId = "",
-                text = "HI This message is good",
-                timestamp = "19:45 PM",
-                chatId = "",
-                id = ""
-            ),
-        )
-    }
-
     val messageTextFieldState = viewModel.messageTextFieldState.value
     val messageState = viewModel.messageState.value
 
@@ -240,7 +131,7 @@ fun MessageScreen(
                         .fillMaxSize()
                         .padding(SpaceSmall)
                 ) {
-                    items(messages) { message ->
+                    items(messageState.messages) { message ->
                         RemoteMessage(
                             message = message.text,
                             timestamp = message.timestamp

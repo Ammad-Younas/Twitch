@@ -106,13 +106,11 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.material.icons.extended)
 
-    // Scarlet
-    implementation(libs.scarlet)
-    implementation(libs.websocket.okhttp)
-    implementation(libs.lifecycle.android)
-    implementation(libs.message.adapter.gson)
-    implementation(libs.stream.adapter.coroutines)
-
-
+    // Ktor
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.client.websockets)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
 
 }

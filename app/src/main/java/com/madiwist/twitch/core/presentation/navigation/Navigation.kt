@@ -58,7 +58,17 @@ fun Navigation(
                 onNavigateUp = navController::navigateUp,
             )
         }
-        composable(Screen.MessageScreen.route) {
+        composable(
+            route = Screen.MessageScreen.route + "/{chatId}/{remoteUserId}",
+            arguments = listOf(
+                navArgument(name = "chatId") {
+                    type = NavType.StringType
+                },
+                navArgument(name = "remoteUserId") {
+                    type = NavType.StringType
+                },
+            )
+        ) {
             MessageScreen(
                 onNavigate = navController::navigate,
                 onNavigateUp = navController::navigateUp,

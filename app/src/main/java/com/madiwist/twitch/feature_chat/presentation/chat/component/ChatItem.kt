@@ -106,7 +106,7 @@ fun ChatItem(
                 )
             }
             Text(
-                text = item.lastMessageTimestamp,
+                text = item.timestamp.toString(),
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
                 softWrap = false
