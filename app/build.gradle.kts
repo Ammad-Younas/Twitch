@@ -106,5 +106,13 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.material.icons.extended)
 
+    // Scarlet
+    implementation(libs.scarlet)
+    implementation(libs.websocket.okhttp)
+    implementation(libs.lifecycle.android)
+    implementation(libs.message.adapter.gson)
+    implementation(libs.stream.adapter.coroutines)
+
+
 
 }
