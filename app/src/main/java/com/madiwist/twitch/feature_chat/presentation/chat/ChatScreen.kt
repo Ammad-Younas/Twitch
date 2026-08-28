@@ -18,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.navigation.Screen
@@ -65,7 +67,8 @@ fun ChatScreen(
                         ChatItem(
                             item = chat,
                             onItemClick = {
-                                onNavigate(Screen.MessageScreen.route + "/${chat.chatId}/${chat.remoteUserId}")
+                                val encodedUrl = URLEncoder.encode(chat.remoteUserProfileUrl, StandardCharsets.UTF_8.toString())
+                                onNavigate(Screen.MessageScreen.route + "/${chat.chatId}/${chat.remoteUserId}/${chat.remoteUsername}/$encodedUrl")
                             }
                         )
                     }

@@ -99,14 +99,14 @@ fun ChatItem(
                 )
                 Spacer(Modifier.height(SpaceSmall))
                 Text(
-                    text = item.lastMessage,
+                    text = item.lastMessage.ifBlank { "No messages yet" },
                     style = MaterialTheme.typography.bodyMedium,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 2
                 )
             }
             Text(
-                text = item.timestamp.toString(),
+                text = item.timestamp ?: "",
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
                 softWrap = false

@@ -4,7 +4,7 @@ import com.madiwist.twitch.R
 import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText
 import com.madiwist.twitch.feature_chat.data.remote.ChatApi
-import com.madiwist.twitch.feature_chat.data.remote.data.WebSocketClientMessage
+import com.madiwist.twitch.feature_chat.data.remote.data.WebSocketServerMessage
 import com.madiwist.twitch.feature_chat.data.remote.util.ChatWebSocketClient
 import com.madiwist.twitch.feature_chat.data.remote.util.WebSocketEvent
 import com.madiwist.twitch.feature_chat.domain.model.Chat
@@ -34,6 +34,25 @@ class ChatRepositoryImpl(
         }
     }
 
+    override suspend fun getMessagesForChat(
+        chatId: String,
+        page: Int,
+        pageSize: Int
+    ): Resource<List<Message>> {
+        return try {
+            val messages = chatApi.getMessagesForChat(chatId = chatId, page = page, pageSize = pageSize).map { it.toMessage() }
+            Resource.Success(data = messages)
+        } catch (e: IOException) {
+            Resource.Error(
+                uiText = UiText.StringResource(R.string.error_couldnt_reach_server),
+            )
+        } catch (e: HttpException) {
+            Resource.Error(
+                uiText = UiText.StringResource(R.string.error_something_went_wrong)
+            )
+        }
+    }
+
     override fun observeChatEvents(): Flow<WebSocketEvent> {
         return client.events
     }
@@ -42,12 +61,14 @@ class ChatRepositoryImpl(
         return client.messages.map { it.toMessage() }
     }
 
-    override suspend fun sendMessage(toId: String, text: String, chatId: String?) {
+    override suspend fun sendMessage(fromId: String, toId: String, text: String, chatId: String?) {
         client.send(
-            WebSocketClientMessage(
+            WebSocketServerMessage(
+                fromId = fromId,
                 toId = toId,
                 text = text,
-                chatId = chatId
+                chatId = chatId,
+                timestamp = System.currentTimeMillis()
             )
         )
     }

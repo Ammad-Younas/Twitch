@@ -7,6 +7,7 @@ import com.madiwist.twitch.feature_chat.domain.repository.ChatRepository
 import com.madiwist.twitch.feature_chat.domain.use_case.ChatUseCases
 import com.madiwist.twitch.feature_chat.domain.use_case.DisconnectChat
 import com.madiwist.twitch.feature_chat.domain.use_case.GetChatsForUser
+import com.madiwist.twitch.feature_chat.domain.use_case.GetMessagesForChat
 import com.madiwist.twitch.feature_chat.domain.use_case.InitializeChat
 import com.madiwist.twitch.feature_chat.domain.use_case.ObserveChatEvents
 import com.madiwist.twitch.feature_chat.domain.use_case.ObserveMessages
@@ -44,20 +45,24 @@ object ChatModule {
 
     @Provides
     @Singleton
-    fun provideHttpClient(okHttpClient: OkHttpClient): HttpClient {
+    fun provideJson(): Json {
+        return Json {
+            ignoreUnknownKeys = true
+        }
+    }
+
+    @Provides
+    @Singleton
+    fun provideHttpClient(okHttpClient: OkHttpClient, json: Json): HttpClient {
         return HttpClient(OkHttp) {
             engine {
                 preconfigured = okHttpClient
             }
             install(WebSockets) {
-                contentConverter = KotlinxWebsocketSerializationConverter(Json {
-                    ignoreUnknownKeys = true
-                })
+                contentConverter = KotlinxWebsocketSerializationConverter(json)
             }
             install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                })
+                json(json)
             }
         }
     }
@@ -70,8 +75,8 @@ object ChatModule {
 
     @Provides
     @Singleton
-    fun provideChatWebSocketClient(client: HttpClient): ChatWebSocketClient {
-        return ChatWebSocketClient(client)
+    fun provideChatWebSocketClient(client: HttpClient, json: Json): ChatWebSocketClient {
+        return ChatWebSocketClient(client, json)
     }
 
     @Provides
@@ -83,7 +88,8 @@ object ChatModule {
             observeChatEvents = ObserveChatEvents(repository),
             initializeChat = InitializeChat(repository),
             disconnectChat = DisconnectChat(repository),
-            getChatsForUser = GetChatsForUser(repository)
+            getChatsForUser = GetChatsForUser(repository),
+            getMessagesForChat = GetMessagesForChat(repository)
         )
     }
 }

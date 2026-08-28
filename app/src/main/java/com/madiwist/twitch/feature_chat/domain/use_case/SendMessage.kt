@@ -5,10 +5,10 @@ import com.madiwist.twitch.feature_chat.domain.repository.ChatRepository
 class SendMessage(
     private val repository: ChatRepository
 ) {
-    suspend operator fun invoke(toId: String, text: String, chatId: String?) {
+    suspend operator fun invoke(fromId: String, toId: String, text: String, chatId: String?) {
         if (text.isBlank()){
             return
         }
-        repository.sendMessage(toId, text.trim(), chatId)
+        repository.sendMessage(fromId, toId, text.trim(), chatId)
     }
 }
