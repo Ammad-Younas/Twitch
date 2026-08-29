@@ -40,6 +40,7 @@
     <string name="posts">Posts</string>
     <string name="follow">Follow</string>
     <string name="un_follow">Unfollow</string>
+    <string name="message">Message</string>
     <string name="all_posts">ALL POSTS</string>
     <string name="edit_profile">Edit profile</string>
     <string name="username">Username</string>
@@ -101,4 +102,6 @@
     <string name="delete">Delete</string>
     <string name="chats">Chats</string>
     <string name="type_your_message">Type your message</string>
+    <string name="no_chats_yet">No chats yet</string>
+    <string name="error_not_connected">Not connected to chat server. Please wait.</string>
 </resources>

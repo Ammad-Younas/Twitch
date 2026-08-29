@@ -6,9 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.states.TwitchTextFieldState
 import com.madiwist.twitch.core.presentation.util.UiEvent
 import com.madiwist.twitch.core.util.Constants
+import com.madiwist.twitch.core.util.Resource
 import com.madiwist.twitch.core.util.UiText
 import com.madiwist.twitch.core.util.paging.DefaultPaginator
 import com.madiwist.twitch.feature_chat.data.remote.util.WebSocketEvent
@@ -47,7 +49,11 @@ class MessageViewModel @Inject constructor(
         },
         onRequest = { nextPage ->
             val chatId = savedStateHandle.get<String>("chatId") ?: ""
-            chatUseCases.getMessagesForChat(chatId, nextPage)
+            if (chatId != "null" && chatId.isNotBlank()) {
+                chatUseCases.getMessagesForChat(chatId, nextPage)
+            } else {
+                Resource.Success(data = emptyList())
+            }
         },
         getNextKey = {
             messageState.value.page + 1
@@ -77,20 +83,26 @@ class MessageViewModel @Inject constructor(
         loadNextMessages()
     }
 
+    private var isConnected = false
+
     private fun observeChatEvents() {
         chatUseCases.observeChatEvents()
             .onEach { event ->
                 when (event) {
                     is WebSocketEvent.Connected -> {
+                        isConnected = true
                         Timber.d("Connected to WebSocket")
                     }
                     is WebSocketEvent.Disconnected -> {
+                        isConnected = false
                         Timber.d("Disconnected from WebSocket")
                     }
                     is WebSocketEvent.Error -> {
+                        isConnected = false
                         Timber.e("WebSocket Error: ${event.message}")
                     }
                     is WebSocketEvent.OnGoing -> {
+                        isConnected = false
                         Timber.d("Connecting to WebSocket...")
                     }
                 }
@@ -100,6 +112,9 @@ class MessageViewModel @Inject constructor(
     private fun observeMessages() {
         chatUseCases.observeMessages()
             .onEach { message ->
+                if (savedStateHandle.get<String>("chatId") == "null" && message.chatId != null) {
+                    savedStateHandle["chatId"] = message.chatId
+                }
                 _messageState.value = messageState.value.copy(
                     messages = listOf(message) + messageState.value.messages
                 )
@@ -132,8 +147,18 @@ class MessageViewModel @Inject constructor(
     private fun sendMessage() {
         val text = messageTextFieldState.value.text
         val remoteUserId = savedStateHandle.get<String>("remoteUserId") ?: ""
-        val chatId = savedStateHandle.get<String>("chatId")
+        var chatId = savedStateHandle.get<String>("chatId")
+        if (chatId == "null") {
+            chatId = null
+        }
         if (text.isBlank()) return
+
+        if (!isConnected) {
+            viewModelScope.launch {
+                _eventFlow.emit(UiEvent.ShowSnackBar(UiText.StringResource(R.string.error_not_connected)))
+            }
+            return
+        }
 
         viewModelScope.launch {
             chatUseCases.sendMessage(

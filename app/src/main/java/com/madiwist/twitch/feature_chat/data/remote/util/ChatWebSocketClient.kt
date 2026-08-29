@@ -7,6 +7,7 @@ import io.ktor.client.plugins.websocket.webSocket
 import io.ktor.websocket.Frame
 import io.ktor.websocket.close
 import io.ktor.websocket.readText
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -28,6 +29,8 @@ class ChatWebSocketClient @Inject constructor(
     val events: Flow<WebSocketEvent> = _events.asSharedFlow()
 
     suspend fun connect(url: String) {
+        if (session != null) return
+
         try {
             _events.emit(WebSocketEvent.OnGoing)
             client.webSocket(url) {
@@ -50,14 +53,18 @@ class ChatWebSocketClient @Inject constructor(
                         }
                     }
                 } catch (e: Exception) {
-                    _events.emit(WebSocketEvent.Error(e.localizedMessage))
+                    if (e !is CancellationException) {
+                        _events.emit(WebSocketEvent.Error(e.localizedMessage))
+                    }
                 } finally {
                     session = null
                     _events.emit(WebSocketEvent.Disconnected)
                 }
             }
         } catch (e: Exception) {
-            _events.emit(WebSocketEvent.Error(e.localizedMessage))
+            if (e !is CancellationException) {
+                _events.emit(WebSocketEvent.Error(e.localizedMessage))
+            }
         }
     }
 

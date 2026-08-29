@@ -8,4 +8,5 @@ sealed class ProfileEvent {
     object DismissLogoutDialogue: ProfileEvent()
     object Logout: ProfileEvent()
     object Refresh: ProfileEvent()
+    object ToggleFollow: ProfileEvent()
 }

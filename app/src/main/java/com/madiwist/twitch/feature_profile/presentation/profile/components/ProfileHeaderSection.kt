@@ -25,6 +25,8 @@ fun ProfileHeaderSection(
     modifier: Modifier = Modifier,
     isOwnProfile: Boolean = true,
     isFollowing: Boolean = true,
+    onFollowClick: () -> Unit = {},
+    onMessageClick: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -56,7 +58,8 @@ fun ProfileHeaderSection(
         Spacer(Modifier.height(SpaceLarge))
         ProfileStats(
             user = user,
-            onFollowCLick = {},
+            onFollowCLick = onFollowClick,
+            onMessageClick = onMessageClick,
             isOwnProfile = isOwnProfile,
             isFollowing = isFollowing
         )

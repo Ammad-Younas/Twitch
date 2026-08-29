@@ -12,19 +12,22 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.presentation.components.TwitchToolBar
 import com.madiwist.twitch.core.presentation.navigation.Screen
 import com.madiwist.twitch.core.presentation.ui.theme.SpaceSmall
 import com.madiwist.twitch.feature_chat.presentation.chat.component.ChatItem
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun ChatScreen(
@@ -35,6 +38,10 @@ fun ChatScreen(
 
     val chats = viewModel.chatState.value.chats
     val isLoading = viewModel.chatState.value.isLoading
+
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        viewModel.onEvent(ChatEvent.RefreshChats)
+    }
 
     Column(
         modifier = Modifier
@@ -70,6 +77,18 @@ fun ChatScreen(
                                 val encodedUrl = URLEncoder.encode(chat.remoteUserProfileUrl, StandardCharsets.UTF_8.toString())
                                 onNavigate(Screen.MessageScreen.route + "/${chat.chatId}/${chat.remoteUserId}/${chat.remoteUsername}/$encodedUrl")
                             }
+                        )
+                    }
+                }
+                if (chats.isEmpty() && !isLoading) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = androidx.compose.ui.Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.no_chats_yet),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }

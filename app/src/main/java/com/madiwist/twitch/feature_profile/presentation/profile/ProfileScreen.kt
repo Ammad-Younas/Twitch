@@ -60,6 +60,8 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import com.madiwist.twitch.R
 import com.madiwist.twitch.core.domain.models.User
 import com.madiwist.twitch.core.presentation.components.BrokenImage
@@ -270,7 +272,19 @@ fun ProfileScreen(
                                         followingCount = profile.followingCount
                                     ),
                                     isFollowing = profile.isFollowing,
-                                    isOwnProfile = profile.isOwnProfile
+                                    isOwnProfile = profile.isOwnProfile,
+                                    onFollowClick = {
+                                        viewModel.onEvent(ProfileEvent.ToggleFollow)
+                                    },
+                                    onMessageClick = {
+                                        val encodedUrl = URLEncoder.encode(
+                                            profile.profilePictureUrl,
+                                            StandardCharsets.UTF_8.toString()
+                                        )
+                                        onNavigate(
+                                            Screen.MessageScreen.route + "/null/${profile.userId}/${profile.username}/$encodedUrl"
+                                        )
+                                    }
                                 )
                             }
                         }

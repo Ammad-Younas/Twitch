@@ -34,7 +34,17 @@ fun Navigation(
     ) {
         composable(Screen.LoginScreen.route) {
             LoginScreen(
-                onNavigate = navController::navigate,
+                onNavigate = {
+                    if (it == Screen.MainFeedScreen.route) {
+                        navController.navigate(it) {
+                            popUpTo(Screen.LoginScreen.route) {
+                                inclusive = true
+                            }
+                        }
+                    } else {
+                        navController.navigate(it)
+                    }
+                },
                 snackbarHostState = snackbarHostState
             )
         }
@@ -63,6 +73,7 @@ fun Navigation(
             arguments = listOf(
                 navArgument(name = "chatId") {
                     type = NavType.StringType
+                    nullable = true
                 },
                 navArgument(name = "remoteUserId") {
                     type = NavType.StringType

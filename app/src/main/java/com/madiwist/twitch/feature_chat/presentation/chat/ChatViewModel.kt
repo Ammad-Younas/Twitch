@@ -29,6 +29,14 @@ class ChatViewModel @Inject constructor(
         loadChats()
     }
 
+    fun onEvent(event: ChatEvent) {
+        when(event) {
+            is ChatEvent.RefreshChats -> {
+                loadChats()
+            }
+        }
+    }
+
     private fun loadChats() {
         viewModelScope.launch {
             _chatState.value = chatState.value.copy(

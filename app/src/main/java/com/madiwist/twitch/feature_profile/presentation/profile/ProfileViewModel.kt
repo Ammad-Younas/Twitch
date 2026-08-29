@@ -153,6 +153,45 @@ class ProfileViewModel @Inject constructor(
                 getProfile(_userId.value)
                 refresh()
             }
+            is ProfileEvent.ToggleFollow -> {
+                toggleFollowStateForUser(_userId.value)
+            }
+        }
+    }
+
+    private fun toggleFollowStateForUser(userId: String) {
+        viewModelScope.launch {
+            val isFollowing = profileState.value.profile?.isFollowing == true
+            _profileState.value = profileState.value.copy(
+                profile = profileState.value.profile?.copy(
+                    isFollowing = !isFollowing,
+                    followerCount = if (isFollowing) {
+                        (profileState.value.profile!!.followerCount - 1).coerceAtLeast(0)
+                    } else {
+                        profileState.value.profile!!.followerCount + 1
+                    }
+                )
+            )
+            val result = profileUseCase.toggleFollowStateForUser(
+                userId = userId,
+                isFollowing = isFollowing
+            )
+            when (result) {
+                is Resource.Success -> Unit
+                is Resource.Error -> {
+                    _profileState.value = profileState.value.copy(
+                        profile = profileState.value.profile?.copy(
+                            isFollowing = isFollowing,
+                            followerCount = if (isFollowing) {
+                                profileState.value.profile!!.followerCount + 1
+                            } else {
+                                profileState.value.profile!!.followerCount - 1
+                            }
+                        )
+                    )
+                    _eventFlow.emit(UiEvent.ShowSnackBar(result.uiText ?: UiText.unknownError()))
+                }
+            }
         }
     }
 

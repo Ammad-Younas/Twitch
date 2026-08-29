@@ -106,7 +106,7 @@ fun ChatItem(
                 )
             }
             Text(
-                text = item.timestamp ?: "",
+                text = item.timestamp?.ifBlank { "" } ?: "",
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
                 softWrap = false

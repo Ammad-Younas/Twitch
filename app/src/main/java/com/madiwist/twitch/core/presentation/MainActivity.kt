@@ -84,12 +84,14 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(Screen.CreatePostScreen.route)
                             },
                             onNavigate = { route ->
-                                navController.navigate(route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = route != Screen.MainFeedScreen.route
+                                if (currentRoute?.split("?")?.get(0) != route) {
+                                    navController.navigate(route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
                                     }
-                                    launchSingleTop = true
-                                    restoreState = route != Screen.MainFeedScreen.route
                                 }
                             },
                             currentRoute = currentRoute,
