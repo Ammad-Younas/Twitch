@@ -1,6 +1,5 @@
 package com.madiwist.twitch.core.presentation
 
-import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle

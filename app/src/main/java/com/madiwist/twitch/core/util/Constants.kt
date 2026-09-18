@@ -20,7 +20,7 @@ object Constants {
 
     const val DEFAULT_PAGE_SIZE = 20
 
-    const val BASE_URL = "http://192.168.100.135:8001/"
+    const val BASE_URL = "http://16.170.245.183:8001/"
 
-    const val WS_BASE_URL = "ws://192.168.100.135:8001/api/chat/websocket"
+    const val WS_BASE_URL = "ws://16.170.245.183:8001/api/chat/websocket"
 }

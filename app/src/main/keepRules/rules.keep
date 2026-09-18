@@ -1,12 +1,92 @@
-# Add project specific R8 rules here.
-# AGP will combine all keep rule files in src/main/keepRules to pass to R8
-#
-# For more details, see
-#   https://d.android.com/r/tools/r8/keep-rules
+# ─────────────────────────────────────────────────────────────────────────────
+# Attributes & Metadata
+# ─────────────────────────────────────────────────────────────────────────────
+-keepattributes Signature, Exceptions, *Annotation*, EnclosingMethod, InnerClasses, SourceFile, LineNumberTable
+-keepattributes RuntimeVisibleAnnotations, RuntimeInvisibleAnnotations, AnnotationDefault
+-keep class kotlin.Metadata { *; }
+-dontwarn kotlin.**
+-keepclassmembers class **$WhenMappings { <fields>; }
+-keepclassmembers class kotlin.Lazy { *; }
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# ─────────────────────────────────────────────────────────────────────────────
+# Coroutines & Serialization (Ktor / Kotlinx Serialization)
+# ─────────────────────────────────────────────────────────────────────────────
+-keep class kotlinx.coroutines.** { *; }
+-keepclassmembers class kotlinx.coroutines.** { *; }
+-keep class kotlin.coroutines.Continuation
+-dontwarn kotlinx.coroutines.**
+
+# Kotlinx Serialization specific rules
+-keepclassmembers class * {
+    *** Companion;
+    *** $serializer;
+}
+-keep @kotlinx.serialization.Serializable class * { *; }
+-keep class kotlinx.serialization.json.** { *; }
+-dontwarn kotlinx.serialization.**
+
+# ─────────────────────────────────────────────────────────────────────────────
+# App Specific Models (Twitch)
+# ─────────────────────────────────────────────────────────────────────────────
+# Domain Models
+-keep class com.madiwist.twitch.core.domain.models.** { *; }
+-keep class com.madiwist.twitch.feature_auth.domain.models.** { *; }
+-keep class com.madiwist.twitch.feature_chat.domain.model.** { *; }
+-keep class com.madiwist.twitch.feature_profile.domain.model.** { *; }
+
+# Data DTOs
+-keep class com.madiwist.twitch.core.data.dto.response.** { *; }
+-keep class com.madiwist.twitch.feature_activity.data.remote.dto.** { *; }
+-keep class com.madiwist.twitch.feature_post.data.remote.dto.** { *; }
+-keep class com.madiwist.twitch.feature_chat.data.remote.data.** { *; }
+
+# Keep all members of classes used for JSON
+-keepclassmembers class com.madiwist.twitch.**.models.** { *; }
+-keepclassmembers class com.madiwist.twitch.**.model.** { *; }
+-keepclassmembers class com.madiwist.twitch.**.dto.** { *; }
+-keepclassmembers class com.madiwist.twitch.**.data.** { *; }
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Retrofit & OkHttp
+# ─────────────────────────────────────────────────────────────────────────────
+-keep class retrofit2.** { *; }
+-keep interface retrofit2.** { *; }
+-keepclassmembers interface * {
+    @retrofit2.http.* <methods>;
+}
+
+-keep class okhttp3.** { *; }
+-keep interface okhttp3.** { *; }
+-keep class okio.** { *; }
+-dontwarn okhttp3.**
+-dontwarn okio.**
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Gson
+# ─────────────────────────────────────────────────────────────────────────────
+-keep class com.google.gson.** { *; }
+-keepclassmembers class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Hilt / Dagger
+# ─────────────────────────────────────────────────────────────────────────────
+-keep class dagger.hilt.** { *; }
+-keep class com.google.dagger.** { *; }
+-keep @dagger.hilt.EntryPoint class * { *; }
+-keep @dagger.hilt.InstallIn class * { *; }
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Ktor
+# ─────────────────────────────────────────────────────────────────────────────
+-keep class io.ktor.** { *; }
+-dontwarn io.ktor.**
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Coil & Timber
+# ─────────────────────────────────────────────────────────────────────────────
+-keep class coil3.** { *; }
+-dontwarn coil3.**
+-keep class timber.log.** { *; }
+-dontwarn timber.log.**
